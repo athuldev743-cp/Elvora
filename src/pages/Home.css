@@ -1,0 +1,527 @@
+/* ===================== BRAND VARIABLES ===================== */
+:root {
+  --white: #ffffff;
+  --dark-orange: #F26722;
+  --light-orange: #F2A254;
+  --charcoal: #2E2E2F;
+}
+
+/* ===================== GLOBAL RESET ===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ===================== NAVBAR ===================== */
+/* ===================== NAVBAR ===================== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  box-sizing: border-box;
+  z-index: 1000;
+  transition: all 0.4s ease;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Transparent navbar when scrolled */
+.navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Logo container - FIXED SIZE */
+.logo {
+  display: flex;
+  align-items: center;
+  height: 80px; /* Fixed height to match navbar */
+  position: relative;
+}
+
+/* Logo image - FORCE LARGE SIZE */
+.logo-img {
+  height: 70px !important; /* Force larger height */
+  width: auto !important;
+  min-height: 60px; /* Minimum size */
+  min-width: 120px; /* Minimum width to prevent shrinking */
+  object-fit: contain; /* Keeps aspect ratio */
+  display: block;
+  transition: all 0.4s ease;
+  transform-origin: center;
+}
+
+/* Make it even larger on larger screens */
+@media (min-width: 1200px) {
+  .logo-img {
+    height: 75px !important;
+    min-width: 150px;
+  }
+}
+
+/* Alternative: If logo is too small, scale it up */
+.logo-img.scaled {
+  transform: scale(1.5); /* Scale up small logos */
+  transform-origin: left center;
+}
+
+/* When scrolled - hide the image logo */
+.navbar.scrolled .logo-img {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-20px) scale(1.5); /* Keep scale when hiding */
+}
+
+/* Text logo - matches navbar height */
+.text-logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* When scrolled - show text logo */
+.navbar.scrolled .text-logo {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+  height: 80px;
+}
+
+.nav-links a {
+  color: #333333;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s ease;
+  position: relative;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+/* Links become darker on scroll */
+.navbar.scrolled .nav-links a {
+  color: #000000;
+  font-weight: 600;
+}
+
+.nav-links a:hover {
+  color: var(--dark-orange);
+}
+
+/* Underline effect */
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: var(--dark-orange);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+/* ===================== HERO SECTION ===================== */
+/* Hero section - Button only */
+.hero {
+  min-height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-top: 80px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 100px; /* Position from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--dark-orange), #ff8c42);
+  color: white;
+  border: none;
+  padding: 22px 60px;
+  border-radius: 50px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 15px 35px rgba(242, 103, 34, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.primary-btn:hover::before {
+  transform: translateX(100%);
+  transition: transform 0.6s ease;
+}
+
+.primary-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 40px rgba(242, 103, 34, 0.6);
+}
+
+/* ===================== PRODUCT CAROUSEL SECTION ===================== */
+/* ===================== PRODUCT CAROUSEL SECTION ===================== */
+.product-preview {
+  padding: 100px 60px;
+  background: #f8f9fa;
+  position: relative;
+}
+
+.product-preview h2 {
+  font-size: 42px;
+  margin-bottom: 50px;
+  text-align: center;
+  color: var(--charcoal);
+  position: relative;
+}
+
+.product-preview h2::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--dark-orange);
+  border-radius: 2px;
+}
+
+/* Carousel Container - IMPORTANT FIX */
+.carousel-container {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0 80px; /* Increased padding for arrows */
+}
+
+/* Carousel Track - FIXED FOR SLIDING */
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+  /* NO gap property here - we'll use margins */
+}
+
+/* Product Card - FIXED WIDTH CALCULATION */
+.product-card {
+  flex: 0 0 calc(100% / 4); /* Exactly 25% width for 4 cards */
+  min-width: 0; /* Important for flex items */
+  margin-right: 30px; /* Gap between cards */
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 450px;
+}
+
+/* Remove margin from last card */
+.product-card:last-child {
+  margin-right: 0;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Product Image */
+.product-image {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  flex-shrink: 0;
+}
+
+/* Product Info */
+.product-info {
+  padding: 25px 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-name {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 10px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-price {
+  color: var(--dark-orange);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.product-btn {
+  background: transparent;
+  color: var(--dark-orange);
+  border: 2px solid var(--dark-orange);
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: auto;
+}
+
+.product-btn:hover {
+  background: var(--dark-orange);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Carousel Navigation Arrows */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  font-size: 24px;
+  color: var(--charcoal);
+}
+
+.carousel-arrow:hover {
+  background: var(--dark-orange);
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow.prev {
+  left: 10px;
+}
+
+.carousel-arrow.next {
+  right: 10px;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: var(--dark-orange);
+  transform: scale(1.2);
+}
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+
+/* Tablet (3 cards) */
+@media (max-width: 1200px) {
+  .carousel-container {
+    padding: 0 70px;
+  }
+  
+  .product-card {
+    flex: 0 0 calc(100% / 3); /* 33.33% for 3 cards */
+    margin-right: 30px;
+    height: 420px;
+  }
+  
+  .product-image {
+    height: 250px;
+  }
+}
+
+/* Medium Tablet (2 cards) */
+@media (max-width: 992px) {
+  .product-preview {
+    padding: 80px 40px;
+  }
+  
+  .carousel-container {
+    padding: 0 60px;
+  }
+  
+  .carousel-arrow {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .product-card {
+    flex: 0 0 calc(100% / 2); /* 50% for 2 cards */
+    margin-right: 30px;
+    height: 400px;
+  }
+  
+  .product-image {
+    height: 230px;
+  }
+}
+
+/* Mobile (2 cards smaller) */
+@media (max-width: 768px) {
+  .product-preview {
+    padding: 60px 20px;
+  }
+  
+  .product-preview h2 {
+    font-size: 32px;
+  }
+  
+  .carousel-container {
+    padding: 0 50px;
+  }
+  
+  .product-card {
+    flex: 0 0 calc(100% / 2);
+    margin-right: 20px;
+    height: 380px;
+  }
+  
+  .product-image {
+    height: 200px;
+  }
+  
+  .carousel-arrow {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+  
+  .product-name {
+    font-size: 16px;
+    min-height: 40px;
+  }
+  
+  .product-price {
+    font-size: 20px;
+  }
+  
+  .product-btn {
+    padding: 10px 25px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile (1 card) */
+@media (max-width: 576px) {
+  .product-preview {
+    padding: 50px 15px;
+  }
+  
+  .carousel-container {
+    padding: 0 40px;
+  }
+  
+  .product-card {
+    flex: 0 0 100%; /* 100% for 1 card */
+    margin-right: 0;
+    height: 350px;
+  }
+  
+  .product-image {
+    height: 180px;
+  }
+  
+  .carousel-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .carousel-indicators {
+    margin-top: 30px;
+  }
+}

@@ -1,0 +1,31 @@
+.products-page {
+  padding: 80px 60px;
+}
+
+.products-page h1 {
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: var(--charcoal);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.product-card {
+  text-align: center;
+}
+
+.product-image {
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.product-name {
+  font-size: 14px;
+}
