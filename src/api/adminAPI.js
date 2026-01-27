@@ -1,3 +1,4 @@
+// src/api/adminAPI.js
 const API_URL = "http://127.0.0.1:8000/admin";
 
 export const adminLogin = async (email, password) => {

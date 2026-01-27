@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { createProduct, getProducts, updateProduct, deleteProduct, getOrders } from "./api/adminAPI";
+import { useState, useEffect, useCallback } from "react";
+import { createProduct, getProducts, deleteProduct, getOrders } from "../api/adminAPI";
 import styles from "./Dashboard.module.css";
 
 function AdminDashboard() {
@@ -10,20 +10,21 @@ function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const token = localStorage.getItem("adminToken");
 
-  const fetchProducts = async () => {
+  // Use useCallback to memoize functions
+  const fetchProducts = useCallback(async () => {
     const data = await getProducts(token);
     setProducts(data);
-  };
+  }, [token]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     const data = await getOrders(token);
     setOrders(data);
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchProducts();
     fetchOrders();
-  }, []);
+  }, [fetchProducts, fetchOrders]); // Now includes dependencies
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -36,43 +37,88 @@ function AdminDashboard() {
     await createProduct(formData, token);
     alert("Product uploaded");
     fetchProducts();
+    // Reset form
+    setFormData({
+      name: "", price: "", description: "", priority: "", email: "", image: null
+    });
   };
 
   const handleDelete = async (id) => {
-    await deleteProduct(id, token);
-    fetchProducts();
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      await deleteProduct(id, token);
+      fetchProducts();
+    }
   };
 
-  const handleUpdate = async (id, updatedData) => {
-    await updateProduct(id, updatedData, token);
-    fetchProducts();
-  };
+  // Optional: Remove or implement handleUpdate
+  // const handleUpdate = async (id, updatedData) => {
+  //   await updateProduct(id, updatedData, token);
+  //   fetchProducts();
+  // };
 
   return (
     <div className={styles.container}>
       <h2>Upload Product</h2>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required />
-        <input name="price" placeholder="Price" type="number" onChange={handleChange} required />
-        <input name="description" placeholder="Description" onChange={handleChange} required />
-        <input name="priority" placeholder="Priority" type="number" onChange={handleChange} required />
-        <input name="email" placeholder="Email" type="email" onChange={handleChange} required />
-        <input name="image" type="file" onChange={handleChange} required />
+        <input 
+          name="name" 
+          placeholder="Name" 
+          value={formData.name}
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="price" 
+          placeholder="Price" 
+          type="number" 
+          value={formData.price}
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="description" 
+          placeholder="Description" 
+          value={formData.description}
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="priority" 
+          placeholder="Priority" 
+          type="number" 
+          value={formData.priority}
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="email" 
+          placeholder="Email" 
+          type="email" 
+          value={formData.email}
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          name="image" 
+          type="file" 
+          onChange={handleChange} 
+          required 
+        />
         <button type="submit">Upload</button>
       </form>
 
-      <h2>Products</h2>
+      <h2>Products ({products.length})</h2>
       <ul>
         {products.map((p) => (
           <li key={p.id}>
-            {p.name} - ${p.price} 
+            <strong>{p.name}</strong> - ${p.price} 
+            <p>{p.description}</p>
             <button onClick={() => handleDelete(p.id)}>Delete</button>
-            {/* You can add an edit form here */}
           </li>
         ))}
       </ul>
 
-      <h2>Orders</h2>
+      <h2>Orders ({orders.length})</h2>
       <ul>
         {orders.map((o) => (
           <li key={o.id}>

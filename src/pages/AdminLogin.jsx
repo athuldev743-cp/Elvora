@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "./api/adminAPI"; 
+import { adminLogin } from "../api/adminAPI";  // FIXED PATH
 import styles from "./Login.module.css";
 
 function AdminLogin() {
