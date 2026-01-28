@@ -7,18 +7,75 @@ import Testimonial from "./Testimonial";
 import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 
+// Google OAuth configuration
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "your-google-client-id";
+
 const Home = () => {
   const [scrolled, setScrolled] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   const trackRef = useRef(null);
   const containerRef = useRef(null);
   const navigate = useNavigate();
 
-  // Check if admin is logged in
-  const isAdmin = !!localStorage.getItem("adminToken");
+  // ---------- CHECK USER LOGIN STATUS ----------
+  useEffect(() => {
+    // Check if user is logged in
+    const token = localStorage.getItem("userToken");
+    const userData = localStorage.getItem("userData");
+    
+    if (token && userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        
+        // If admin, redirect to admin dashboard
+        if (parsedUser.role === "admin") {
+          navigate("/admin/dashboard");
+        }
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userData");
+      }
+    }
+    
+    setIsLoadingUser(false);
+  }, [navigate]);
+
+  // ---------- GOOGLE LOGIN HANDLERS ----------
+  const handleGoogleLogin = () => {
+    // For development/testing, use a mock login
+    // In production, implement actual Google OAuth
+    
+    // Mock login - remove this in production
+    const mockUser = {
+      id: 1,
+      name: "Demo User",
+      email: "user@example.com",
+      role: "user", // Change to "admin" for admin access
+      profile_pic: "/images/user-avatar.png"
+    };
+    
+    localStorage.setItem("userToken", "mock-jwt-token");
+    localStorage.setItem("userData", JSON.stringify(mockUser));
+    setUser(mockUser);
+    
+    // If admin, redirect to dashboard
+    if (mockUser.role === "admin") {
+      navigate("/admin/dashboard");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userData");
+    setUser(null);
+  };
 
   // ---------- FETCH PRODUCTS ----------
   useEffect(() => {
@@ -72,21 +129,25 @@ const Home = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  if (isLoadingUser) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
   return (
     <>
       {/* NAVBAR */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
-  {!scrolled ? (
-    <img
-      src="/images/logo.png"
-      alt="Eka Bhumih Logo"
-      className="logo-img"
-    />
-  ) : (
-    <span className="text-logo">EKABHUMI</span>
-  )}
-</div>
+          {!scrolled ? (
+            <img
+              src="/images/logo.png"
+              alt="Eka Bhumih Logo"
+              className="logo-img"
+            />
+          ) : (
+            <span className="text-logo">EKABHUMI</span>
+          )}
+        </div>
 
         <div className="nav-links">
           <a href="#home">Home</a>
@@ -94,29 +155,65 @@ const Home = () => {
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
           <a href="#testimonials">Testimonials</a>
-          {!isAdmin && <a href="/admin/login">Admin Login</a>}
+          
+          {/* USER/AUTH SECTION */}
+          <div className="auth-section">
+            {user ? (
+              <div className="user-menu">
+                <div className="user-info">
+                  <img 
+                    src={user.profile_pic || "/images/user-avatar.png"} 
+                    alt={user.name}
+                    className="user-avatar"
+                  />
+                  <span className="user-name">{user.name}</span>
+                </div>
+                <button className="logout-btn" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button className="google-login-btn" onClick={handleGoogleLogin}>
+                <img 
+                  src="/images/google-logo.png" 
+                  alt="Google" 
+                  className="google-icon"
+                />
+                Login 
+              </button>
+            )}
+          </div>
         </div>
       </nav>
 
-      {/* HERO */}
+      {/* HERO SECTION */}
       <section
         id="home"
         className="hero"
         style={{ backgroundImage: `url(/images/redensyl-hero.jpg)` }}
       >
         <div className="hero-content">
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/products")}
-          >
-            Shop Now
-          </button>
+          <h1>Welcome to Eka Bhumi</h1>
+          <p>Premium hair care products for healthy, beautiful hair</p>
+          
+          <div className="hero-buttons">
+            <button
+              className="primary-btn"
+              onClick={() => navigate("/products")}
+            >
+              Shop Now
+            </button>
+            
+            
+          </div>
         </div>
       </section>
 
-      {/* PRODUCTS */}
+      {/* PRODUCTS SECTION */}
       <section id="products" className="product-preview">
         <h2>Our Products</h2>
+        
+        
 
         {loading && <p>Loading products...</p>}
         {!loading && products.length === 0 && <p>No products available</p>}
@@ -133,12 +230,23 @@ const Home = () => {
                 <div className="product-info">
                   <span className="product-name">{p.name}</span>
                   <span className="product-price">₹{p.price}</span>
-                  <button
-                    className="product-btn"
-                    onClick={() => navigate(`/product/${p.id}`)}
-                  >
-                    View Details
-                  </button>
+                  
+                  {user ? (
+                    <button
+                      className="product-btn"
+                      onClick={() => navigate(`/product/${p.id}`)}
+                    >
+                      View Details
+                    </button>
+                  ) : (
+                    <button
+                      className="product-btn disabled"
+                      onClick={handleGoogleLogin}
+                      title="Login to view details"
+                    >
+                      Login to View
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
