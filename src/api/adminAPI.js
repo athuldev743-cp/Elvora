@@ -1,5 +1,4 @@
-// src/api/adminAPI.js - CORRECTED VERSION
-const API_URL = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 export const adminLogin = async (email, password) => {
   const form = new FormData();
@@ -9,77 +8,54 @@ export const adminLogin = async (email, password) => {
   const res = await fetch(`${API_URL}/admin/login`, {
     method: "POST",
     body: form,
-    headers: { 'Accept': 'application/json' },
+    headers: { Accept: "application/json" },
   });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Login failed' }));
-  return res.json();
-};
 
-export const createProduct = async (formData, token) => {
-  // CORRECT ENDPOINT: /admin/products (not /products)
-  const res = await fetch(`${API_URL}/admin/products`, {
-    method: "POST",
-    headers: { 
-      'Authorization': `Bearer ${token}`,
-    },
-    body: formData,
-  });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Create product failed' }));
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Login failed" }));
   return res.json();
 };
 
 export const getProducts = async (token) => {
-  // CORRECT ENDPOINT: /admin/products (not /products)
   const res = await fetch(`${API_URL}/admin/products`, {
-    headers: { 
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
-    },
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
   });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Fetch products failed' }));
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Fetch products failed" }));
+  return res.json();
+};
+
+export const createProduct = async (formData, token) => {
+  const res = await fetch(`${API_URL}/admin/products`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Create product failed" }));
   return res.json();
 };
 
 export const updateProduct = async (id, formData, token) => {
-  // CORRECT ENDPOINT: /admin/products/{id} (not /products/{id})
   const res = await fetch(`${API_URL}/admin/products/${id}`, {
     method: "PUT",
-    headers: { 
-      'Authorization': `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Update product failed' }));
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Update failed" }));
   return res.json();
 };
 
 export const deleteProduct = async (id, token) => {
-  // CORRECT ENDPOINT: /admin/products/{id} (not /products/{id})
   const res = await fetch(`${API_URL}/admin/products/${id}`, {
     method: "DELETE",
-    headers: { 
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
-    },
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
   });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Delete product failed' }));
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Delete failed" }));
   return res.json();
 };
 
 export const getOrders = async (token) => {
-  // CORRECT ENDPOINT: /admin/orders (not /orders)
   const res = await fetch(`${API_URL}/admin/orders`, {
-    headers: { 
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
-    },
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
   });
-  
-  if (!res.ok) throw await res.json().catch(() => ({ detail: 'Fetch orders failed' }));
+  if (!res.ok) throw await res.json().catch(() => ({ detail: "Fetch orders failed" }));
   return res.json();
 };

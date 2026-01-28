@@ -22,7 +22,8 @@ function AdminDashboard() {
     email: "",
     image: null
   });
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("authToken");
+
   const navigate = useNavigate();
 
   const fetchProducts = useCallback(async () => {
@@ -115,10 +116,11 @@ const handleAddProduct = async (e) => {
     setNewProduct({...newProduct, [e.target.name]: e.target.value});
   };
 
-  const logout = () => {
-    localStorage.removeItem("adminToken");
-    navigate("/admin/login");
-  };
+ const logout = () => {
+  localStorage.clear();
+  navigate("/");
+};
+
 
   if (loading) {
     return (
