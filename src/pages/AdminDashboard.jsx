@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  createProduct,
   getProducts,
   deleteProduct,
   getOrders
@@ -22,9 +21,11 @@ function AdminDashboard() {
   }, [token]);
 
   useEffect(() => {
-    fetchProducts();
-    fetchOrders();
-  }, [fetchProducts, fetchOrders]);
+    if (token) {
+      fetchProducts();
+      fetchOrders();
+    }
+  }, [fetchProducts, fetchOrders, token]);
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete product?")) {
@@ -45,9 +46,9 @@ function AdminDashboard() {
 
       <h2>Products</h2>
       <ul>
-        {products.map(p => (
+        {products.map((p) => (
           <li key={p.id}>
-            <b>{p.name}</b> - ₹{p.price}
+            <strong>{p.name}</strong> – ₹{p.price}
             <button onClick={() => handleDelete(p.id)}>Delete</button>
           </li>
         ))}
@@ -55,7 +56,7 @@ function AdminDashboard() {
 
       <h2>Orders</h2>
       <ul>
-        {orders.map(o => (
+        {orders.map((o) => (
           <li key={o.id}>
             {o.customer_email} | {o.status} | ₹{o.total}
           </li>
