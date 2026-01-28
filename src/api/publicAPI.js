@@ -1,5 +1,5 @@
-const API_BASE =
-  process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+// src/api/publicAPI.js
+const API_BASE = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
 
 /**
  * Get all products (Home page)

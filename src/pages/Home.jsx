@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
@@ -17,21 +18,22 @@ const Home = () => {
   const containerRef = useRef(null);
   const navigate = useNavigate();
 
-  // ---------------- FETCH PRODUCTS ----------------
+  // ---------- FETCH PRODUCTS ----------
   useEffect(() => {
-    (async () => {
+    async function loadProducts() {
       try {
         const data = await fetchProducts();
-        setProducts(data || []);
+        setProducts(data);
       } catch (err) {
-        console.error("Failed to fetch products", err);
+        console.error("Failed to load products", err);
       } finally {
         setLoading(false);
       }
-    })();
+    }
+    loadProducts();
   }, []);
 
-  // ---------------- CAROUSEL HELPERS ----------------
+  // ---------- CAROUSEL HELPERS ----------
   const getVisibleCards = () => {
     if (window.innerWidth <= 480) return 1;
     if (window.innerWidth <= 768) return 2;
@@ -44,30 +46,26 @@ const Home = () => {
     return Math.max(0, Math.ceil(products.length / visible) - 1);
   };
 
-  const nextSlide = () =>
-    setCurrentSlide((p) => Math.min(p + 1, getTotalSlides()));
+  const nextSlide = () => setCurrentSlide((p) => Math.min(p + 1, getTotalSlides()));
+  const prevSlide = () => setCurrentSlide((p) => Math.max(p - 1, 0));
+  const goToSlide = (i) => { if (i >= 0 && i <= getTotalSlides()) setCurrentSlide(i); };
 
-  const prevSlide = () =>
-    setCurrentSlide((p) => Math.max(p - 1, 0));
-
-  const goToSlide = (i) => {
-    if (i >= 0 && i <= getTotalSlides()) setCurrentSlide(i);
-  };
-
-  // ---------------- APPLY TRANSFORM ----------------
+  // ---------- APPLY TRANSFORM ----------
   useEffect(() => {
     if (!trackRef.current || !containerRef.current) return;
-
     const visible = getVisibleCards();
-    const width = containerRef.current.offsetWidth / visible;
+    const containerWidth = containerRef.current.offsetWidth;
+    const cardWidth = containerWidth / visible;
     const gap = 30;
-
-    trackRef.current.style.transform = `translateX(-${
-      currentSlide * (width + gap) * visible
-    }px)`;
+    const translateX = -(currentSlide * (cardWidth + gap) * visible);
+    trackRef.current.style.transform = `translateX(${translateX}px)`;
   }, [currentSlide, products]);
 
-  // ---------------- SCROLL EFFECT ----------------
+  // ---------- SCROLL ----------
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
@@ -79,15 +77,15 @@ const Home = () => {
       {/* NAVBAR */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
-          <img src="/images/logo.png" alt="Eka Bhumi" className="logo-img" />
           <span className="text-logo">EKA BHUMI</span>
         </div>
         <div className="nav-links">
-          <a href="#home">Home</a>
-          <a href="#products">Products</a>
-          <a href="#about">About</a>
-          <a href="#blog">Blog</a>
-          <a href="#testimonials">Testimonials</a>
+          <button onClick={() => scrollTo("home")}>Home</button>
+          <button onClick={() => scrollTo("products")}>Products</button>
+          <button onClick={() => scrollTo("about")}>About</button>
+          <button onClick={() => scrollTo("blog")}>Blog</button>
+          <button onClick={() => scrollTo("testimonials")}>Testimonials</button>
+          <button onClick={() => navigate("/admin/login")}>Admin Login</button>
         </div>
       </nav>
 
@@ -95,23 +93,17 @@ const Home = () => {
       <section
         id="home"
         className="hero"
-        style={{ backgroundImage: "url(/images/redensyl-hero.jpg)" }}
+        style={{ backgroundImage: `url(/images/redensyl-hero.jpg)` }}
       >
         <div className="hero-content">
-          <button
-  className="primary-btn"
-  onClick={() => {
-    if (products.length > 0) {
-      navigate(`/product/${products[0].id}`);
-    }
-  }}
->
+          <button className="primary-btn" onClick={() => navigate(`/product/${products[0]?.id}`)}>
   Shop Now
 </button>
+
         </div>
       </section>
 
-      {/* PRODUCTS */}
+      {/* PRODUCT CAROUSEL */}
       <section id="products" className="product-preview">
         <h2>Our Products</h2>
 
@@ -119,10 +111,7 @@ const Home = () => {
         {!loading && products.length === 0 && <p>No products available</p>}
 
         <div className="carousel-container" ref={containerRef}>
-          <button className="carousel-arrow prev" onClick={prevSlide}>
-            &#10094;
-          </button>
-
+          <button className="carousel-arrow prev" onClick={prevSlide}>&#10094;</button>
           <div className="carousel-track" ref={trackRef}>
             {products.map((p) => (
               <div className="product-card" key={p.id}>
@@ -130,20 +119,14 @@ const Home = () => {
                 <div className="product-info">
                   <span className="product-name">{p.name}</span>
                   <span className="product-price">₹{p.price}</span>
-                  <button
-                    className="product-btn"
-                    onClick={() => navigate(`/product/${p.id}`)}
-                  >
+                  <button className="product-btn" onClick={() => navigate(`/product/${p.id}`)}>
                     View Details
                   </button>
                 </div>
               </div>
             ))}
           </div>
-
-          <button className="carousel-arrow next" onClick={nextSlide}>
-            &#10095;
-          </button>
+          <button className="carousel-arrow next" onClick={nextSlide}>&#10095;</button>
         </div>
 
         {getTotalSlides() > 0 && (
