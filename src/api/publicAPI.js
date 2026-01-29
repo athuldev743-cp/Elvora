@@ -1,5 +1,5 @@
 // src/api/publicAPI.js - CORRECTED VERSION
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_BASE = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
 
 // Helper function to get URL
 const getUrl = (endpoint) => {

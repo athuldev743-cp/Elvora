@@ -57,7 +57,7 @@ const ensureJWTToken = async () => {
   const fetchProducts = useCallback(async () => {
     try {
       const token = await ensureJWTToken();
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE = process.env.REACT_APP_API_URL|| 'https://ekb-backend.onrender.com';
       const response = await fetch(`${API_BASE}/admin/admin-products`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -80,7 +80,7 @@ const ensureJWTToken = async () => {
   const fetchOrders = useCallback(async () => {
     try {
       const token = await ensureJWTToken();
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE = process.env.REACT_APP_API_URL || 'https://ekb-backend.onrender.com';
       const response = await fetch(`${API_BASE}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -126,7 +126,7 @@ const ensureJWTToken = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = await ensureJWTToken();
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const API_BASE = process.env.REACT_APP_API_URL || 'https://ekb-backend.onrender.com';
         const response = await fetch(`${API_BASE}/admin/delete-product/${id}`, {
           method: 'DELETE',
           headers: {
@@ -162,7 +162,7 @@ const ensureJWTToken = async () => {
     
     try {
       const token = await ensureJWTToken();
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_BASE = process.env.REACT_APP_API_URL || 'https://ekb-backend.onrender.com';
       const formData = new FormData();
       formData.append("name", newProduct.name);
       formData.append("price", newProduct.price.toString());
@@ -367,7 +367,7 @@ const ensureJWTToken = async () => {
                   <div className={styles.productImage}>
                     {p.image_url ? (
                       <img 
-                        src={p.image_url.startsWith('http') ? p.image_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${p.image_url}`} 
+                        src={p.image_url.startsWith('http') ? p.image_url : `${process.env.REACT_APP_API_URL || 'https://ekb-backend.onrender.com'}${p.image_url}`} 
                         alt={p.name} 
                         onError={handleImageError}
                         style={{ width: '100%', height: '200px', objectFit: 'cover' }}
