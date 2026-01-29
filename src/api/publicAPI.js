@@ -1,34 +1,30 @@
-// src/api/publicAPI.js - COMPLETE VERSION
-const API_BASE = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
-const USE_CORS_PROXY = false; // Set to false since backend CORS is fixed
+// src/api/publicAPI.js - UPDATED VERSION
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 // Helper function to get URL
 const getUrl = (endpoint) => {
-  if (USE_CORS_PROXY && typeof window !== 'undefined') {
-    // CORS proxy URLs (for backup)
-    const CORS_PROXIES = [
-      "https://api.allorigins.win/raw?url=",
-      "https://corsproxy.io/?",
-    ];
-    const proxy = CORS_PROXIES[0];
-    return proxy + encodeURIComponent(API_BASE + endpoint);
-  }
   return API_BASE + endpoint;
 };
 
 /**
- * Get all products (Home page)
+ * Get all products (Home page) - UPDATED
  */
 export async function fetchProducts() {
   const url = getUrl('/products');
   
   try {
+    console.log("Fetching products from:", url); // Debug log
+    
     const res = await fetch(url, {
       headers: {
         'Accept': 'application/json',
         'Cache-Control': 'no-cache'
-      }
+      },
+      mode: 'cors', // Ensure CORS mode
+      credentials: 'omit'
     });
+    
+    console.log("Response status:", res.status); // Debug log
     
     if (!res.ok) {
       console.error("Fetch products failed with status:", res.status);
@@ -36,7 +32,34 @@ export async function fetchProducts() {
     }
     
     const data = await res.json();
-    return data;
+    console.log("Fetched products data:", data); // Debug log
+    
+    // Process image URLs
+    const processedData = data.map(product => {
+      let imageUrl = product.image_url;
+      
+      // If image_url exists but doesn't start with http, prepend backend URL
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        // Fix mixed slashes
+        imageUrl = imageUrl.replace(/\\/g, '/');
+        
+        // Ensure it has a leading slash
+        if (!imageUrl.startsWith('/')) {
+          imageUrl = '/' + imageUrl;
+        }
+        
+        // Prepend backend URL
+        imageUrl = `${API_BASE}${imageUrl}`;
+      }
+      
+      return {
+        ...product,
+        image_url: imageUrl || "https://images.unsplash.com/photo-1601042879364-f3947d1f9fc9?w=400&h=400&fit=crop"
+      };
+    });
+    
+    return processedData;
+    
   } catch (error) {
     console.error('Error fetching products:', error);
     // Return mock data as fallback
@@ -66,6 +89,7 @@ export async function fetchProducts() {
   }
 }
 
+// ... rest of the functions remain the same
 /**
  * Get single product by ID (Product details page)
  */

@@ -10,6 +10,7 @@ import { ADMIN_EMAILS } from "../config/auth";
 import { convertGoogleToJWT } from "../api/adminAPI";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 const Home = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -17,6 +18,7 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [error, setError] = useState("");
 
   const trackRef = useRef(null);
   const containerRef = useRef(null);
@@ -38,14 +40,26 @@ const Home = () => {
     }
   }, []);
 
-  // Fetch products
+  // Fetch products - UPDATED with better error handling
   useEffect(() => {
     async function loadProducts() {
       try {
+        console.log("Fetching products from API...");
         const data = await fetchProducts();
-        setProducts(data);
+        console.log("Fetched products:", data);
+        
+        if (data && Array.isArray(data)) {
+          setProducts(data);
+          setError("");
+        } else {
+          console.error("Invalid products data:", data);
+          setProducts([]);
+          setError("No products available");
+        }
       } catch (err) {
         console.error("Failed to load products", err);
+        setProducts([]);
+        setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -98,11 +112,9 @@ const Home = () => {
       localStorage.setItem("userData", JSON.stringify(userData));
       setUser(userData);
 
-      // ALWAYS convert Google token to JWT (for both admin and user)
-      // This ensures we have a JWT for API calls
+      // Try to convert Google token to JWT
       try {
         const jwtResponse = await convertGoogleToJWT(response.credential);
-        
         if (jwtResponse.access_token) {
           localStorage.setItem('adminToken', jwtResponse.access_token);
         }
@@ -113,11 +125,10 @@ const Home = () => {
           alert(`Welcome ${userData.name}!`);
         }
       } catch (jwtError) {
-        console.error("JWT conversion failed, but user is logged in:", jwtError);
+        console.error("JWT conversion failed:", jwtError);
         
-        // User is still logged in with Google token
         if (isAdmin) {
-          alert(`Welcome Admin ${userData.name}! (Note: Some features may be limited)`);
+          alert(`Welcome Admin ${userData.name}! (Some admin features may be limited)`);
         } else {
           alert(`Welcome ${userData.name}!`);
         }
@@ -176,14 +187,28 @@ const Home = () => {
   }, []);
 
   // Image fallback
-  const handleImageError = (e) => { e.target.src = "/images/product-placeholder.jpg"; };
+  const handleImageError = (e) => {
+    e.target.onerror = null;
+    e.target.src = "/images/product-placeholder.jpg";
+  };
+
+  // Logo image fallback
+  const handleLogoError = (e) => {
+    e.target.onerror = null;
+    e.target.src = "/images/logo-placeholder.png";
+  };
 
   return (
     <>
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           {!scrolled ? (
-            <img src="/images/logo.png" alt="Eka Bhumi" className="logo-img" />
+            <img 
+              src="/images/logo.png" 
+              alt="Eka Bhumi" 
+              className="logo-img" 
+              onError={handleLogoError} 
+            />
           ) : (
             <span className="text-logo">EKABHUMI</span>
           )}
@@ -236,46 +261,71 @@ const Home = () => {
 
       <section id="products" className="product-preview">
         <h2>Our Products</h2>
-        {loading && <p className="loading-text">Loading products...</p>}
-        {!loading && products.length === 0 && <p>No products available</p>}
-
-        <div className="carousel-container" ref={containerRef}>
-          <button className="carousel-arrow prev" onClick={prevSlide}>&#10094;</button>
-          <div className="carousel-track" ref={trackRef}>
-            {products.map((p) => (
-              <div className="product-card" key={p.id}>
-                <img 
-                  src={p.image_url || "/images/product-placeholder.jpg"} 
-                  alt={p.name} 
-                  className="product-image" 
-                  onError={handleImageError} 
-                />
-                <div className="product-info">
-                  <span className="product-name">{p.name}</span>
-                  <span className="product-price">₹{p.price}</span>
-                  
-                  {user ? (
-                    <button 
-                      className="view-details-btn"
-                      onClick={() => navigate(`/product/${p.id}`)}
-                    >
-                      View Details
-                    </button>
-                  ) : (
-                    <button 
-                      className="login-to-view-btn"
-                      onClick={handleGoogleLogin}
-                      title="Login to view product details"
-                    >
-                      Login to View Details
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+        
+        {error && (
+          <div className="error-message" style={{ 
+            backgroundColor: '#fff3cd', 
+            border: '1px solid #ffeaa7',
+            padding: '10px',
+            borderRadius: '5px',
+            margin: '20px 0',
+            color: '#856404',
+            textAlign: 'center'
+          }}>
+            ⚠️ {error}
           </div>
-          <button className="carousel-arrow next" onClick={nextSlide}>&#10095;</button>
-        </div>
+        )}
+        
+        {loading && <p className="loading-text">Loading products...</p>}
+        
+        {!loading && products.length === 0 && !error && (
+          <p style={{ textAlign: 'center', color: '#666' }}>No products available</p>
+        )}
+
+        {!loading && products.length > 0 && (
+          <div className="carousel-container" ref={containerRef}>
+            <button className="carousel-arrow prev" onClick={prevSlide} disabled={currentSlide === 0}>
+              &#10094;
+            </button>
+            <div className="carousel-track" ref={trackRef}>
+              {products.map((p) => (
+                <div className="product-card" key={p.id}>
+                  <img 
+                    src={p.image_url} 
+                    alt={p.name} 
+                    className="product-image" 
+                    onError={handleImageError}
+                    loading="lazy"
+                  />
+                  <div className="product-info">
+                    <span className="product-name">{p.name}</span>
+                    <span className="product-price">₹{p.price}</span>
+                    
+                    {user ? (
+                      <button 
+                        className="view-details-btn"
+                        onClick={() => navigate(`/product/${p.id}`)}
+                      >
+                        View Details
+                      </button>
+                    ) : (
+                      <button 
+                        className="login-to-view-btn"
+                        onClick={handleGoogleLogin}
+                        title="Login to view product details"
+                      >
+                        Login to View Details
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="carousel-arrow next" onClick={nextSlide} disabled={currentSlide >= getTotalSlides()}>
+              &#10095;
+            </button>
+          </div>
+        )}
       </section>
 
       <section id="about"><About /></section>
