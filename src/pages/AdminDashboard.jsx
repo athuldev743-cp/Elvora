@@ -4,7 +4,8 @@ import {
   getProducts,
   deleteProduct,
   getOrders,
-  createProduct
+  createProduct,
+  convertGoogleToJWT
 } from "../api/adminAPI";
 import styles from "./Dashboard.module.css";
 
@@ -25,17 +26,6 @@ function AdminDashboard() {
   
   const navigate = useNavigate();
 
-  // Get token from localStorage - FIXED: using userToken from Google login
-  const getToken = () => {
-    // Try to get userToken (from Google login) first
-    const userToken = localStorage.getItem("userToken");
-    if (userToken) return userToken;
-    
-    // Fallback to authToken (from traditional login)
-    const authToken = localStorage.getItem("authToken");
-    return authToken;
-  };
-
   // Check if user is admin
   const isUserAdmin = () => {
     const userData = localStorage.getItem("userData");
@@ -49,33 +39,45 @@ function AdminDashboard() {
     }
   };
 
-  const fetchProducts = useCallback(async () => {
-    const token = getToken();
-    if (!token) {
-      setError("No authentication token found");
-      return;
+  // Function to convert Google token to JWT if needed
+  const ensureJWTToken = async () => {
+    const userToken = localStorage.getItem("userToken");
+    const adminToken = localStorage.getItem("adminToken");
+    
+    // If we already have adminToken, use it
+    if (adminToken) return adminToken;
+    
+    // If we have userToken (Google), convert it to JWT
+    if (userToken) {
+      try {
+        const result = await convertGoogleToJWT(userToken);
+        if (result.access_token) {
+          localStorage.setItem('adminToken', result.access_token);
+          return result.access_token;
+        }
+      } catch (error) {
+        console.error("Failed to convert Google token:", error);
+      }
     }
     
+    return null;
+  };
+
+  const fetchProducts = useCallback(async () => {
     try {
-      const data = await getProducts(token);
+      const data = await getProducts();
       setProducts(data);
     } catch (err) {
-      setError("Failed to fetch products: " + (err.detail || err.message));
+      setError("Failed to fetch products: " + (err.detail || err.message || err.toString()));
     }
   }, []);
 
   const fetchOrders = useCallback(async () => {
-    const token = getToken();
-    if (!token) {
-      setError("No authentication token found");
-      return;
-    }
-    
     try {
-      const data = await getOrders(token);
+      const data = await getOrders();
       setOrders(data);
     } catch (err) {
-      setError("Failed to fetch orders: " + (err.detail || err.message));
+      setError("Failed to fetch orders: " + (err.detail || err.message || err.toString()));
     }
   }, []);
 
@@ -87,19 +89,17 @@ function AdminDashboard() {
       return;
     }
 
-    const token = getToken();
-    if (!token) {
-      navigate("/");
-      return;
-    }
-
     const fetchData = async () => {
       setLoading(true);
       setError("");
       try {
+        // Ensure we have a valid JWT token
+        await ensureJWTToken();
+        
+        // Fetch data
         await Promise.all([fetchProducts(), fetchOrders()]);
       } catch (err) {
-        setError("Failed to load dashboard data");
+        setError("Failed to load dashboard data: " + (err.message || err.toString()));
       } finally {
         setLoading(false);
       }
@@ -110,28 +110,17 @@ function AdminDashboard() {
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      const token = getToken();
-      if (!token) {
-        setError("No authentication token found");
-        return;
-      }
-      
       try {
-        await deleteProduct(id, token);
+        await deleteProduct(id);
         fetchProducts();
       } catch (err) {
-        setError("Failed to delete product");
+        setError("Failed to delete product: " + (err.detail || err.message || err.toString()));
       }
     }
   };
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    const token = getToken();
-    if (!token) {
-      setError("No authentication token found");
-      return;
-    }
     
     try {
       // Create FormData object
@@ -145,7 +134,7 @@ function AdminDashboard() {
         formData.append("image", newProduct.image);
       }
       
-      await createProduct(formData, token); // Pass FormData directly
+      await createProduct(formData);
       
       setShowAddForm(false);
       setNewProduct({
@@ -158,7 +147,7 @@ function AdminDashboard() {
       });
       fetchProducts();
     } catch (err) {
-      setError("Failed to add product: " + (err.detail || err.message));
+      setError("Failed to add product: " + (err.detail || err.message || err.toString()));
     }
   };
 

@@ -7,6 +7,7 @@ import Testimonial from "./Testimonial";
 import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { ADMIN_EMAILS } from "../config/auth";
+import { convertGoogleToJWT } from "../api/adminAPI"; // Import the conversion function
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -28,11 +29,11 @@ const Home = () => {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
-        // NO AUTO-REDIRECT - user stays on home page
       } catch (error) {
         console.error("Error parsing user data:", error);
         localStorage.removeItem("userToken");
         localStorage.removeItem("userData");
+        localStorage.removeItem("adminToken"); // Also clear admin token
       }
     }
   }, []);
@@ -74,7 +75,7 @@ const Home = () => {
     window.google.accounts.id.prompt();
   };
 
-  const handleGoogleResponse = (response) => {
+  const handleGoogleResponse = async (response) => {
     try {
       const payload = JSON.parse(atob(response.credential.split(".")[1]));
       const userEmail = payload.email;
@@ -96,9 +97,20 @@ const Home = () => {
       localStorage.setItem("userData", JSON.stringify(userData));
       setUser(userData);
 
-      // Show success message
+      // If admin, convert Google token to JWT
       if (isAdmin) {
-        alert(`Welcome Admin ${userData.name}! You can access the admin dashboard from the button in the navbar.`);
+        try {
+          const jwtResponse = await convertGoogleToJWT(response.credential);
+          if (jwtResponse.access_token) {
+            localStorage.setItem('adminToken', jwtResponse.access_token);
+            alert(`Welcome Admin ${userData.name}! You can access the admin dashboard from the button in the navbar.`);
+          } else {
+            alert(`Welcome Admin ${userData.name}! Some admin features may be limited.`);
+          }
+        } catch (jwtError) {
+          console.error("JWT conversion failed:", jwtError);
+          alert(`Welcome Admin ${userData.name}! Note: Some admin features may require re-authentication.`);
+        }
       } else {
         alert(`Welcome ${userData.name}! You are now logged in.`);
       }
@@ -112,6 +124,7 @@ const Home = () => {
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userData");
+    localStorage.removeItem("adminToken"); // Also clear admin token
     setUser(null);
     alert("Logged out successfully!");
   };
@@ -119,7 +132,7 @@ const Home = () => {
   const goToAdminDashboard = () => {
     // Double-check user is admin before navigating
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-    if (userData && userData.role === "admin") {
+    if (userData && (userData.role === "admin" || userData.isAdmin === true)) {
       navigate("/admin/dashboard");
     } else {
       alert("Access denied. Admin privileges required.");
@@ -137,8 +150,6 @@ const Home = () => {
   const getTotalSlides = () => Math.max(0, Math.ceil(products.length / getVisibleCards()) - 1);
   const nextSlide = () => setCurrentSlide((p) => Math.min(p + 1, getTotalSlides()));
   const prevSlide = () => setCurrentSlide((p) => Math.max(p - 1, 0));
-  
-  // REMOVED: const goToSlide = (i) => { if (i >= 0 && i <= getTotalSlides()) setCurrentSlide(i); };
 
   useEffect(() => {
     if (!trackRef.current || !containerRef.current) return;
@@ -267,7 +278,7 @@ const Home = () => {
         
         {/* Info message about optional login */}
         <div className="login-info">
-          
+          <p>💡 <strong>Note:</strong> Login is optional. Browse products freely, login only if you want to view detailed information.</p>
         </div>
       </section>
 
