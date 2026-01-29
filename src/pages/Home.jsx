@@ -10,7 +10,6 @@ import { ADMIN_EMAILS } from "../config/auth";
 import { convertGoogleToJWT } from "../api/adminAPI";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-// REMOVED: const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const Home = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -40,45 +39,33 @@ const Home = () => {
     }
   }, []);
 
-  // Fetch products - UPDATED with better error handling
-  // In your Home.jsx, update the fetchProducts useEffect:
-useEffect(() => {
-  async function loadProducts() {
-    try {
-      console.log("Fetching products from API...");
-      const data = await fetchProducts();
-      console.log("Fetched products:", data);
-      
-      if (data && Array.isArray(data)) {
-        // Filter out mock products (if any)
-        const realProducts = data.filter(product => 
-          !product.image_url.includes('unsplash.com') && 
-          !product.image_url.includes('placehold.co')
-        );
+  // Fetch products - CORRECTED VERSION
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        console.log("Fetching products from API...");
+        const data = await fetchProducts();
+        console.log("Fetched products:", data);
         
-        if (realProducts.length > 0) {
-          setProducts(realProducts);
+        if (data && Array.isArray(data) && data.length > 0) {
+          // DON'T filter out products! Cloudinary URLs might contain these domains
+          setProducts(data);
           setError("");
         } else {
-          // If no real products, show empty state
+          console.log("No products returned from API");
           setProducts([]);
           setError("No products available. Add products from admin dashboard.");
         }
-      } else {
-        console.error("Invalid products data:", data);
+      } catch (err) {
+        console.error("Failed to load products", err);
         setProducts([]);
-        setError("No products available");
+        setError("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Failed to load products", err);
-      setProducts([]);
-      setError("Failed to load products. Please try again later.");
-    } finally {
-      setLoading(false);
     }
-  }
-  loadProducts();
-}, []);
+    loadProducts();
+  }, []);
 
   // Google OAuth
   useEffect(() => {
@@ -301,38 +288,42 @@ useEffect(() => {
               &#10094;
             </button>
             <div className="carousel-track" ref={trackRef}>
-              {products.map((p) => (
-                <div className="product-card" key={p.id}>
-                  <img 
-                    src={p.image_url} 
-                    alt={p.name} 
-                    className="product-image" 
-                    onError={handleImageError}
-                    loading="lazy"
-                  />
-                  <div className="product-info">
-                    <span className="product-name">{p.name}</span>
-                    <span className="product-price">₹{p.price}</span>
-                    
-                    {user ? (
-                      <button 
-                        className="view-details-btn"
-                        onClick={() => navigate(`/product/${p.id}`)}
-                      >
-                        View Details
-                      </button>
-                    ) : (
-                      <button 
-                        className="login-to-view-btn"
-                        onClick={handleGoogleLogin}
-                        title="Login to view product details"
-                      >
-                        Login to View Details
-                      </button>
-                    )}
+              {products.map((p) => {
+                // Debug: log each product's image URL
+                console.log(`Product ${p.id}: ${p.name}, Image: ${p.image_url}`);
+                return (
+                  <div className="product-card" key={p.id}>
+                    <img 
+                      src={p.image_url} 
+                      alt={p.name} 
+                      className="product-image" 
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                    <div className="product-info">
+                      <span className="product-name">{p.name}</span>
+                      <span className="product-price">₹{p.price}</span>
+                      
+                      {user ? (
+                        <button 
+                          className="view-details-btn"
+                          onClick={() => navigate(`/product/${p.id}`)}
+                        >
+                          View Details
+                        </button>
+                      ) : (
+                        <button 
+                          className="login-to-view-btn"
+                          onClick={handleGoogleLogin}
+                          title="Login to view product details"
+                        >
+                          Login to View Details
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <button className="carousel-arrow next" onClick={nextSlide} disabled={currentSlide >= getTotalSlides()}>
               &#10095;
