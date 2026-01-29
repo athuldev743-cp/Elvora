@@ -320,7 +320,8 @@ useEffect(() => {
                           className="view-details-btn"
                           onClick={() => {
                            setCurrentSlide(0);
-                            navigate(`/product/${p.id}`);
+                            navigate(`/products/${p.id}`);
+
                             }}
 
                         >
