@@ -53,7 +53,8 @@ function AdminDashboard() {
   const fetchProducts = useCallback(async () => {
     try {
       const token = await ensureJWTToken();
-      const response = await fetch('http://localhost:8000/admin/admin-products', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_BASE}/admin/admin-products`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -75,7 +76,8 @@ function AdminDashboard() {
   const fetchOrders = useCallback(async () => {
     try {
       const token = await ensureJWTToken();
-      const response = await fetch('http://localhost:8000/admin/orders', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${API_BASE}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -120,7 +122,8 @@ function AdminDashboard() {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = await ensureJWTToken();
-        const response = await fetch(`http://localhost:8000/admin/delete-product/${id}`, {
+        const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${API_BASE}/admin/delete-product/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -155,6 +158,7 @@ function AdminDashboard() {
     
     try {
       const token = await ensureJWTToken();
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const formData = new FormData();
       formData.append("name", newProduct.name);
       formData.append("price", newProduct.price.toString());
@@ -162,7 +166,7 @@ function AdminDashboard() {
       formData.append("priority", newProduct.priority || "1");
       formData.append("image", newProduct.image);
       
-      const response = await fetch('http://localhost:8000/admin/create-product', {
+      const response = await fetch(`${API_BASE}/admin/create-product`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -211,6 +215,15 @@ function AdminDashboard() {
     navigate("/");
   };
 
+  // Safe image error handler
+  const handleImageError = (e) => {
+    const imgElement = e.currentTarget;
+    if (imgElement) {
+      imgElement.onerror = null;
+      imgElement.src = 'https://via.placeholder.com/200x150?text=No+Image';
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -237,7 +250,6 @@ function AdminDashboard() {
       )}
 
       <div className={styles.mainContent}>
-        {/* Products Section */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <h2>🛍️ Products</h2>
@@ -354,11 +366,9 @@ function AdminDashboard() {
                   <div className={styles.productImage}>
                     {p.image_url ? (
                       <img 
-                        src={p.image_url.startsWith('http') ? p.image_url : `http://localhost:8000${p.image_url}`} 
+                        src={p.image_url.startsWith('http') ? p.image_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}${p.image_url}`} 
                         alt={p.name} 
-                        onError={(e) => {
-                          
-                        }}
+                        onError={handleImageError}
                       />
                     ) : (
                       <div className={styles.noImage}>📷 No Image</div>
@@ -385,7 +395,6 @@ function AdminDashboard() {
           )}
         </div>
 
-        {/* Orders Section */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <h2>📋 Orders</h2>
@@ -428,7 +437,6 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Footer */}
       <div className={styles.statsFooter}>
         <div className={styles.statItem}>
           <div className={styles.statValue}>{products.length}</div>
