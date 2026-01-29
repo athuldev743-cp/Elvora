@@ -20,9 +20,8 @@ function AdminDashboard() {
     price: "",
     description: "",
     priority: "1",
-    email: "",
     image: null
-  });
+  }); // REMOVED: email field
   
   const navigate = useNavigate();
 
@@ -119,51 +118,52 @@ function AdminDashboard() {
     }
   };
 
- // In AdminDashboard.jsx, update handleAddProduct:
-const handleAddProduct = async (e) => {
-  e.preventDefault();
-  
-  try {
-    // Create FormData object
-    const formData = new FormData();
-    formData.append("name", newProduct.name);
-    formData.append("price", newProduct.price.toString()); // Convert to string
-    formData.append("description", newProduct.description);
-    formData.append("priority", newProduct.priority);
-    formData.append("email", newProduct.email);
+  // UPDATED: handleAddProduct - removed email field
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
     
-    // Debug: Log what we're sending
-    console.log("Sending FormData:");
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value, typeof value);
+    try {
+      // Create FormData object
+      const formData = new FormData();
+      formData.append("name", newProduct.name || "");
+      formData.append("price", newProduct.price.toString()); // Convert to string
+      formData.append("description", newProduct.description || "");
+      formData.append("priority", newProduct.priority || "1");
+      
+      // Send placeholder email since backend requires it
+      formData.append("email", "admin@ekabhumi.com");
+      
+      // Debug: Log what we're sending
+      console.log("Sending FormData:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value, typeof value);
+      }
+      
+      if (newProduct.image) {
+        console.log("Image file:", newProduct.image.name, newProduct.image.type, newProduct.image.size);
+        formData.append("image", newProduct.image);
+      } else {
+        console.error("No image selected!");
+        setError("Please select an image file");
+        return;
+      }
+      
+      await createProduct(formData);
+      
+      setShowAddForm(false);
+      setNewProduct({
+        name: "",
+        price: "",
+        description: "",
+        priority: "1",
+        image: null
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Add product error details:", err);
+      setError("Failed to add product: " + JSON.stringify(err));
     }
-    
-    if (newProduct.image) {
-      console.log("Image file:", newProduct.image.name, newProduct.image.type, newProduct.image.size);
-      formData.append("image", newProduct.image);
-    } else {
-      console.error("No image selected!");
-      setError("Please select an image file");
-      return;
-    }
-    
-    await createProduct(formData);
-    
-    setShowAddForm(false);
-    setNewProduct({
-      name: "",
-      price: "",
-      description: "",
-      priority: "1",
-      email: "",
-      image: null
-    });
-    fetchProducts();
-  } catch (err) {
-    console.error("Add product error details:", err);
-    setError("Failed to add product: " + JSON.stringify(err));
-  }
-};
+  };
 
   const handleFileChange = (e) => {
     setNewProduct({...newProduct, image: e.target.files[0]});
@@ -270,7 +270,7 @@ const handleAddProduct = async (e) => {
                     <h3>{p.name}</h3>
                     <p className={styles.productPrice}>₹{p.price}</p>
                     <p>{p.description}</p>
-                    {p.email && <small>Contact: {p.email}</small>}
+                    {/* REMOVED: email display since it's not needed */}
                   </div>
                   <button 
                     className={styles.deleteBtn}
