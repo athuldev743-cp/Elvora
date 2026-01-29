@@ -35,7 +35,7 @@ const Home = () => {
         localStorage.removeItem("userData");
       }
     }
-  }, []); // Removed navigate dependency
+  }, []);
 
   // ---------- Fetch products ----------
   useEffect(() => {
@@ -71,10 +71,6 @@ const Home = () => {
       client_id: GOOGLE_CLIENT_ID,
       callback: handleGoogleResponse,
     });
-    window.google.accounts.id.renderButton(
-      document.getElementById("googleSignInDiv"),
-      { theme: "outline", size: "large" }
-    );
     window.google.accounts.id.prompt();
   };
 
@@ -106,13 +102,6 @@ const Home = () => {
       } else {
         alert(`Welcome ${userData.name}! You are now logged in.`);
       }
-
-      console.log("User logged in:", {
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-        isAdmin: userData.isAdmin
-      });
 
     } catch (err) {
       console.error("Login failed:", err);
@@ -148,7 +137,8 @@ const Home = () => {
   const getTotalSlides = () => Math.max(0, Math.ceil(products.length / getVisibleCards()) - 1);
   const nextSlide = () => setCurrentSlide((p) => Math.min(p + 1, getTotalSlides()));
   const prevSlide = () => setCurrentSlide((p) => Math.max(p - 1, 0));
-  const goToSlide = (i) => { if (i >= 0 && i <= getTotalSlides()) setCurrentSlide(i); };
+  
+  // REMOVED: const goToSlide = (i) => { if (i >= 0 && i <= getTotalSlides()) setCurrentSlide(i); };
 
   useEffect(() => {
     if (!trackRef.current || !containerRef.current) return;
@@ -216,15 +206,11 @@ const Home = () => {
             </button>
           )}
         </div>
-        
-        {/* Hidden div for Google Sign In button */}
-        <div id="googleSignInDiv" style={{ display: 'none' }}></div>
       </nav>
 
       {/* HERO SECTION */}
       <section id="home" className="hero" style={{ backgroundImage: "url(/images/redensyl-hero.jpg)" }}>
         <div className="hero-content">
-          
           <button 
             className="primary-btn" 
             onClick={() => document.getElementById("products").scrollIntoView({ behavior: "smooth" })}
@@ -254,7 +240,6 @@ const Home = () => {
                 <div className="product-info">
                   <span className="product-name">{p.name}</span>
                   <span className="product-price">₹{p.price}</span>
-                  <p className="product-description">{p.description?.substring(0, 60)}...</p>
                   
                   {/* Show different button based on login status */}
                   {user ? (
@@ -282,7 +267,7 @@ const Home = () => {
         
         {/* Info message about optional login */}
         <div className="login-info">
-         
+          
         </div>
       </section>
 
