@@ -7,7 +7,7 @@ import Testimonial from "./Testimonial";
 import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { ADMIN_EMAILS } from "../config/auth";
-import { convertGoogleToJWT } from "../api/adminAPI"; // Import the conversion function
+import { convertGoogleToJWT } from "../api/adminAPI";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -22,7 +22,7 @@ const Home = () => {
   const containerRef = useRef(null);
   const navigate = useNavigate();
 
-  // ---------- Check if user is already logged in ----------
+  // Check if user is already logged in
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (userData) {
@@ -33,12 +33,12 @@ const Home = () => {
         console.error("Error parsing user data:", error);
         localStorage.removeItem("userToken");
         localStorage.removeItem("userData");
-        localStorage.removeItem("adminToken"); // Also clear admin token
+        localStorage.removeItem("adminToken");
       }
     }
   }, []);
 
-  // ---------- Fetch products ----------
+  // Fetch products
   useEffect(() => {
     async function loadProducts() {
       try {
@@ -53,7 +53,7 @@ const Home = () => {
     loadProducts();
   }, []);
 
-  // ---------- Google OAuth ----------
+  // Google OAuth
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://accounts.google.com/gsi/client";
@@ -64,7 +64,7 @@ const Home = () => {
 
   const handleGoogleLogin = () => {
     if (!window.google) {
-      alert("Google login loading... Please try again in a moment.");
+      alert("Google login loading... Please try again.");
       return;
     }
 
@@ -77,10 +77,11 @@ const Home = () => {
 
   const handleGoogleResponse = async (response) => {
     try {
+      // Decode Google token
       const payload = JSON.parse(atob(response.credential.split(".")[1]));
       const userEmail = payload.email;
       
-      // Check if email is in admin list
+      // Check if admin
       const isAdmin = ADMIN_EMAILS.includes(userEmail);
       const role = isAdmin ? "admin" : "user";
 
@@ -92,27 +93,34 @@ const Home = () => {
         isAdmin: isAdmin
       };
 
-      // Save to localStorage
+      // Store user data
       localStorage.setItem("userToken", response.credential);
       localStorage.setItem("userData", JSON.stringify(userData));
       setUser(userData);
 
-      // If admin, convert Google token to JWT
-      if (isAdmin) {
-        try {
-          const jwtResponse = await convertGoogleToJWT(response.credential);
-          if (jwtResponse.access_token) {
-            localStorage.setItem('adminToken', jwtResponse.access_token);
-            alert(`Welcome Admin ${userData.name}! You can access the admin dashboard from the button in the navbar.`);
-          } else {
-            alert(`Welcome Admin ${userData.name}! Some admin features may be limited.`);
-          }
-        } catch (jwtError) {
-          console.error("JWT conversion failed:", jwtError);
-          alert(`Welcome Admin ${userData.name}! Note: Some admin features may require re-authentication.`);
+      // ALWAYS convert Google token to JWT (for both admin and user)
+      // This ensures we have a JWT for API calls
+      try {
+        const jwtResponse = await convertGoogleToJWT(response.credential);
+        
+        if (jwtResponse.access_token) {
+          localStorage.setItem('adminToken', jwtResponse.access_token);
         }
-      } else {
-        alert(`Welcome ${userData.name}! You are now logged in.`);
+        
+        if (isAdmin) {
+          alert(`Welcome Admin ${userData.name}!`);
+        } else {
+          alert(`Welcome ${userData.name}!`);
+        }
+      } catch (jwtError) {
+        console.error("JWT conversion failed, but user is logged in:", jwtError);
+        
+        // User is still logged in with Google token
+        if (isAdmin) {
+          alert(`Welcome Admin ${userData.name}! (Note: Some features may be limited)`);
+        } else {
+          alert(`Welcome ${userData.name}!`);
+        }
       }
 
     } catch (err) {
@@ -124,13 +132,12 @@ const Home = () => {
   const handleLogout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userData");
-    localStorage.removeItem("adminToken"); // Also clear admin token
+    localStorage.removeItem("adminToken");
     setUser(null);
     alert("Logged out successfully!");
   };
 
   const goToAdminDashboard = () => {
-    // Double-check user is admin before navigating
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     if (userData && (userData.role === "admin" || userData.isAdmin === true)) {
       navigate("/admin/dashboard");
@@ -139,7 +146,7 @@ const Home = () => {
     }
   };
 
-  // ---------- Carousel helpers ----------
+  // Carousel helpers
   const getVisibleCards = () => {
     if (window.innerWidth <= 480) return 1;
     if (window.innerWidth <= 768) return 2;
@@ -161,19 +168,18 @@ const Home = () => {
     trackRef.current.style.transform = `translateX(${translateX}px)`;
   }, [currentSlide, products]);
 
-  // ---------- Scroll effect ----------
+  // Scroll effect
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ---------- Image fallback ----------
+  // Image fallback
   const handleImageError = (e) => { e.target.src = "/images/product-placeholder.jpg"; };
 
   return (
     <>
-      {/* NAVBAR */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           {!scrolled ? (
@@ -191,13 +197,11 @@ const Home = () => {
           <a href="#testimonials">Testimonials</a>
         </div>
         
-        {/* LOGIN/LOGOUT SECTION - OPTIONAL LOGIN */}
         <div className="auth-section">
           {user ? (
             <div className="user-nav">
               <span className="user-greeting">Hi, {user.name}</span>
               
-              {/* Show Admin Dashboard button ONLY if user is admin */}
               {user.isAdmin === true && (
                 <button 
                   className="admin-dashboard-btn"
@@ -219,7 +223,6 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
       <section id="home" className="hero" style={{ backgroundImage: "url(/images/redensyl-hero.jpg)" }}>
         <div className="hero-content">
           <button 
@@ -231,7 +234,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* PRODUCTS SECTION - NO LOGIN REQUIRED TO VIEW */}
       <section id="products" className="product-preview">
         <h2>Our Products</h2>
         {loading && <p className="loading-text">Loading products...</p>}
@@ -252,7 +254,6 @@ const Home = () => {
                   <span className="product-name">{p.name}</span>
                   <span className="product-price">₹{p.price}</span>
                   
-                  {/* Show different button based on login status */}
                   {user ? (
                     <button 
                       className="view-details-btn"
@@ -275,14 +276,8 @@ const Home = () => {
           </div>
           <button className="carousel-arrow next" onClick={nextSlide}>&#10095;</button>
         </div>
-        
-        {/* Info message about optional login */}
-        <div className="login-info">
-          <p>💡 <strong>Note:</strong> Login is optional. Browse products freely, login only if you want to view detailed information.</p>
-        </div>
       </section>
 
-      {/* OTHER SECTIONS */}
       <section id="about"><About /></section>
       <Blog />
       <Testimonial />
