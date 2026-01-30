@@ -1,120 +1,185 @@
-.ordersCard {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 16px;
-  padding: 16px;
+:root{
+  --dark-orange:#F26722;
+  --light-orange:#F2A254;
+  --charcoal:#2E2E2F;
+
+  --surface:#fff;
+  --muted:#6B7280;
+  --border:rgba(46,46,47,0.12);
+
+  --r-lg:16px;
+  --r-md:12px;
+
+  --shadow-sm: 0 8px 18px rgba(46,46,47,0.08);
 }
 
-.ordersCardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
+.ordersList{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-.ordersBadge {
-  background: #f2f2f2;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 12px;
+.orderCard{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow-sm);
+  overflow:hidden;
 }
 
-.ordersEmptyState {
-  text-align: center;
-  padding: 18px 10px;
-  border: 1px dashed #ddd;
-  border-radius: 14px;
-  background: #fafafa;
+.orderTop{
+  width:100%;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  text-align:left;
 }
 
-.ordersEmptyIcon {
-  font-size: 28px;
-  margin-bottom: 6px;
+.orderTop:hover{
+  background:rgba(46,46,47,0.03);
 }
 
-.ordersList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.orderTopLeft{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-.orderCard {
-  border: 1px solid #eee;
-  border-radius: 14px;
-  padding: 14px;
-  background: #fff;
+.orderId{
+  font-weight:900;
+  color:var(--charcoal);
+  letter-spacing:-0.01em;
 }
 
-.orderHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+.orderSub{
+  color:var(--muted);
+  font-size:0.92rem;
 }
 
-.statusBadge {
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 12px;
-  text-transform: capitalize;
+.orderTopRight{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-.statusCompleted {
-  background: #e9f7ef;
-  color: #15803d;
+.statusBadge{
+  font-size:0.8rem;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:800;
+  border:1px solid transparent;
 }
 
-.statusPending {
-  background: #fff7ed;
-  color: #c2410c;
+.statusPending{
+  background:rgba(242,162,84,0.16);
+  border-color:rgba(242,162,84,0.35);
+  color:var(--charcoal);
 }
 
-.orderDetails p {
-  margin: 6px 0;
-  color: #222;
-  font-size: 14px;
+.statusCompleted{
+  background:rgba(242,103,34,0.10);
+  border-color:rgba(242,103,34,0.25);
+  color:var(--dark-orange);
 }
 
-.orderActions {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
+.chev{
+  display:inline-block;
+  font-size:1rem;
+  color:rgba(46,46,47,0.55);
+  transform:rotate(0deg);
+  transition:transform .16s ease;
+}
+.chev.up{ transform:rotate(180deg); }
+
+.orderExpand{
+  border-top:1px solid var(--border);
+  padding:14px 16px 16px;
 }
 
-.viewBtn {
-  border: 1px solid #ddd;
-  background: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 700;
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
 }
 
-.completeBtn {
-  border: none;
-  background: #111;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 800;
+@media (max-width: 640px){
+  .grid2{ grid-template-columns:1fr; }
 }
 
-.viewBtn:hover {
-  background: #f7f7f7;
+.kv .k{
+  color:var(--muted);
+  font-size:0.82rem;
+  margin-bottom:3px;
+}
+.kv .v{
+  color:var(--charcoal);
+  font-weight:700;
+}
+.kv .v.strong{ font-weight:900; }
+
+.addrBox, .notesBox{
+  margin-top:12px;
+  background:rgba(46,46,47,0.02);
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+  padding:12px;
 }
 
-.completeBtn:hover {
-  opacity: 0.92;
+.addrTitle{
+  font-weight:900;
+  color:var(--charcoal);
+  margin-bottom:6px;
 }
-.ordersError {
-  margin: 12px 0;
-  padding: 10px 14px;
-  border: 1px solid #ffd8a8;
-  background: #fff7ed;
-  border-radius: 12px;
-  color: #9a3412;
-  font-weight: 600;
+
+.addrText{
+  color:rgba(46,46,47,0.85);
+  line-height:1.5;
+  font-size:0.95rem;
 }
+
+.orderActions{
+  margin-top:14px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.approveBtn{
+  background:var(--dark-orange);
+  color:#fff;
+  border:none;
+  padding:12px 14px;
+  border-radius:999px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 14px 30px rgba(242,103,34,0.20);
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.approveBtn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 18px 40px rgba(242,103,34,0.24);
+}
+
+.approvedHint{
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* Empty state */
+.ordersEmptyState{
+  text-align:center;
+  padding:36px 14px;
+  color:var(--charcoal);
+}
+.ordersEmptyIcon{
+  font-size:42px;
+  margin-bottom:10px;
+}
+.ordersEmptyState p{
+  color:var(--muted);
+}
+

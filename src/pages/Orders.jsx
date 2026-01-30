@@ -1,70 +1,108 @@
+import { useState } from "react";
 import "./Orders.css";
 
-function Orders({ orders = [], onViewDetails, onApprove }) {
+function money(n) {
+  return Number(n || 0).toFixed(2);
+}
+
+function Orders({ orders = [], onApprove, mode = "pending" }) {
+  const [openId, setOpenId] = useState(null);
+  const isApprovedMode = mode === "approved";
+
   if (!orders.length) {
     return (
       <div className="ordersEmptyState">
         <div className="ordersEmptyIcon">📝</div>
-        <h3>No Orders Yet</h3>
-        <p>Orders will appear here when customers place orders.</p>
+        <h3>{isApprovedMode ? "No Approved Orders" : "No Pending Orders"}</h3>
+        <p>{isApprovedMode ? "Approved orders will appear here." : "Orders will appear here when customers place orders."}</p>
       </div>
     );
   }
 
   return (
     <div className="ordersList">
-      {orders.map((o) => (
-        <div key={o.id} className="orderCard">
-          <div className="orderHeader">
-            <h3>Order #{o.id}</h3>
-            <span
-              className={`statusBadge ${
-                o.status === "confirmed" ? "statusCompleted" : "statusPending"
-              }`}
-            >
-              {o.status}
-            </span>
-          </div>
+      {orders.map((o) => {
+        const isOpen = openId === o.id;
+        const status = String(o.status || "").toLowerCase();
+        const isPending = status === "pending";
 
-          <div className="orderDetails">
-            {o.customer_email && (
-              <p>
-                <strong>Customer:</strong> {o.customer_email}
-              </p>
-            )}
-
-            <p>
-              <strong>Total:</strong> ₹{parseFloat(o.total_amount || 0).toFixed(2)}
-            </p>
-
-            {o.order_date && (
-              <p>
-                <strong>Date:</strong> {new Date(o.order_date).toLocaleDateString()}
-              </p>
-            )}
-          </div>
-
-          <div className="orderActions">
+        return (
+          <div key={o.id} className={`orderCard ${isOpen ? "open" : ""}`}>
             <button
-              className="viewBtn"
               type="button"
-              onClick={() => onViewDetails?.(o)}
+              className="orderTop"
+              onClick={() => setOpenId(isOpen ? null : o.id)}
             >
-              View Details
+              <div className="orderTopLeft">
+                <div className="orderId">Order #{o.id}</div>
+                <div className="orderSub">
+                  {o.customer_email || "-"} • ₹{money(o.total_amount)}
+                </div>
+              </div>
+
+              <div className="orderTopRight">
+                <span className={`statusBadge ${isPending ? "statusPending" : "statusCompleted"}`}>
+                  {o.status}
+                </span>
+                <span className={`chev ${isOpen ? "up" : ""}`}>⌄</span>
+              </div>
             </button>
 
-            {o.status === "pending" && (
-              <button
-                className="completeBtn"
-                type="button"
-                onClick={() => onApprove?.(o.id)}
-              >
-                Approve & Send Email
-              </button>
+            {isOpen && (
+              <div className="orderExpand">
+                <div className="grid2">
+                  <div className="kv">
+                    <div className="k">Customer</div>
+                    <div className="v">{o.customer_name || "-"}</div>
+                  </div>
+                  <div className="kv">
+                    <div className="k">Phone</div>
+                    <div className="v">{o.customer_phone || "-"}</div>
+                  </div>
+                  <div className="kv">
+                    <div className="k">Product</div>
+                    <div className="v">{o.product_name || "-"}</div>
+                  </div>
+                  <div className="kv">
+                    <div className="k">Qty</div>
+                    <div className="v">{o.quantity ?? "-"}</div>
+                  </div>
+                  <div className="kv">
+                    <div className="k">Unit Price</div>
+                    <div className="v">₹{money(o.unit_price)}</div>
+                  </div>
+                  <div className="kv">
+                    <div className="k">Total</div>
+                    <div className="v strong">₹{money(o.total_amount)}</div>
+                  </div>
+                </div>
+
+                <div className="addrBox">
+                  <div className="addrTitle">Shipping Address</div>
+                  <div className="addrText">{o.shipping_address || "❌ Shipping address missing from order"}</div>
+                </div>
+
+                {o.notes ? (
+                  <div className="notesBox">
+                    <div className="addrTitle">Notes</div>
+                    <div className="addrText">{o.notes}</div>
+                  </div>
+                ) : null}
+
+                <div className="orderActions">
+                  {isPending ? (
+                    <button className="approveBtn" type="button" onClick={() => onApprove?.(o.id)}>
+                      Approve & Send Email
+                    </button>
+                  ) : (
+                    <div className="approvedHint">This order is approved.</div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

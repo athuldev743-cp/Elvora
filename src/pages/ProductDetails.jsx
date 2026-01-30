@@ -168,6 +168,54 @@ const ProductDetails = () => {
     }
   };
 
+  // --- Cart helpers (localStorage) ---
+const getCart = () => {
+  try {
+    return JSON.parse(localStorage.getItem("cart") || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const saveCart = (next) => {
+  localStorage.setItem("cart", JSON.stringify(next));
+  // Optional: notify other tabs/components
+  window.dispatchEvent(new Event("cart:updated"));
+};
+
+const addToCart = () => {
+  if (!product) return;
+
+  const cart = getCart();
+
+  const existing = cart.find((x) => String(x.id) === String(product.id));
+  let next;
+
+  if (existing) {
+    // Add quantity to existing item
+    next = cart.map((x) =>
+      String(x.id) === String(product.id)
+        ? { ...x, qty: Number(x.qty || 1) + Number(quantity || 1) }
+        : x
+    );
+  } else {
+    // Add new item
+    next = [
+      ...cart,
+      {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        qty: Number(quantity || 1),
+      },
+    ];
+  }
+
+  saveCart(next);
+  alert("✅ Added to cart!");
+};
+
+
   const handleImageError = (e) => {
     e.target.onerror = null;
     e.target.src = "https://placehold.co/600x400/EEE/31343C?text=Product+Image";
@@ -211,6 +259,9 @@ const ProductDetails = () => {
         </button>
         <h1>Product Details</h1>
       </div>
+
+      
+
 
       {/* Order Form Modal */}
       {showOrderForm && (
@@ -405,13 +456,7 @@ const ProductDetails = () => {
             <div className="product-price-large">₹{product.price}</div>
           </div>
 
-          {/* Product ID */}
-          <div className="product-meta">
-            <span className="product-id">Product ID: #{product.id}</span>
-            {product.priority && (
-              <span className="product-priority">Priority: {product.priority}</span>
-            )}
-          </div>
+         
 
           {/* Description */}
           <div className="description-section">
@@ -460,31 +505,36 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          {/* Order Button */}
-          <div className="order-action-section">
-            {user ? (
-              <button 
-                className="order-btn"
-                onClick={handleOrderClick}
-              >
-                🛒 Place Order
-              </button>
-            ) : (
-              <div className="login-required">
-                <p>Please login to place an order</p>
-                <button 
-                  className="login-btn"
-                  onClick={() => navigate("/")}
-                >
-                  Login Now
-                </button>
-              </div>
-            )}
-            
-            <p className="order-note">
-              * After placing order, you'll receive confirmation email. Our team will contact you for delivery details.
-            </p>
-          </div>
+         {/* Actions */}
+<div className="actions">
+  <div className="actions-row">
+    <button className="add-cart-btn" onClick={addToCart}>
+      Add to Cart
+    </button>
+
+    <button className="buy-btn" onClick={handleOrderClick} disabled={!user}>
+      Buy Now
+    </button>
+  </div>
+
+  {!user ? (
+    <div className="login-hint">
+      Please login to continue checkout.
+      <button className="link-btn" onClick={() => navigate("/")}>
+        Login
+      </button>
+    </div>
+  ) : (
+    <button className="go-cart-btn" onClick={() => navigate("/account")}>
+      View Cart
+    </button>
+  )}
+
+  <p className="order-note">
+    Secure checkout • Fast delivery • Support available
+  </p>
+</div>
+
         </div>
       </div>
     </div>
