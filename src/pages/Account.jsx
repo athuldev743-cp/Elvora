@@ -35,6 +35,15 @@ export default function Account() {
   const GST_PERCENT = 18;
   const SHIPPING_FEE = 0;
 
+  // ✅ Logout (moved from Home → Account)
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userData");
+    localStorage.removeItem("adminToken");
+    // localStorage.removeItem("cart"); // optional: uncomment if you want to clear cart on logout
+    navigate("/");
+  };
+
   // Load user
   useEffect(() => {
     const raw = localStorage.getItem("userData");
@@ -97,11 +106,6 @@ export default function Account() {
   // Selected order totals
   const orderSubtotal = useMemo(() => {
     if (!selectedOrder) return 0;
-    // In your DB you already have total_amount.
-    // Decide policy:
-    // - If total_amount is pre-tax subtotal: use it directly.
-    // - If total_amount is final: then GST should be "included" not added.
-    // I’ll treat total_amount as subtotal for clean billing.
     return Number(selectedOrder.total_amount || 0);
   }, [selectedOrder]);
 
@@ -115,15 +119,30 @@ export default function Account() {
       <div className="account-header">
         <div>
           <h2>My Account</h2>
-          <div className="muted">{user.name} • {user.email}</div>
+          <div className="muted">
+            {user.name} • {user.email}
+          </div>
         </div>
 
-        <div className="tabs">
-          <button className={tab === "orders" ? "active" : ""} onClick={() => setTab("orders")}>
-            Orders
-          </button>
-          <button className={tab === "cart" ? "active" : ""} onClick={() => setTab("cart")}>
-            Cart
+        {/* ✅ Tabs + Logout */}
+        <div className="account-actions">
+          <div className="tabs">
+            <button
+              className={tab === "orders" ? "active" : ""}
+              onClick={() => setTab("orders")}
+            >
+              Orders
+            </button>
+            <button
+              className={tab === "cart" ? "active" : ""}
+              onClick={() => setTab("cart")}
+            >
+              Cart
+            </button>
+          </div>
+
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
           </button>
         </div>
       </div>
@@ -172,19 +191,31 @@ export default function Account() {
                 <div className="details-grid">
                   <div>
                     <div className="muted">Order ID</div>
-                    <div><b>#{selectedOrder.id}</b></div>
+                    <div>
+                      <b>#{selectedOrder.id}</b>
+                    </div>
                   </div>
                   <div>
                     <div className="muted">Status</div>
-                    <div><b>{selectedOrder.status}</b></div>
+                    <div>
+                      <b>{selectedOrder.status}</b>
+                    </div>
                   </div>
                   <div>
                     <div className="muted">Payment</div>
-                    <div><b>{selectedOrder.payment_status}</b></div>
+                    <div>
+                      <b>{selectedOrder.payment_status}</b>
+                    </div>
                   </div>
                   <div>
                     <div className="muted">Ordered At</div>
-                    <div><b>{selectedOrder.order_date ? new Date(selectedOrder.order_date).toLocaleString() : "-"}</b></div>
+                    <div>
+                      <b>
+                        {selectedOrder.order_date
+                          ? new Date(selectedOrder.order_date).toLocaleString()
+                          : "-"}
+                      </b>
+                    </div>
                   </div>
                 </div>
 
@@ -202,18 +233,40 @@ export default function Account() {
 
                 <h4>Billing</h4>
                 <div className="bill">
-                  <div className="row"><span>Subtotal</span><span>₹{money(orderSubtotal)}</span></div>
-                  <div className="row"><span>GST ({GST_PERCENT}%)</span><span>₹{money(orderGst)}</span></div>
-                  <div className="row"><span>Shipping</span><span>₹{money(SHIPPING_FEE)}</span></div>
+                  <div className="row">
+                    <span>Subtotal</span>
+                    <span>₹{money(orderSubtotal)}</span>
+                  </div>
+                  <div className="row">
+                    <span>GST ({GST_PERCENT}%)</span>
+                    <span>₹{money(orderGst)}</span>
+                  </div>
+                  <div className="row">
+                    <span>Shipping</span>
+                    <span>₹{money(SHIPPING_FEE)}</span>
+                  </div>
                   <hr />
-                  <div className="row total"><span>Total</span><span>₹{money(orderTotal)}</span></div>
+                  <div className="row total">
+                    <span>Total</span>
+                    <span>₹{money(orderTotal)}</span>
+                  </div>
                 </div>
 
                 <div className="addr">
-                  <div><b>Delivery Address:</b> {selectedOrder.shipping_address}</div>
-                  <div><b>Phone:</b> {selectedOrder.customer_phone}</div>
-                  <div><b>Email:</b> {selectedOrder.customer_email}</div>
-                  {selectedOrder.notes ? <div><b>Notes:</b> {selectedOrder.notes}</div> : null}
+                  <div>
+                    <b>Delivery Address:</b> {selectedOrder.shipping_address}
+                  </div>
+                  <div>
+                    <b>Phone:</b> {selectedOrder.customer_phone}
+                  </div>
+                  <div>
+                    <b>Email:</b> {selectedOrder.customer_email}
+                  </div>
+                  {selectedOrder.notes ? (
+                    <div>
+                      <b>Notes:</b> {selectedOrder.notes}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="muted" style={{ marginTop: 10 }}>
@@ -237,7 +290,9 @@ export default function Account() {
                 {cart.map((it) => (
                   <div key={it.id} className="cart-item">
                     <div className="cart-left">
-                      <div><b>{it.name}</b></div>
+                      <div>
+                        <b>{it.name}</b>
+                      </div>
                       <div className="muted">₹{money(it.price)}</div>
                     </div>
 
@@ -248,7 +303,9 @@ export default function Account() {
                         value={it.qty || 1}
                         onChange={(e) => updateQty(it.id, e.target.value)}
                       />
-                      <div className="muted">₹{money(Number(it.price || 0) * Number(it.qty || 1))}</div>
+                      <div className="muted">
+                        ₹{money(Number(it.price || 0) * Number(it.qty || 1))}
+                      </div>
                       <button onClick={() => removeItem(it.id)}>Remove</button>
                     </div>
                   </div>
@@ -256,11 +313,23 @@ export default function Account() {
               </div>
 
               <div className="bill" style={{ maxWidth: 420, marginTop: 12 }}>
-                <div className="row"><span>Subtotal</span><span>₹{money(cartSubtotal)}</span></div>
-                <div className="row"><span>GST ({GST_PERCENT}%)</span><span>₹{money(cartGst)}</span></div>
-                <div className="row"><span>Shipping</span><span>₹{money(SHIPPING_FEE)}</span></div>
+                <div className="row">
+                  <span>Subtotal</span>
+                  <span>₹{money(cartSubtotal)}</span>
+                </div>
+                <div className="row">
+                  <span>GST ({GST_PERCENT}%)</span>
+                  <span>₹{money(cartGst)}</span>
+                </div>
+                <div className="row">
+                  <span>Shipping</span>
+                  <span>₹{money(SHIPPING_FEE)}</span>
+                </div>
                 <hr />
-                <div className="row total"><span>Total</span><span>₹{money(cartTotal)}</span></div>
+                <div className="row total">
+                  <span>Total</span>
+                  <span>₹{money(cartTotal)}</span>
+                </div>
               </div>
             </>
           )}

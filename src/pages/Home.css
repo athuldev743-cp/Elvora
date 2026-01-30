@@ -13,6 +13,12 @@
   box-sizing: border-box;
 }
 
+/* ✅ Fix mobile cut/overflow issues (footer/testimonial) */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
@@ -48,17 +54,18 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  height: 80px; /* Fixed height to match navbar */
+  height: 80px;
   position: relative;
+  flex-shrink: 0;
 }
 
 /* Logo image - FORCE LARGE SIZE */
 .logo-img {
-  height: 70px !important; /* Force larger height */
+  height: 70px !important;
   width: auto !important;
-  min-height: 60px; /* Minimum size */
-  min-width: 120px; /* Minimum width to prevent shrinking */
-  object-fit: contain; /* Keeps aspect ratio */
+  min-height: 60px;
+  min-width: 120px;
+  object-fit: contain;
   display: block;
   transition: all 0.4s ease;
   transform-origin: center;
@@ -74,7 +81,7 @@ body {
 
 /* Alternative: If logo is too small, scale it up */
 .logo-img.scaled {
-  transform: scale(1.5); /* Scale up small logos */
+  transform: scale(1.5);
   transform-origin: left center;
 }
 
@@ -82,10 +89,10 @@ body {
 .navbar.scrolled .logo-img {
   opacity: 0;
   visibility: hidden;
-  transform: translateX(-20px) scale(1.5); /* Keep scale when hiding */
+  transform: translateX(-20px) scale(1.5);
 }
 
-/* Text logo - matches navbar height */
+/* Text logo */
 .text-logo {
   font-size: 28px;
   font-weight: 700;
@@ -115,6 +122,10 @@ body {
   gap: 32px;
   align-items: center;
   height: 80px;
+
+  /* ✅ Prevent nav-links pushing auth section */
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-links a {
@@ -159,6 +170,9 @@ body {
 .auth-section {
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 2000;
+  flex-shrink: 0;
 }
 
 .user-nav {
@@ -172,6 +186,7 @@ body {
   color: var(--charcoal);
   font-weight: 500;
 }
+
 /* Account icon button (after login) */
 .accountBtn {
   background: transparent;
@@ -248,28 +263,6 @@ body {
   box-shadow: 0 6px 15px rgba(46, 46, 47, 0.3);
 }
 
-/* Logout Button */
-.logout-nav-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f8f9fa;
-  color: var(--charcoal);
-  border: 2px solid #ddd;
-  padding: 8px 20px;
-  border-radius: 25px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.logout-nav-btn:hover {
-  background: #f0f0f0;
-  border-color: #bbb;
-  transform: translateY(-2px);
-}
-
 /* ===================== VIEW DETAILS BUTTONS ===================== */
 .view-details-btn,
 .login-to-view-btn {
@@ -326,7 +319,7 @@ body {
 
 .hero-content {
   position: absolute;
-  bottom: 100px; /* Position from bottom */
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -352,10 +345,7 @@ body {
 .primary-btn::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transform: translateX(-100%);
 }
@@ -370,7 +360,20 @@ body {
   box-shadow: 0 20px 40px rgba(242, 103, 34, 0.6);
 }
 
-/* ===================== PRODUCT CAROUSEL SECTION ===================== */
+/* ✅ Mobile-only hero image (hidden on desktop) */
+.hero-mobile-img{
+  display: none;
+  width: min(92vw, 520px);
+  height: auto;
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  border-radius: 18px;
+  pointer-events: none; /* ✅ prevents blocking Shop Now click */
+}
+
 /* ===================== PRODUCT CAROUSEL SECTION ===================== */
 .product-preview {
   padding: 100px 60px;
@@ -406,8 +409,6 @@ body {
   border-radius: 14px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  /* IMPORTANT FIX */
   display: flex;
   flex-direction: column;
   overflow: visible;
@@ -442,8 +443,6 @@ body {
   flex-grow: 1;
 }
 
-
-/* Product Name */
 .product-name {
   font-size: 18px;
   font-weight: 600;
@@ -456,10 +455,10 @@ body {
   justify-content: center;
 }
 
-/* ===================== VIEW DETAILS BUTTON ===================== */
+/* ===================== VIEW DETAILS BUTTON (card version) ===================== */
 .view-details-btn,
 .login-to-view-btn {
-  margin-top: auto; /* Push button to bottom */
+  margin-top: auto;
   width: 85%;
   padding: 12px 0;
   border-radius: 30px;
@@ -467,14 +466,8 @@ body {
   font-weight: 600;
   border: none;
   cursor: pointer;
-
-  background: linear-gradient(
-    135deg,
-    var(--dark-orange),
-    var(--light-orange)
-  );
+  background: linear-gradient(135deg, var(--dark-orange), var(--light-orange));
   color: #ffffff;
-
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 6px 18px rgba(242, 103, 34, 0.35);
 }
@@ -488,12 +481,6 @@ body {
 .view-details-btn:active,
 .login-to-view-btn:active {
   transform: scale(0.97);
-}
-
-/* Lock icon */
-.login-to-view-btn::after {
-  
-  font-size: 14px;
 }
 
 /* ===================== CAROUSEL ARROWS ===================== */
@@ -513,57 +500,38 @@ body {
   color: var(--charcoal);
 }
 
-.carousel-arrow.prev {
-  left: 10px;
-}
-
-.carousel-arrow.next {
-  right: 10px;
-}
+.carousel-arrow.prev { left: 10px; }
+.carousel-arrow.next { right: 10px; }
 
 .carousel-arrow:hover {
   background: var(--dark-orange);
   color: #ffffff;
 }
 
-/* ===================== RESPONSIVE ===================== */
+/* ===================== RESPONSIVE (YOUR EXISTING) ===================== */
 
 /* Tablet (3 cards) */
 @media (max-width: 1200px) {
-  .product-card {
-    flex: 0 0 calc(100% / 3);
-  }
-
-  .product-image {
-    height: 240px;
-  }
+  .product-card { flex: 0 0 calc(100% / 3); }
+  .product-image { height: 240px; }
 }
 
 /* Tablet (2 cards) */
 @media (max-width: 992px) {
-  .product-card {
-    flex: 0 0 calc(100% / 2);
-  }
-
-  .product-image {
-    height: 220px;
-  }
+  .product-card { flex: 0 0 calc(100% / 2); }
+  .product-image { height: 220px; }
 }
 
 /* Mobile */
 @media (max-width: 576px) {
-  .carousel-container {
-    padding: 0 40px;
-  }
+  .carousel-container { padding: 0 40px; }
 
   .product-card {
     flex: 0 0 100%;
     margin-right: 0;
   }
 
-  .product-image {
-    height: 200px;
-  }
+  .product-image { height: 200px; }
 
   .view-details-btn,
   .login-to-view-btn {
@@ -572,99 +540,200 @@ body {
   }
 }
 
-  
-  .navbar {
-    padding: 0 20px;
-  }
-  
-  .nav-links {
-    gap: 20px;
-  }
-  
-  .nav-links a {
-    font-size: 14px;
-  }
-  
-  .login-nav-btn {
-    padding: 8px 20px;
-    font-size: 14px;
-  }
-
-
 /* Small Mobile (1 card) */
 @media (max-width: 576px) {
-  .product-preview {
-    padding: 50px 15px;
-  }
-  
-  .carousel-container {
-    padding: 0 40px;
-  }
-  
+  .product-preview { padding: 50px 15px; }
+  .carousel-container { padding: 0 40px; }
+
   .product-card {
-    flex: 0 0 100%; /* 100% for 1 card */
+    flex: 0 0 100%;
     margin-right: 0;
     height: 350px;
   }
-  
-  .product-image {
-    height: 180px;
-  }
-  
+
+  .product-image { height: 180px; }
+
   .carousel-arrow {
     width: 40px;
     height: 40px;
     font-size: 16px;
   }
-  
-  .carousel-indicators {
-    margin-top: 30px;
-  }
-  
+
+  .carousel-indicators { margin-top: 30px; }
+
   .view-details-btn,
   .login-to-view-btn {
     min-width: 120px;
     padding: 8px 18px;
     font-size: 12px;
   }
-  
-  .nav-links {
-    gap: 15px;
-  }
-  
-  .nav-links a {
-    font-size: 13px;
-  }
-  
+
   .user-nav {
     flex-direction: column;
     gap: 8px;
   }
-  
-  .user-greeting {
-    font-size: 12px;
-  }
-  
-  .admin-dashboard-btn,
-  .logout-nav-btn {
+
+  .user-greeting { font-size: 12px; }
+
+  .admin-dashboard-btn {
     font-size: 12px;
     padding: 6px 15px;
   }
 }
-/* ✅ Ensure right-side buttons always clickable */
-.auth-section {
-  position: relative;
-  z-index: 2000;
-  flex-shrink: 0;
-}
 
-/* ✅ Prevent nav-links from pushing / overlapping auth section */
-.nav-links {
-  flex: 1;
+/* ===================== MOBILE MENU + TOUCH CAROUSEL ===================== */
+.desktop-only { display: flex; }
+.mobile-only { display: none; }
+
+/* ✅ Hamburger hidden by default (desktop) */
+.hamburger { display: none; }
+
+/* Hamburger button base style (applies when shown on mobile) */
+.hamburger{
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(46,46,47,0.20);
+  background: #fff;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  gap: 6px;
+  cursor: pointer;
 }
 
-/* ✅ Logo should not stretch */
-.logo {
-  flex-shrink: 0;
+.hamburger span{
+  width: 20px;
+  height: 2px;
+  background: var(--charcoal);
+  display: block;
+  border-radius: 999px;
+}
+
+/* Mobile menu overlay */
+.mobileMenuOverlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(46,46,47,0.55);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mobileMenuPanel{
+  width: min(360px, 92vw);
+  height: 100%;
+  background: #fff;
+  border-left: 1px solid rgba(46,46,47,0.14);
+  padding: 14px;
+  overflow: auto;
+}
+
+.mobileMenuSection{
+  border: 1px solid rgba(46,46,47,0.14);
+  border-radius: 14px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.mobileMenuItem{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: #fff;
+  color: var(--charcoal);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mobileMenuItem:hover{
+  border-color: rgba(242,103,34,0.35);
+  background: rgba(242,103,34,0.05);
+}
+
+.mmIcon{
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(242,103,34,0.10);
+  border: 1px solid rgba(242,103,34,0.22);
+}
+
+.mmAvatar{
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* ✅ Mobile-only behaviors (NO desktop changes) */
+@media (max-width: 992px){
+  .desktop-only{ display: none !important; }
+  .mobile-only{ display: inline-flex !important; }
+
+  /* show hamburger in mobile */
+  .hamburger{ display: flex; }
+
+  /* navbar spacing only for mobile */
+  .navbar{ padding: 0 20px; }
+
+  /* show mobile hero image */
+  .hero-mobile-img{ display: block; }
+
+  /* Touch carousel: scroll track, container stays clean */
+  .carousel-container{
+    overflow: hidden;
+    padding: 0 12px;
+  }
+
+  .carousel-track{
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding: 10px 4px 16px;
+    transition: none;
+    transform: none !important;
+  }
+
+  .carousel-track::-webkit-scrollbar{ height: 6px; }
+  .carousel-track::-webkit-scrollbar-thumb{
+    background: rgba(46,46,47,0.25);
+    border-radius: 999px;
+  }
+
+  /* swipe cards */
+  .product-card{
+    scroll-snap-align: start;
+    flex: 0 0 78%;
+    max-width: 78%;
+    margin-right: 16px;
+  }
+
+  /* Mobile button sizing */
+  .login-nav-btn{
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Smaller phones */
+@media (max-width: 480px){
+  .product-card{
+    flex: 0 0 88%;
+    max-width: 88%;
+  }
+
+  .hero-content{
+    bottom: 60px;
+  }
 }
