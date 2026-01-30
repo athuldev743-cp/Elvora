@@ -37,19 +37,13 @@ function AdminDashboard() {
     }
   };
 
-  const ensureJWTToken = async () => {
-    const userToken = localStorage.getItem("userToken");
-    const adminToken = localStorage.getItem("adminToken");
+ const ensureJWTToken = async () => {
+  const adminToken = localStorage.getItem("adminToken");
+  if (adminToken) return adminToken;
 
-    if (adminToken) return adminToken;
-
-    if (userToken) {
-      // TODO: convert Google token to JWT later
-      return "test-token";
-    }
-
-    return "test-token";
-  };
+  // if adminToken missing, force re-login instead of silently using "test-token"
+  throw new Error("Admin token missing. Please login again as admin.");
+};
 
   const fetchProducts = useCallback(async () => {
     try {

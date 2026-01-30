@@ -8,6 +8,8 @@ import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { ADMIN_EMAILS } from "../config/auth";
 import { convertGoogleToJWT } from "../api/adminAPI";
+import { User } from "lucide-react";
+
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -248,31 +250,58 @@ useEffect(() => {
           <a href="#blog">Blog</a>
           <a href="#testimonials">Testimonials</a>
         </div>
+
+        
         
         <div className="auth-section">
-          {user ? (
-            <div className="user-nav">
-              <span className="user-greeting">Hi, {user.name}</span>
-              
-              {user.isAdmin === true && (
-                <button 
-                  className="admin-dashboard-btn"
-                  onClick={goToAdminDashboard}
-                >
-                  Admin Dashboard
-                </button>
-              )}
-              
-              <button className="logout-nav-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          ) : (
-            <button className="login-nav-btn" onClick={handleGoogleLogin}>
-              Login
-            </button>
-          )}
-        </div>
+  {user ? (
+    <div className="user-nav">
+      {/* Account Icon (replaces Login after auth) */}
+      <button
+        className="accountBtn"
+        title="Account"
+      >
+        {user.profile_pic ? (
+          <img
+            src={user.profile_pic}
+            alt="Account"
+            className="accountAvatar"
+          />
+        ) : (
+          <User size={20} />
+        )}
+      </button>
+
+      {/* Optional greeting (can remove if you want cleaner UI) */}
+      <span className="user-greeting">Hi, {user.name}</span>
+
+      {user.isAdmin === true && (
+        <button
+          className="admin-dashboard-btn"
+          onClick={goToAdminDashboard}
+        >
+          Admin Dashboard
+        </button>
+      )}
+
+      <button
+        className="logout-nav-btn"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
+    </div>
+  ) : (
+    /* Login button BEFORE auth */
+    <button
+      className="login-nav-btn"
+      onClick={handleGoogleLogin}
+    >
+      Login
+    </button>
+  )}
+</div>
+
       </nav>
 
       <section id="home" className="hero" style={{ backgroundImage: "url(/images/redensyl-hero.jpg)" }}>

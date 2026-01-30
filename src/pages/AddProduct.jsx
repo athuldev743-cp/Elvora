@@ -1,4 +1,4 @@
-import styles from "./Dashboard.module.css";
+import "./AddProduct.css";
 
 function AddProduct({
   showAddForm,
@@ -11,11 +11,11 @@ function AddProduct({
   if (!showAddForm) return null;
 
   return (
-    <div className={styles.addFormContainer}>
+    <div className="addFormContainer">
       <h3>Add New Product</h3>
 
       <form onSubmit={handleAddProduct}>
-        <div className={styles.formGroup}>
+        <div className="formGroup">
           <label>Product Name *</label>
           <input
             type="text"
@@ -27,7 +27,7 @@ function AddProduct({
           />
         </div>
 
-        <div className={styles.formGroup}>
+        <div className="formGroup">
           <label>Price (₹) *</label>
           <input
             type="number"
@@ -41,7 +41,7 @@ function AddProduct({
           />
         </div>
 
-        <div className={styles.formGroup}>
+        <div className="formGroup">
           <label>Description *</label>
           <textarea
             name="description"
@@ -55,22 +55,20 @@ function AddProduct({
           />
         </div>
 
-        <div className={styles.formGroup}>
+        <div className="formGroup">
           <label>Priority (1 = highest) *</label>
           <input
             type="number"
             name="priority"
             placeholder="Enter priority"
             value={newProduct.priority}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, priority: e.target.value })
-            }
+            onChange={(e) => setNewProduct({ ...newProduct, priority: e.target.value })}
             required
             min="1"
           />
         </div>
 
-        <div className={styles.formGroup}>
+        <div className="formGroup">
           <label>Product Image *</label>
           <input
             type="file"
@@ -85,18 +83,18 @@ function AddProduct({
           <small>Select a product image (JPEG, PNG, etc.)</small>
 
           {newProduct.image && (
-            <div className={styles.filePreview}>Selected: {newProduct.image.name}</div>
+            <div className="filePreview">Selected: {newProduct.image.name}</div>
           )}
         </div>
 
-        <div className={styles.formButtons}>
-          <button type="submit" className={styles.submitBtn}>
+        <div className="formButtons">
+          <button type="submit" className="submitBtn">
             Add Product
           </button>
 
           <button
             type="button"
-            className={styles.cancelBtn}
+            className="cancelBtn"
             onClick={() => {
               setShowAddForm(false);
               setError("");

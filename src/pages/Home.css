@@ -172,6 +172,30 @@ body {
   color: var(--charcoal);
   font-weight: 500;
 }
+/* Account icon button (after login) */
+.accountBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.accountBtn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Account avatar image */
+.accountAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
 /* ===================== BUTTON STYLES ===================== */
 /* Navbar Login Button */

@@ -1,0 +1,120 @@
+.ordersCard {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.ordersCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ordersBadge {
+  background: #f2f2f2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.ordersEmptyState {
+  text-align: center;
+  padding: 18px 10px;
+  border: 1px dashed #ddd;
+  border-radius: 14px;
+  background: #fafafa;
+}
+
+.ordersEmptyIcon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.orderCard {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.statusBadge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.statusCompleted {
+  background: #e9f7ef;
+  color: #15803d;
+}
+
+.statusPending {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.orderDetails p {
+  margin: 6px 0;
+  color: #222;
+  font-size: 14px;
+}
+
+.orderActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.viewBtn {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.completeBtn {
+  border: none;
+  background: #111;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.viewBtn:hover {
+  background: #f7f7f7;
+}
+
+.completeBtn:hover {
+  opacity: 0.92;
+}
+.ordersError {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border: 1px solid #ffd8a8;
+  background: #fff7ed;
+  border-radius: 12px;
+  color: #9a3412;
+  font-weight: 600;
+}

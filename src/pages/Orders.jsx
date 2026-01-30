@@ -1,17 +1,19 @@
 import { useEffect, useCallback, useState } from "react";
-import styles from "./Dashboard.module.css";
+
+import "./Orders.css";
 
 function Orders({ ensureJWTToken, setError }) {
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [ordersError, setOrdersError] = useState("");
+
 
   const fetchOrders = useCallback(async () => {
     try {
       setLoadingOrders(true);
 
       const token = await ensureJWTToken();
-      const API_BASE =
-        process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+      const API_BASE = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
 
       const response = await fetch(`${API_BASE}/admin/orders`, {
         headers: {
@@ -31,7 +33,9 @@ function Orders({ ensureJWTToken, setError }) {
     } catch (err) {
       console.error("Failed to fetch orders:", err);
       const msg = "Temporary issue loading orders: " + (err?.message || "Network error");
+      setOrdersError(msg);
       setError?.(msg);
+
     } finally {
       setLoadingOrders(false);
     }
@@ -44,8 +48,7 @@ function Orders({ ensureJWTToken, setError }) {
   const approveOrder = async (orderId) => {
     try {
       const token = await ensureJWTToken();
-      const API_BASE =
-        process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+      const API_BASE = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
 
       const res = await fetch(`${API_BASE}/admin/orders/${orderId}/approve`, {
         method: "POST",
@@ -67,42 +70,42 @@ function Orders({ ensureJWTToken, setError }) {
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHeader}>
+    <div className="ordersCard">
+      <div className="ordersCardHeader">
         <h2>📋 Orders</h2>
-        <div className={styles.badge}>{orders.length} orders</div>
+        <div className="ordersBadge">{orders.length} orders</div>
       </div>
 
       {loadingOrders ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyStateIcon}>⏳</div>
+        <div className="ordersEmptyState">
+          <div className="ordersEmptyIcon">⏳</div>
           <h3>Loading Orders...</h3>
           <p>Please wait</p>
         </div>
       ) : orders.length === 0 ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyStateIcon}>📝</div>
+        <div className="ordersEmptyState">
+          <div className="ordersEmptyIcon">📝</div>
           <h3>No Orders Yet</h3>
           <p>Orders will appear here when customers place orders.</p>
         </div>
       ) : (
-        <div className={styles.ordersList}>
+        <div className="ordersList">
           {orders.map((o) => (
-            <div key={o.id} className={styles.orderCard}>
-              <div className={styles.orderHeader}>
+            <div key={o.id} className="orderCard">
+              <div className="orderHeader">
+                {ordersError && (
+                <div className="ordersError">
+                ⚠️ {ordersError}
+                   </div>
+                   )}
+
                 <h3>Order #{o.id}</h3>
-                <span
-                  className={`${styles.statusBadge} ${
-                    o.status === "confirmed"
-                      ? styles.statusCompleted
-                      : styles.statusPending
-                  }`}
-                >
+                <span className={`statusBadge ${o.status === "confirmed" ? "statusCompleted" : "statusPending"}`}>
                   {o.status}
                 </span>
               </div>
 
-              <div className={styles.orderDetails}>
+              <div className="orderDetails">
                 {o.customer_email && (
                   <p>
                     <strong>Customer:</strong> {o.customer_email}
@@ -115,20 +118,16 @@ function Orders({ ensureJWTToken, setError }) {
 
                 {o.order_date && (
                   <p>
-                    <strong>Date:</strong>{" "}
-                    {new Date(o.order_date).toLocaleDateString()}
+                    <strong>Date:</strong> {new Date(o.order_date).toLocaleDateString()}
                   </p>
                 )}
               </div>
 
-              <div className={styles.orderActions}>
-                <button className={styles.viewBtn}>View Details</button>
+              <div className="orderActions">
+                <button className="viewBtn">View Details</button>
 
                 {o.status === "pending" && (
-                  <button
-                    className={styles.completeBtn}
-                    onClick={() => approveOrder(o.id)}
-                  >
+                  <button className="completeBtn" onClick={() => approveOrder(o.id)}>
                     Approve & Send Email
                   </button>
                 )}
