@@ -292,7 +292,7 @@ useEffect(() => {
       </button>
     </div>
   ) : (
-    /* Login button BEFORE auth */
+    /* Login butto BEFORE auth */
     <button
       className="login-nav-btn"
       onClick={handleGoogleLogin}
