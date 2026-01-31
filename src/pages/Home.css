@@ -617,10 +617,13 @@ body{
 
 /* ===================== ≤ 480px (small phones) ===================== */
 @media (max-width:480px){
-  .product-card{
-    flex:0 0 88%;
-    max-width:88%;
+  .product-image{
+    height:200px;
+    object-fit:contain;        /* ✅ still full image */
+    background:#f3f4f6;
+    padding:8px;
   }
+
 
   .product-image{
     height:200px;
