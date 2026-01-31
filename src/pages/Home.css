@@ -614,21 +614,19 @@ body{
     font-size:28px;
   }
 }
-/* ===================== ≤ 480px (small phones) ===================== */
 @media (max-width:480px){
 
-  /* Image wrapper respects image ratio */
   .product-image{
-    width:100%;
-    height:auto;              /* ✅ KEY: remove fixed height */
-    aspect-ratio: 1 / 1;      /* ✅ square card (safe default) */
-    object-fit:contain;       /* ✅ no crop EVER */
-    background:#f3f4f6;       /* neutral fill */
+    width:100%;          /* ✅ max horizontal width */
+    max-width:100%;
+    height:auto;         /* ✅ keep natural height */
+    object-fit:contain;  /* ✅ no crop */
+    background:#f3f4f6;
     display:block;
   }
 
   .product-card{
-    height:auto;              /* ✅ card grows naturally */
+    height:auto;
   }
 
   .hero-mobile-img{
