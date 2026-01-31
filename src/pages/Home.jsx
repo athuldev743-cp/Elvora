@@ -307,11 +307,21 @@ const Home = () => {
             </div>
 
             <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#home" onClick={closeMenu}>Home</a>
-              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
-              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
-              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
-              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
+              <a className="mobileMenuItem" href="#home" onClick={closeMenu}>
+                Home
+              </a>
+              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
+                Products
+              </a>
+              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>
+                About
+              </a>
+              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>
+                Blog
+              </a>
+              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>
+                Testimonials
+              </a>
             </div>
 
             {user?.isAdmin === true && (
@@ -327,14 +337,12 @@ const Home = () => {
 
       {/* HERO */}
       <section id="home" className="hero" style={{ backgroundImage: "url(/images/hero-mobile.png)" }}>
-        {/* ✅ Desktop CTA always visible */}
         <div className="hero-cta desktop-only">
           <button className="primary-btn" onClick={goToPriorityOneProduct}>
             Shop Now
           </button>
         </div>
 
-        {/* ✅ Mobile hero image + CTA */}
         <div className="hero-mobile-wrap">
           <img className="hero-mobile-img" src="/images/hero-mobile.png" alt="Eka Bhumi" loading="lazy" />
           <div className="hero-cta mobile-cta">
@@ -347,8 +355,6 @@ const Home = () => {
 
       {/* PRODUCTS */}
       <section id="products" className="product-preview">
-       
-
         {error && <div className="error-message">⚠️ {error}</div>}
         {loading && <p className="loading-text">Loading products...</p>}
 
@@ -358,33 +364,62 @@ const Home = () => {
 
         {!loading && products.length > 0 && (
           <div className="carousel-container">
-            <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">
+            <button
+              className="carousel-arrow prev"
+              onClick={() => scrollCarousel("prev")}
+              type="button"
+              aria-label="Previous"
+            >
               ‹
             </button>
 
             <div className="carousel-track" ref={trackRef}>
-              {products.map((p) => (
-                <div className="product-card" key={p.id}>
-                  <img src={p.image_url} alt={p.name} className="product-image" onError={handleImageError} loading="lazy" />
-                  <div className="product-info">
-                    <span className="product-name">{p.name}</span>
-                    
+              {products.map((p) => {
+                const qty = Number(p.quantity ?? 0);
+                const availableSoon = qty <= 0;
 
-                    {user ? (
-                      <button className="view-details-btn" onClick={() => navigate(`/products/${p.id}`)}>
+                const onView = () => {
+                  if (availableSoon) return;
+                  if (!user) return handleGoogleLogin();
+                  navigate(`/products/${p.id}`);
+                };
+
+                return (
+                  <div className="product-card" key={p.id}>
+                    {availableSoon && <div className="available-soon-badge">Available Soon</div>}
+
+                    <img
+                      src={p.image_url}
+                      alt={p.name}
+                      className="product-image"
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+
+                    <div className="product-info">
+                      <span className="product-name">{p.name}</span>
+
+                      <button
+                        className={`view-details-btn ${availableSoon ? "isDisabled" : ""}`}
+                        onClick={onView}
+                        type="button"
+                        disabled={availableSoon}
+                        title={availableSoon ? "Available soon" : user ? "View details" : "Login to view"}
+                      >
                         View Details
                       </button>
-                    ) : (
-                      <button className="login-to-view-btn" onClick={handleGoogleLogin}>
-                        View Details
-                      </button>
-                    )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <button className="carousel-arrow next" onClick={() => scrollCarousel("next")} type="button" aria-label="Next">
+            <button
+              className="carousel-arrow next"
+              onClick={() => scrollCarousel("next")}
+              type="button"
+              aria-label="Next"
+            >
               ›
             </button>
           </div>

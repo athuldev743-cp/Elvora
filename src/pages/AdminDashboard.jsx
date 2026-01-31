@@ -5,11 +5,14 @@ import styles from "./Dashboard.module.css";
 
 import AddProduct from "./AddProduct";
 import Orders from "./Orders";
+import UpdateProduct from "./UpdateProduct";
 
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState("orders"); // orders | approved | products | addProduct
+  // orders | approved | products | addProduct | updateProduct
+  const [activeTab, setActiveTab] = useState("orders");
+
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -20,11 +23,16 @@ function AdminDashboard() {
   const [error, setError] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
+  // ✅ NEW: selected product for update
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // ✅ single newProduct state (with quantity)
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
     description: "",
     priority: "1",
+    quantity: "0",
     image: null,
   });
 
@@ -33,7 +41,7 @@ function AdminDashboard() {
     []
   );
 
-  // ✅ NEW: Approved selection + cleared ids (frontend-only)
+  // ✅ Approved selection + cleared ids (frontend-only)
   const [approvedSelected, setApprovedSelected] = useState(() => new Set());
   const [clearedApprovedIds, setClearedApprovedIds] = useState(() => {
     try {
@@ -43,7 +51,6 @@ function AdminDashboard() {
     }
   });
 
-  // ✅ persist cleared ids
   useEffect(() => {
     localStorage.setItem("clearedApprovedIds", JSON.stringify(clearedApprovedIds));
   }, [clearedApprovedIds]);
@@ -140,13 +147,20 @@ function AdminDashboard() {
   // on-demand products
   useEffect(() => {
     if (
-      (activeTab === "products" || activeTab === "addProduct") &&
+      (activeTab === "products" || activeTab === "addProduct" || activeTab === "updateProduct") &&
       products.length === 0 &&
       !loadingProducts
     ) {
       fetchProducts();
     }
   }, [activeTab, fetchProducts, products.length, loadingProducts]);
+
+  // ✅ reset selection when leaving update tab
+  useEffect(() => {
+    if (activeTab !== "updateProduct") {
+      setSelectedProduct(null);
+    }
+  }, [activeTab]);
 
   const logout = () => {
     localStorage.clear();
@@ -201,6 +215,7 @@ function AdminDashboard() {
       formData.append("price", newProduct.price.toString());
       formData.append("description", newProduct.description);
       formData.append("priority", newProduct.priority || "1");
+      formData.append("quantity", String(newProduct.quantity ?? "0"));
       formData.append("image", newProduct.image);
 
       const res = await fetch(`${API_BASE}/admin/create-product`, {
@@ -215,7 +230,15 @@ function AdminDashboard() {
       }
 
       setShowAddForm(false);
-      setNewProduct({ name: "", price: "", description: "", priority: "1", image: null });
+
+      setNewProduct({
+        name: "",
+        price: "",
+        description: "",
+        priority: "1",
+        quantity: "0",
+        image: null,
+      });
 
       await fetchProducts();
       localStorage.setItem("productsUpdated", Date.now().toString());
@@ -226,6 +249,51 @@ function AdminDashboard() {
       setError(e?.message || "Failed to add product");
     }
   };
+
+  // ✅ NEW: update product submit (frontend ready; backend can be added later)
+  const handleUpdateProduct = useCallback(
+    async (payload) => {
+      try {
+        const token = await ensureJWTToken();
+        if (!token) throw new Error("Admin token missing. Please login again as admin.");
+
+        // payload: { id, name, price, description, priority, quantity, imageFile? }
+        const formData = new FormData();
+        formData.append("name", payload.name);
+        formData.append("price", String(payload.price));
+        formData.append("description", payload.description);
+        formData.append("priority", String(payload.priority ?? "1"));
+        formData.append("quantity", String(payload.quantity ?? "0"));
+
+        // optional image
+        if (payload.imageFile) {
+          formData.append("image", payload.imageFile);
+        }
+
+        // ✅ Decide endpoint: you will implement later in backend
+        // Suggested: PUT /admin/update-product/{id}
+        const res = await fetch(`${API_BASE}/admin/update-product/${payload.id}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Update failed: ${res.status} ${text}`);
+        }
+
+        await fetchProducts();
+        localStorage.setItem("productsUpdated", Date.now().toString());
+        alert("✅ Product updated successfully!");
+        setError("");
+        setActiveTab("products");
+      } catch (e) {
+        setError(e?.message || "Failed to update product");
+      }
+    },
+    [API_BASE, ensureJWTToken, fetchProducts]
+  );
 
   const approveOrder = useCallback(
     async (orderId) => {
@@ -259,7 +327,6 @@ function AdminDashboard() {
     [orders]
   );
 
-  // ✅ Approved orders filtered by "clearedApprovedIds" (frontend-only hide)
   const approvedOrders = useMemo(() => {
     const clearedSet = new Set(clearedApprovedIds);
     return orders.filter((o) => {
@@ -269,14 +336,12 @@ function AdminDashboard() {
     });
   }, [orders, clearedApprovedIds]);
 
-  // ✅ reset selection when leaving approved tab
   useEffect(() => {
     if (activeTab !== "approved") {
       setApprovedSelected(new Set());
     }
   }, [activeTab]);
 
-  // ✅ selection toggles (approved only)
   const toggleApprovedSelect = (orderId) => {
     setApprovedSelected((prev) => {
       const next = new Set(prev);
@@ -311,11 +376,26 @@ function AdminDashboard() {
     setApprovedSelected(new Set());
   };
 
-  // optional restore
   const restoreApprovedOrders = () => {
     setClearedApprovedIds([]);
     setApprovedSelected(new Set());
   };
+
+  const openUpdate = (product) => {
+    setSelectedProduct(product);
+    setActiveTab("updateProduct");
+  };
+
+  const title =
+    activeTab === "orders"
+      ? "Pending Orders"
+      : activeTab === "approved"
+      ? "Approved Orders"
+      : activeTab === "products"
+      ? "Products"
+      : activeTab === "addProduct"
+      ? "Add Product"
+      : "Update Product";
 
   if (loading) {
     return (
@@ -353,15 +433,7 @@ function AdminDashboard() {
         {/* Main */}
         <main className={styles.main}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>
-              {activeTab === "orders"
-                ? "Pending Orders"
-                : activeTab === "approved"
-                ? "Approved Orders"
-                : activeTab === "products"
-                ? "Products"
-                : "Add Product"}
-            </h2>
+            <h2 className={styles.sectionTitle}>{title}</h2>
 
             <div className={styles.sectionMeta}>
               {activeTab === "orders" && <span className={styles.pill}>{pendingOrders.length} pending</span>}
@@ -370,7 +442,6 @@ function AdminDashboard() {
                 <>
                   <span className={styles.pill}>{approvedOrders.length} approved</span>
 
-                  {/* ✅ NEW: clear buttons */}
                   <div className={styles.approvedActions}>
                     <button
                       type="button"
@@ -391,7 +462,6 @@ function AdminDashboard() {
                       Clear All
                     </button>
 
-                    {/* optional */}
                     <button type="button" className={styles.restoreBtn} onClick={restoreApprovedOrders}>
                       Restore
                     </button>
@@ -400,48 +470,47 @@ function AdminDashboard() {
               )}
 
               {activeTab === "products" && <span className={styles.pill}>{products.length} items</span>}
+
+              {activeTab === "updateProduct" && selectedProduct && (
+                <span className={styles.pill}>Editing: {selectedProduct.name}</span>
+              )}
             </div>
           </div>
 
-         {/* Orders */}
-{activeTab === "orders" && (
-  <div className={styles.card}>
-    {loadingOrders ? (
-      <div className={styles.emptyState}>
-        <div className={styles.emptyStateIcon}>⏳</div>
-        <h3>Loading Orders...</h3>
-        <p>Please wait</p>
-      </div>
-    ) : (
-      <Orders
-        orders={pendingOrders}
-        onApprove={approveOrder}
-        mode="pending"
-      />
-    )}
-  </div>
-)}
+          {/* Orders */}
+          {activeTab === "orders" && (
+            <div className={styles.card}>
+              {loadingOrders ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyStateIcon}>⏳</div>
+                  <h3>Loading Orders...</h3>
+                  <p>Please wait</p>
+                </div>
+              ) : (
+                <Orders orders={pendingOrders} onApprove={approveOrder} mode="pending" />
+              )}
+            </div>
+          )}
 
-{/* Approved */}
-{activeTab === "approved" && (
-  <div className={styles.card}>
-    {loadingOrders ? (
-      <div className={styles.emptyState}>
-        <div className={styles.emptyStateIcon}>⏳</div>
-        <h3>Loading Orders...</h3>
-        <p>Please wait</p>
-      </div>
-    ) : (
-      <Orders
-        orders={approvedOrders}
-        mode="approved"
-        selectedIds={approvedSelected}
-        onToggleSelect={toggleApprovedSelect}
-      />
-    )}
-  </div>
-)}
-
+          {/* Approved */}
+          {activeTab === "approved" && (
+            <div className={styles.card}>
+              {loadingOrders ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyStateIcon}>⏳</div>
+                  <h3>Loading Orders...</h3>
+                  <p>Please wait</p>
+                </div>
+              ) : (
+                <Orders
+                  orders={approvedOrders}
+                  mode="approved"
+                  selectedIds={approvedSelected}
+                  onToggleSelect={toggleApprovedSelect}
+                />
+              )}
+            </div>
+          )}
 
           {/* Products */}
           {activeTab === "products" && (
@@ -460,33 +529,53 @@ function AdminDashboard() {
                 </div>
               ) : (
                 <div className={styles.productsGrid}>
-                  {products.map((p) => (
-                    <div key={p.id} className={styles.productCard}>
-                      <div className={styles.productImage}>
-                        {p.image_url ? (
-                          <img
-                            src={p.image_url.startsWith("http") ? p.image_url : `${API_BASE}${p.image_url}`}
-                            alt={p.name}
-                            onError={handleImageError}
-                          />
-                        ) : (
-                          <div className={styles.noImage}>No Image</div>
-                        )}
-                      </div>
+                  {products.map((p) => {
+                    const qty = Number(p.quantity ?? 0);
+                    const availableSoon = qty <= 0;
 
-                      <div className={styles.productContent}>
-                        <h3 className={styles.productTitle}>{p.name}</h3>
-                        <div className={styles.productPrice}>₹{parseFloat(p.price).toFixed(2)}</div>
-                        <p className={styles.productDescription}>{p.description}</p>
+                    return (
+                      <div key={p.id} className={styles.productCard}>
+                        {availableSoon && <div className={styles.availableSoonBadge}>Available Soon</div>}
 
-                        <div className={styles.productActions}>
-                          <button className={styles.deleteBtn} onClick={() => handleDelete(p.id)} type="button">
-                            Delete
-                          </button>
+                        <div className={styles.productImage}>
+                          {p.image_url ? (
+                            <img
+                              src={p.image_url.startsWith("http") ? p.image_url : `${API_BASE}${p.image_url}`}
+                              alt={p.name}
+                              onError={handleImageError}
+                            />
+                          ) : (
+                            <div className={styles.noImage}>No Image</div>
+                          )}
+                        </div>
+
+                        <div className={styles.productContent}>
+                          <h3 className={styles.productTitle}>{p.name}</h3>
+
+                          <div className={styles.productRow}>
+                            <div className={styles.productPrice}>₹{parseFloat(p.price).toFixed(2)}</div>
+                            <div className={styles.qtyPill}>Qty: {qty}</div>
+                          </div>
+
+                          <p className={styles.productDescription}>{p.description}</p>
+
+                          <div className={styles.productActions}>
+                            <button
+                              className={styles.updateBtn}
+                              onClick={() => openUpdate(p)}
+                              type="button"
+                            >
+                              Update
+                            </button>
+
+                            <button className={styles.deleteBtn} onClick={() => handleDelete(p.id)} type="button">
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -511,6 +600,39 @@ function AdminDashboard() {
                 handleAddProduct={handleAddProduct}
                 setError={setError}
               />
+            </div>
+          )}
+
+          {/* ✅ Update Product */}
+          {activeTab === "updateProduct" && (
+            <div className={styles.card}>
+              {!selectedProduct ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyStateIcon}>✏️</div>
+                  <h3>Select a product to update</h3>
+                  <p>Go to Products and click Update.</p>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.updateTopRow}>
+                    <button
+                      type="button"
+                      className={styles.backBtn}
+                      onClick={() => setActiveTab("products")}
+                    >
+                      ← Back to Products
+                    </button>
+                  </div>
+
+                  <UpdateProduct
+                    product={selectedProduct}
+                    apiBase={API_BASE}
+                    onCancel={() => setActiveTab("products")}
+                    onSubmit={handleUpdateProduct}
+                    setError={setError}
+                  />
+                </>
+              )}
             </div>
           )}
         </main>
@@ -554,10 +676,21 @@ function AdminDashboard() {
             >
               Add Product
             </button>
+
+            {activeTab === "updateProduct" && (
+              <button
+                type="button"
+                className={`${styles.sideTab} ${styles.sideTabActive}`}
+                onClick={() => setActiveTab("updateProduct")}
+              >
+                Update Product
+                <span className={styles.sideCount}>✏️</span>
+              </button>
+            )}
           </div>
 
           <div className={styles.sideHint}>
-            Tip: Click an order card to expand. Approve inside the expanded panel.
+            Tip: Go to Products → click Update to edit existing items.
           </div>
         </aside>
       </div>

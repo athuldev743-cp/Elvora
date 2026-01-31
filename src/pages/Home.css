@@ -239,6 +239,7 @@ body{
   scrollbar-width:none;
 }
 .carousel-track::-webkit-scrollbar{display:none;}
+
 .product-card{
   scroll-snap-align:start;
 
@@ -258,6 +259,22 @@ body{
   position:relative; /* ✅ required for overlay + gradient */
 }
 
+/* ✅ Available Soon badge (works on all screens) */
+.available-soon-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:6;                 /* above gradient + overlay */
+  background:rgba(46,46,47,.92);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+  box-shadow:0 10px 22px rgba(0,0,0,.14);
+}
+
 .product-card:hover{
   transform:translateY(-6px);
   box-shadow:0 16px 40px rgba(0,0,0,.14);
@@ -270,7 +287,6 @@ body{
   object-fit:contain;  /* NO CROP ever */
   display:block;
 }
-
 
 /* ✅ gradient so overlay doesn't feel like image is cut */
 .product-card::after{
@@ -339,6 +355,19 @@ body{
   box-shadow:0 10px 26px rgba(242,103,34,.50);
 }
 
+/* ✅ DISABLED state (important) */
+.view-details-btn:disabled,
+.login-to-view-btn:disabled,
+.view-details-btn.isDisabled,
+.login-to-view-btn.isDisabled{
+  background:rgba(46,46,47,.35) !important;
+  box-shadow:none !important;
+  cursor:not-allowed !important;
+  transform:none !important;
+  opacity:0.85;
+  pointer-events:none; /* ✅ prevents any click */
+}
+
 /* ✅ name under button */
 .product-name{
   order:2;
@@ -351,6 +380,7 @@ body{
   min-height:unset;
   line-height:1.2;
 }
+
 /* ✅ arrows only for Products */
 .carousel-arrow{
   position:absolute;
