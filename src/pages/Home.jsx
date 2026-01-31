@@ -368,7 +368,7 @@ const Home = () => {
                   <img src={p.image_url} alt={p.name} className="product-image" onError={handleImageError} loading="lazy" />
                   <div className="product-info">
                     <span className="product-name">{p.name}</span>
-                    <span className="product-price">₹{p.price}</span>
+                    
 
                     {user ? (
                       <button className="view-details-btn" onClick={() => navigate(`/products/${p.id}`)}>

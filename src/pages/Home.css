@@ -239,10 +239,10 @@ body{
   scrollbar-width:none;
 }
 .carousel-track::-webkit-scrollbar{display:none;}
-
 .product-card{
   scroll-snap-align:start;
-  flex:0 0 calc(25% - 12px);
+  flex:0 0 calc((100% - 48px) / 4);   /* ✅ UPDATED */
+  max-width: calc((100% - 48px) / 4); /* ✅ UPDATED */
   background:#fff;
   border-radius:14px;
   box-shadow:0 6px 20px rgba(0,0,0,.10);
@@ -250,49 +250,72 @@ body{
   display:flex;
   flex-direction:column;
   overflow:hidden;
+  position:relative; /* keep overlay support */
 }
-.product-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.14);}
 
-.product-image{width:100%;height:320px;object-fit:cover;}
+.product-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 16px 40px rgba(0,0,0,.14);
+}
 
+.product-image{
+  width:100%;
+  height:380px;        /* ✅ UPDATED: bigger on desktop */
+  object-fit:cover;
+  display:block;
+}
+/* ✅ REAL transparent overlay */
 .product-info{
-  padding:14px 12px 18px;
+  position:absolute;          /* ✅ overlay */
+  left:0;
+  right:0;
+  bottom:0;
+
+  padding:8px 10px;           /* very small */
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:10px;
-  flex-grow:1;
-}
-.product-name{
-  font-size:18px;
-  font-weight:900;
-  color:var(--charcoal);
-  text-align:center;
-  min-height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.product-price{font-weight:900;color:#111;}
+  gap:6px;
 
+  background:rgba(0,0,0,.28); /* ✅ dark transparent overlay */
+  backdrop-filter:blur(6px);
+}
+
+/* hide price completely */
+.product-price{
+  display:none !important;
+}
+
+/* button first */
 .view-details-btn,
 .login-to-view-btn{
-  margin-top:auto;
+  order:1;
   width:90%;
-  padding:12px 0;
-  border-radius:30px;
+  padding:9px 0;
+  border-radius:20px;
   border:none;
   cursor:pointer;
-  font-size:15px;
+  font-size:14px;
   font-weight:900;
   background:linear-gradient(135deg,var(--dark-orange),var(--light-orange));
   color:#fff;
   box-shadow:0 6px 18px rgba(242,103,34,.35);
-  transition:transform .15s ease, box-shadow .15s ease;
 }
+
+/* name under button */
+.product-name{
+  order:2;
+  font-size:14px;
+  font-weight:800;
+  color:#fff;                 /* readable on dark overlay */
+  text-align:center;
+  line-height:1.2;
+  min-height:unset;
+}
+
 .view-details-btn:hover,
 .login-to-view-btn:hover{transform:scale(1.02);box-shadow:0 10px 26px rgba(242,103,34,.50);}
-.login-to-view-btn::after{content:" 🔒";}
+
 
 /* ✅ arrows only for Products */
 .carousel-arrow{
