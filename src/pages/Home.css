@@ -241,16 +241,21 @@ body{
 .carousel-track::-webkit-scrollbar{display:none;}
 .product-card{
   scroll-snap-align:start;
-  flex:0 0 calc((100% - 48px) / 4);   /* ✅ UPDATED */
-  max-width: calc((100% - 48px) / 4); /* ✅ UPDATED */
+
+  /* ✅ 4 cards fit exactly: 3 gaps × 16px = 48px */
+  flex: 0 0 calc((100% - 48px) / 4);
+  max-width: calc((100% - 48px) / 4);
+
   background:#fff;
   border-radius:14px;
   box-shadow:0 6px 20px rgba(0,0,0,.10);
   transition:transform .2s ease, box-shadow .2s ease;
+
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  position:relative; /* keep overlay support */
+
+  position:relative; /* ✅ required for overlay + gradient */
 }
 
 .product-card:hover{
@@ -260,63 +265,90 @@ body{
 
 .product-image{
   width:100%;
-  height:380px;        /* ✅ UPDATED: bigger on desktop */
+  height:380px;          /* ✅ taller on desktop */
   object-fit:cover;
   display:block;
 }
-/* ✅ REAL transparent overlay */
+
+/* ✅ gradient so overlay doesn't feel like image is cut */
+.product-card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:120px;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.58),
+    rgba(0,0,0,.22),
+    rgba(0,0,0,0)
+  );
+  pointer-events:none;
+  z-index:1;
+}
+
+/* ✅ transparent overlay container (sits on top of gradient) */
 .product-info{
-  position:absolute;          /* ✅ overlay */
+  position:absolute;
   left:0;
   right:0;
   bottom:0;
 
-  padding:8px 10px;           /* very small */
+  padding:10px 10px 12px; /* tight */
   display:flex;
   flex-direction:column;
   align-items:center;
   gap:6px;
 
-  background:rgba(0,0,0,.28); /* ✅ dark transparent overlay */
-  backdrop-filter:blur(6px);
+  background:transparent;
+  z-index:2;
 }
 
-/* hide price completely */
+/* ✅ hide price completely */
 .product-price{
   display:none !important;
 }
 
-/* button first */
+/* ✅ make button appear first */
 .view-details-btn,
 .login-to-view-btn{
   order:1;
+
   width:90%;
   padding:9px 0;
   border-radius:20px;
   border:none;
   cursor:pointer;
+
   font-size:14px;
   font-weight:900;
+
   background:linear-gradient(135deg,var(--dark-orange),var(--light-orange));
   color:#fff;
-  box-shadow:0 6px 18px rgba(242,103,34,.35);
-}
 
-/* name under button */
-.product-name{
-  order:2;
-  font-size:14px;
-  font-weight:800;
-  color:#fff;                 /* readable on dark overlay */
-  text-align:center;
-  line-height:1.2;
-  min-height:unset;
+  box-shadow:0 6px 18px rgba(242,103,34,.35);
+  transition:transform .15s ease, box-shadow .15s ease;
 }
 
 .view-details-btn:hover,
-.login-to-view-btn:hover{transform:scale(1.02);box-shadow:0 10px 26px rgba(242,103,34,.50);}
+.login-to-view-btn:hover{
+  transform:scale(1.02);
+  box-shadow:0 10px 26px rgba(242,103,34,.50);
+}
 
+/* ✅ name under button */
+.product-name{
+  order:2;
 
+  font-size:14px;
+  font-weight:900;
+  color:#fff;            /* ✅ must be white for dark gradient */
+  text-align:center;
+
+  min-height:unset;
+  line-height:1.2;
+}
 /* ✅ arrows only for Products */
 .carousel-arrow{
   position:absolute;
@@ -484,35 +516,46 @@ body{
 }
 
 /* ===================== RESPONSIVE ===================== */
+/* ===================== ≤ 1200px (3 cards) ===================== */
 @media (max-width:1200px){
-  .product-card{flex:0 0 calc(33.333% - 12px);}
-  .product-image{height:260px;}
+  /* 3 cards → 2 gaps × 16px = 32px */
+  .product-card{
+    flex: 0 0 calc((100% - 32px) / 3);
+    max-width: calc((100% - 32px) / 3);
+  }
+
+  .product-image{
+    height:300px;   /* balanced for tablets / small laptops */
+  }
 }
 
+/* ===================== ≤ 992px (mobile / tablet) ===================== */
 @media (max-width:992px){
   /* ✅ force-hide desktop navbar content on mobile */
   .nav-links{ display:none !important; }
   .auth-section{ display:none !important; }
 
-  .desktop-only{display:none !important;}
-  .mobile-only{display:inline-flex !important;}
-  .hamburger{display:flex;}
-  .navbar{padding:0 20px;}
+  .desktop-only{ display:none !important; }
+  .mobile-only{ display:inline-flex !important; }
+  .hamburger{ display:flex; }
+  .navbar{ padding:0 20px; }
 
   /* ✅ Mobile hero: show image and hide desktop bg */
   .hero{
     background-image:none !important;
     min-height:auto;
   }
+
   .hero-mobile-wrap{
     display:block;
     width:100%;
     position:relative;
   }
+
   .hero-mobile-img{
     display:block;
     width:100%;
-    height:auto;
+    height:520px;          /* slightly taller hero image */
     object-fit:cover;
     border-radius:0;
   }
@@ -529,6 +572,7 @@ body{
     z-index:4;
     pointer-events:none;
   }
+
   .hero-cta.mobile-cta .primary-btn{
     pointer-events:auto;
     padding:14px 26px;
@@ -538,31 +582,61 @@ body{
     max-width:86%;
   }
 
-  /* ✅ UPDATED: slightly reduce section padding (prevents big gaps) */
-  .product-preview{padding:26px 15px;}
-
-  .product-preview h2{font-size:32px;margin-bottom:18px;}
-
-  .product-card{flex:0 0 78%;max-width:78%;}
-
-  /* ✅ UPDATED: reduce card height mainly by image height */
-  .product-image{height:180px;}
-
-  /* ✅ UPDATED: reduce forced text height on mobile */
-  .product-name{
-    min-height:0;
-    font-size:16px;
+  /* ✅ tighter section spacing (no gaps between sections) */
+  .product-preview{
+    padding:26px 15px;
   }
 
-  .carousel-arrow{width:42px;height:42px;border-radius:14px;font-size:28px;}
+  .product-preview h2{
+    font-size:32px;
+    margin-bottom:18px;
+  }
+
+  /* 1.25 cards visible for swipe UX */
+  .product-card{
+    flex:0 0 78%;
+    max-width:78%;
+  }
+
+  .product-image{
+    height:220px;          /* compact but not cramped */
+  }
+
+  .product-name{
+    font-size:14px;
+    min-height:unset;
+  }
+
+  .carousel-arrow{
+    width:42px;
+    height:42px;
+    border-radius:14px;
+    font-size:28px;
+  }
 }
 
+/* ===================== ≤ 480px (small phones) ===================== */
 @media (max-width:480px){
-  .product-card{flex:0 0 88%;max-width:88%;}
+  .product-card{
+    flex:0 0 88%;
+    max-width:88%;
+  }
 
-  /* ✅ UPDATED: even smaller image for small phones */
-  .product-image{height:160px;}
+  .product-image{
+    height:200px;
+  }
 
-  .hero-cta.mobile-cta{bottom:12px;}
-  .hero-cta.mobile-cta .primary-btn{padding:12px 20px;font-size:15px;border-radius:14px;}
+  .hero-mobile-img{
+    height:460px;          /* keeps hero visually strong */
+  }
+
+  .hero-cta.mobile-cta{
+    bottom:12px;
+  }
+
+  .hero-cta.mobile-cta .primary-btn{
+    padding:12px 20px;
+    font-size:15px;
+    border-radius:14px;
+  }
 }
