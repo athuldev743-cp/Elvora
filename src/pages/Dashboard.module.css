@@ -209,6 +209,43 @@
 }
 
 .productActions{ margin-top:10px; display:flex; justify-content:flex-end; }
+.approvedActions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-left: 10px;
+}
+
+.clearSelectedBtn,
+.clearAllBtn,
+.restoreBtn{
+  border:none;
+  padding:10px 12px;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.clearSelectedBtn{
+  background:#F2A254;
+  color:#2E2E2F;
+}
+
+.clearAllBtn{
+  background:#F26722;
+  color:#fff;
+}
+
+.restoreBtn{
+  background:#2E2E2F;
+  color:#fff;
+}
+
+.clearSelectedBtn:disabled,
+.clearAllBtn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
 
 .deleteBtn{
   background:transparent;

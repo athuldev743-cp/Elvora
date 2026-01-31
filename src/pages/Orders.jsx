@@ -5,7 +5,14 @@ function money(n) {
   return Number(n || 0).toFixed(2);
 }
 
-function Orders({ orders = [], onApprove, mode = "pending" }) {
+// ✅ added selectedIds + onToggleSelect (optional props)
+function Orders({
+  orders = [],
+  onApprove,
+  mode = "pending",
+  selectedIds,
+  onToggleSelect,
+}) {
   const [openId, setOpenId] = useState(null);
   const isApprovedMode = mode === "approved";
 
@@ -14,7 +21,11 @@ function Orders({ orders = [], onApprove, mode = "pending" }) {
       <div className="ordersEmptyState">
         <div className="ordersEmptyIcon">📝</div>
         <h3>{isApprovedMode ? "No Approved Orders" : "No Pending Orders"}</h3>
-        <p>{isApprovedMode ? "Approved orders will appear here." : "Orders will appear here when customers place orders."}</p>
+        <p>
+          {isApprovedMode
+            ? "Approved orders will appear here."
+            : "Orders will appear here when customers place orders."}
+        </p>
       </div>
     );
   }
@@ -25,6 +36,8 @@ function Orders({ orders = [], onApprove, mode = "pending" }) {
         const isOpen = openId === o.id;
         const status = String(o.status || "").toLowerCase();
         const isPending = status === "pending";
+
+        const isSelected = isApprovedMode ? !!selectedIds?.has(o.id) : false;
 
         return (
           <div key={o.id} className={`orderCard ${isOpen ? "open" : ""}`}>
@@ -41,7 +54,26 @@ function Orders({ orders = [], onApprove, mode = "pending" }) {
               </div>
 
               <div className="orderTopRight">
-                <span className={`statusBadge ${isPending ? "statusPending" : "statusCompleted"}`}>
+                {/* ✅ checkbox only for approved tab */}
+                {isApprovedMode && (
+                  <label
+                    className="orderSelect"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => onToggleSelect?.(o.id)}
+                    />
+                    <span>Select</span>
+                  </label>
+                )}
+
+                <span
+                  className={`statusBadge ${
+                    isPending ? "statusPending" : "statusCompleted"
+                  }`}
+                >
                   {o.status}
                 </span>
                 <span className={`chev ${isOpen ? "up" : ""}`}>⌄</span>
@@ -79,7 +111,9 @@ function Orders({ orders = [], onApprove, mode = "pending" }) {
 
                 <div className="addrBox">
                   <div className="addrTitle">Shipping Address</div>
-                  <div className="addrText">{o.shipping_address || "❌ Shipping address missing from order"}</div>
+                  <div className="addrText">
+                    {o.shipping_address || "❌ Shipping address missing from order"}
+                  </div>
                 </div>
 
                 {o.notes ? (
@@ -91,7 +125,11 @@ function Orders({ orders = [], onApprove, mode = "pending" }) {
 
                 <div className="orderActions">
                   {isPending ? (
-                    <button className="approveBtn" type="button" onClick={() => onApprove?.(o.id)}>
+                    <button
+                      className="approveBtn"
+                      type="button"
+                      onClick={() => onApprove?.(o.id)}
+                    >
                       Approve & Send Email
                     </button>
                   ) : (

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Dashboard.module.css";
 
 import AddProduct from "./AddProduct";
-import Orders from "./Orders"; // we'll upgrade this component below
+import Orders from "./Orders";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -32,6 +32,21 @@ function AdminDashboard() {
     () => process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com",
     []
   );
+
+  // ✅ NEW: Approved selection + cleared ids (frontend-only)
+  const [approvedSelected, setApprovedSelected] = useState(() => new Set());
+  const [clearedApprovedIds, setClearedApprovedIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("clearedApprovedIds") || "[]");
+    } catch {
+      return [];
+    }
+  });
+
+  // ✅ persist cleared ids
+  useEffect(() => {
+    localStorage.setItem("clearedApprovedIds", JSON.stringify(clearedApprovedIds));
+  }, [clearedApprovedIds]);
 
   const isUserAdmin = () => {
     const userData = localStorage.getItem("userData");
@@ -124,7 +139,11 @@ function AdminDashboard() {
 
   // on-demand products
   useEffect(() => {
-    if ((activeTab === "products" || activeTab === "addProduct") && products.length === 0 && !loadingProducts) {
+    if (
+      (activeTab === "products" || activeTab === "addProduct") &&
+      products.length === 0 &&
+      !loadingProducts
+    ) {
       fetchProducts();
     }
   }, [activeTab, fetchProducts, products.length, loadingProducts]);
@@ -224,7 +243,7 @@ function AdminDashboard() {
           throw new Error(`Approve failed: ${res.status} ${text}`);
         }
 
-        await fetchOrders(); // refresh: order moves to approved automatically
+        await fetchOrders();
         alert("✅ Order approved and email sent!");
       } catch (e) {
         const msg = e?.message || "Failed to approve order";
@@ -240,10 +259,63 @@ function AdminDashboard() {
     [orders]
   );
 
-  const approvedOrders = useMemo(
-    () => orders.filter((o) => String(o.status || "").toLowerCase() !== "pending"),
-    [orders]
-  );
+  // ✅ Approved orders filtered by "clearedApprovedIds" (frontend-only hide)
+  const approvedOrders = useMemo(() => {
+    const clearedSet = new Set(clearedApprovedIds);
+    return orders.filter((o) => {
+      const isApproved = String(o.status || "").toLowerCase() !== "pending";
+      const notCleared = !clearedSet.has(o.id);
+      return isApproved && notCleared;
+    });
+  }, [orders, clearedApprovedIds]);
+
+  // ✅ reset selection when leaving approved tab
+  useEffect(() => {
+    if (activeTab !== "approved") {
+      setApprovedSelected(new Set());
+    }
+  }, [activeTab]);
+
+  // ✅ selection toggles (approved only)
+  const toggleApprovedSelect = (orderId) => {
+    setApprovedSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(orderId)) next.delete(orderId);
+      else next.add(orderId);
+      return next;
+    });
+  };
+
+  const clearSelectedApprovedOrders = () => {
+    const ids = Array.from(approvedSelected);
+    if (ids.length === 0) return;
+
+    setClearedApprovedIds((prev) => {
+      const s = new Set(prev);
+      ids.forEach((id) => s.add(id));
+      return Array.from(s);
+    });
+
+    setApprovedSelected(new Set());
+  };
+
+  const clearAllApprovedOrders = () => {
+    if (approvedOrders.length === 0) return;
+
+    setClearedApprovedIds((prev) => {
+      const s = new Set(prev);
+      approvedOrders.forEach((o) => s.add(o.id));
+      return Array.from(s);
+    });
+
+    setApprovedSelected(new Set());
+  };
+
+  // optional restore
+  const restoreApprovedOrders = () => {
+    setClearedApprovedIds([]);
+    setApprovedSelected(new Set());
+  };
 
   if (loading) {
     return (
@@ -282,47 +354,94 @@ function AdminDashboard() {
         <main className={styles.main}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              {activeTab === "orders" ? "Pending Orders" :
-               activeTab === "approved" ? "Approved Orders" :
-               activeTab === "products" ? "Products" : "Add Product"}
+              {activeTab === "orders"
+                ? "Pending Orders"
+                : activeTab === "approved"
+                ? "Approved Orders"
+                : activeTab === "products"
+                ? "Products"
+                : "Add Product"}
             </h2>
 
             <div className={styles.sectionMeta}>
               {activeTab === "orders" && <span className={styles.pill}>{pendingOrders.length} pending</span>}
-              {activeTab === "approved" && <span className={styles.pill}>{approvedOrders.length} approved</span>}
+
+              {activeTab === "approved" && (
+                <>
+                  <span className={styles.pill}>{approvedOrders.length} approved</span>
+
+                  {/* ✅ NEW: clear buttons */}
+                  <div className={styles.approvedActions}>
+                    <button
+                      type="button"
+                      className={styles.clearSelectedBtn}
+                      onClick={clearSelectedApprovedOrders}
+                      disabled={approvedSelected.size === 0}
+                      title={approvedSelected.size === 0 ? "Select orders to enable" : "Clear selected"}
+                    >
+                      Clear Selected ({approvedSelected.size})
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.clearAllBtn}
+                      onClick={clearAllApprovedOrders}
+                      disabled={approvedOrders.length === 0}
+                    >
+                      Clear All
+                    </button>
+
+                    {/* optional */}
+                    <button type="button" className={styles.restoreBtn} onClick={restoreApprovedOrders}>
+                      Restore
+                    </button>
+                  </div>
+                </>
+              )}
+
               {activeTab === "products" && <span className={styles.pill}>{products.length} items</span>}
             </div>
           </div>
 
-          {/* Orders */}
-          {activeTab === "orders" && (
-            <div className={styles.card}>
-              {loadingOrders ? (
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyStateIcon}>⏳</div>
-                  <h3>Loading Orders...</h3>
-                  <p>Please wait</p>
-                </div>
-              ) : (
-                <Orders orders={pendingOrders} onApprove={approveOrder} mode="pending" />
-              )}
-            </div>
-          )}
+         {/* Orders */}
+{activeTab === "orders" && (
+  <div className={styles.card}>
+    {loadingOrders ? (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyStateIcon}>⏳</div>
+        <h3>Loading Orders...</h3>
+        <p>Please wait</p>
+      </div>
+    ) : (
+      <Orders
+        orders={pendingOrders}
+        onApprove={approveOrder}
+        mode="pending"
+      />
+    )}
+  </div>
+)}
 
-          {/* Approved */}
-          {activeTab === "approved" && (
-            <div className={styles.card}>
-              {loadingOrders ? (
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyStateIcon}>⏳</div>
-                  <h3>Loading Orders...</h3>
-                  <p>Please wait</p>
-                </div>
-              ) : (
-                <Orders orders={approvedOrders} onApprove={approveOrder} mode="approved" />
-              )}
-            </div>
-          )}
+{/* Approved */}
+{activeTab === "approved" && (
+  <div className={styles.card}>
+    {loadingOrders ? (
+      <div className={styles.emptyState}>
+        <div className={styles.emptyStateIcon}>⏳</div>
+        <h3>Loading Orders...</h3>
+        <p>Please wait</p>
+      </div>
+    ) : (
+      <Orders
+        orders={approvedOrders}
+        mode="approved"
+        selectedIds={approvedSelected}
+        onToggleSelect={toggleApprovedSelect}
+      />
+    )}
+  </div>
+)}
+
 
           {/* Products */}
           {activeTab === "products" && (
