@@ -562,15 +562,24 @@ body{
 }
 
 /* ===================== ≤ 992px (mobile / tablet) ===================== */
-@media (max-width:992px){
-  /* ✅ force-hide desktop navbar content on mobile */
-  .nav-links{ display:none !important; }
-  .auth-section{ display:none !important; }
+/* ✅ MOBILE ONLY: let each image decide its own height (cards can differ) */
+@media (max-width: 992px){
 
-  .desktop-only{ display:none !important; }
-  .mobile-only{ display:inline-flex !important; }
-  .hamburger{ display:flex; }
-  .navbar{ padding:0 20px; }
+  /* remove the forced height you set earlier */
+  .product-image{
+    height: auto !important;
+    width: 100%;
+    display: block;
+    object-fit: contain;   /* full image, no crop */
+    background: #f3f4f6;
+  }
+
+  /* card should auto-size */
+  .product-card{
+    height: auto;
+  }
+}
+
 
   /* ✅ Mobile hero: show image and hide desktop bg */
   .hero{
@@ -663,58 +672,61 @@ body{
     border-radius:14px;
     font-size:28px;
   }
-}
 
-/* ===================== ≤ 480px (small phones) ===================== */
-@media (max-width:480px){
-  /* ✅ keep full image visible on very small phones */
-  .product-image{
-    width:100%;
-    max-width:100%;
-    height:auto;
-    object-fit:contain;
-    background:#f3f4f6;
-    display:block;
-  }
 
+/* =========================================================
+   ✅ SMALL SCREENS: make image height like Redencyl (not tall)
+   - Full image visible (contain)
+   - Limit max height so tall/vertical photos don't stretch cards
+   - Cards can still vary a bit, but images won't become huge
+   ========================================================= */
+@media (max-width: 480px){
+
+  /* Card sizing for swipe (keep your layout) */
   .product-card{
-    height:auto;
+    flex: 0 0 78%;
+    max-width: 78%;
+    height: auto !important;
   }
 
-  /* ✅ further reduce overlay height on small phones */
+  /* ✅ IMAGE RULE (this is the main fix) */
+  .product-image{
+    width: 100%;
+    height: auto !important;          /* remove any forced heights (220px etc.) */
+    max-height: 320px;                /* ✅ tune this to match your Redencyl look */
+    object-fit: contain !important;   /* full image, no crop */
+    object-position: center;
+    display: block;
+    background: #f3f4f6;
+  }
+
+  /* If the image is in a wrapper in some places, keep it safe */
+  .product-card img{
+    height: auto !important;
+    max-height: 320px;
+    object-fit: contain !important;
+    display: block;
+  }
+
+  /* Tighten overlay so it doesn't add "extra space" feeling */
   .product-card::after{
-    height:70px;
+    height: 70px;
   }
-
   .product-info{
-    padding:5px 8px 7px;
-    gap:3px;
+    padding: 6px 8px 8px;
+    gap: 4px;
   }
 
   .view-details-btn,
   .login-to-view-btn{
-    padding:6px 0;
-    font-size:12.5px;
-    border-radius:16px;
+    width: 90%;
+    padding: 7px 0;
+    font-size: 13px;
+    border-radius: 18px;
   }
 
   .product-name{
-    font-size:12.5px;
-    line-height:1.12;
-  }
-
-  .hero-mobile-img{
-    height:460px;
-    object-fit:cover;
-  }
-
-  .hero-cta.mobile-cta{
-    bottom:12px;
-  }
-
-  .hero-cta.mobile-cta .primary-btn{
-    padding:12px 20px;
-    font-size:15px;
-    border-radius:14px;
+    font-size: 13px;
+    line-height: 1.15;
   }
 }
