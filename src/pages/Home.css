@@ -170,7 +170,7 @@ body{
 }
 .hero-cta .primary-btn{pointer-events:auto;}
 
-/* ✅ Prevent 2 CTAs (desktop vs mobile) */
+/* safe defaults: desktop CTA visible, mobile CTA hidden */
 .hero-cta.mobile-cta{display:none;}
 .hero-cta.desktop-cta{display:flex;}
 
@@ -190,6 +190,7 @@ body{
 }
 .primary-btn:hover{transform:scale(1.03);box-shadow:0 22px 45px rgba(242,103,34,.55);}
 
+/* mobile image hidden on desktop */
 .hero-mobile-wrap{display:none;}
 .hero-mobile-img{display:none;}
 
@@ -239,6 +240,8 @@ body{
 
 .product-card{
   scroll-snap-align:start;
+
+  /* ✅ 4 cards: 3 gaps × 16px = 48px */
   flex:0 0 calc((100% - 48px) / 4);
   max-width:calc((100% - 48px) / 4);
 
@@ -250,7 +253,6 @@ body{
   display:flex;
   flex-direction:column;
   overflow:hidden;
-
   position:relative;
 }
 .product-card:hover{
@@ -258,7 +260,7 @@ body{
   box-shadow:0 16px 40px rgba(0,0,0,.14);
 }
 
-/* ✅ Available Soon badge */
+/* badge */
 .available-soon-badge{
   position:absolute;
   top:12px;
@@ -274,7 +276,7 @@ body{
   box-shadow:0 10px 22px rgba(0,0,0,.14);
 }
 
-/* ✅ image baseline (desktop default) */
+/* image baseline */
 .product-image{
   width:100%;
   max-width:100%;
@@ -388,11 +390,9 @@ body{
 /* ===================== MOBILE MENU BASE ===================== */
 .desktop-only{display:flex;}
 .mobile-only{display:none;}
+.hamburger{display:none;} /* ✅ never on desktop */
 
-/* ✅ Hamburger hidden by default (desktop/laptop) */
-.hamburger{display:none;}
-
-/* Overlay + Panel */
+/* overlay/panel */
 .mobileMenuOverlay{
   position:fixed;
   inset:0;
@@ -497,8 +497,9 @@ body{
 /* ✅ Mobile/Tablet (≤992px) */
 @media (max-width:992px){
 
-  /* show ONLY mobile CTA */
+  /* ✅ prevent double CTA (supports both class styles) */
   .hero-cta.desktop-cta{display:none !important;}
+  .hero-cta.desktop-only{display:none !important;}
   .hero-cta.mobile-cta{display:flex !important;}
 
   /* navbar mobile: hide desktop items */
@@ -563,19 +564,31 @@ body{
   .product-preview{padding:26px 15px;}
   .product-preview h2{font-size:32px;margin-bottom:18px;}
 
-  /* swipe layout */
-  .product-card{flex:0 0 78%;max-width:78%;}
-
-  /* ✅ DO NOT set fixed height here (removed 220px) */
-  .product-image{
-    height:auto !important;
-    object-fit:contain;
-    background:#f3f4f6;
+  /* ✅ REMOVE side padding feeling */
+  .carousel-track{
+    padding:10px 0 14px !important;
+    scroll-padding-left:15px;
+    scroll-padding-right:15px;
   }
 
-  /* reduce “padding look” */
-  .product-card::after{height:80px;}
-  .product-info{padding:6px 8px 8px;gap:4px;}
+  /* ✅ cards almost full width */
+  .product-card{
+    flex:0 0 92% !important;
+    max-width:92% !important;
+    height:auto !important;
+  }
+
+  /* ✅ IMPORTANT: no fixed height */
+  .product-image{
+    height:auto !important;
+    object-fit:contain !important;
+    background:transparent !important; /* ✅ removes bottom “padding look” */
+  }
+
+  /* ✅ reduce overlay space */
+  .product-card::after{height:65px !important;}
+  .product-info{padding:6px 8px 6px !important;gap:4px;}
+
   .view-details-btn,.login-to-view-btn{padding:7px 0;font-size:13px;border-radius:18px;}
   .product-name{font-size:13px;line-height:1.15;}
   .carousel-arrow{width:42px;height:42px;border-radius:14px;font-size:28px;}
@@ -584,16 +597,19 @@ body{
 /* ✅ Small phones (≤480px): cap image height like Redencyl */
 @media (max-width:480px){
 
-  /* cap only on very small screens */
+  .product-card{
+    flex:0 0 96% !important;
+    max-width:96% !important;
+  }
+
   .product-image{
-    max-height:300px;              /* adjust 280–320 */
+    max-height:300px;
     height:auto !important;
     object-fit:contain !important;
   }
 
-  /* even less “padding look” */
-  .product-card::after{height:60px;}
-  .product-info{padding:5px 8px 6px;gap:3px;}
+  .product-card::after{height:55px !important;}
+  .product-info{padding:5px 8px 5px !important;gap:3px;}
 
   .view-details-btn,.login-to-view-btn{
     padding:6px 0;

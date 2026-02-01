@@ -55,6 +55,15 @@ const Home = () => {
     }
   }, []);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
+
+useEffect(() => {
+  const onResize = () => setIsMobile(window.innerWidth <= 992);
+  window.addEventListener("resize", onResize);
+  return () => window.removeEventListener("resize", onResize);
+}, []);
+
+
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -272,7 +281,8 @@ const Home = () => {
           )}
         </div>
 
-        <MobileRightButton />
+        {isMobile && <MobileRightButton />}
+
       </nav>
 
       {menuOpen && user && (
