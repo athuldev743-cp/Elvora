@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
@@ -8,7 +8,7 @@ import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { ADMIN_EMAILS } from "../config/auth";
 import { convertGoogleToJWT } from "../api/adminAPI";
-import { User } from "lucide-react";
+import { User } from "lucide-react"; // ✅ you were using <User/> but import was missing
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
@@ -27,6 +27,9 @@ const Home = () => {
   const gsiInitRef = useRef(false);
   const gsiPromptingRef = useRef(false);
   const [loginBusy, setLoginBusy] = useState(false);
+
+  // ✅ Video ref (plays once)
+  const videoRef = useRef(null);
 
   const trackRef = useRef(null);
   const navigate = useNavigate();
@@ -162,7 +165,6 @@ const Home = () => {
         console.error("Login failed:", err);
         alert("Login failed. Please try again.");
       } finally {
-        // ✅ release locks (VERY IMPORTANT)
         gsiPromptingRef.current = false;
         setLoginBusy(false);
       }
@@ -207,16 +209,13 @@ const Home = () => {
     gsiPromptingRef.current = true;
     setLoginBusy(true);
 
-    // Prompt and listen for “not displayed / skipped”
     window.google.accounts.id.prompt((notification) => {
-      // If popup not shown or user dismissed, unlock quickly
       if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
         gsiPromptingRef.current = false;
         setLoginBusy(false);
       }
     });
 
-    // Safety unlock in case callback doesn't fire (prevents permanent lock)
     setTimeout(() => {
       gsiPromptingRef.current = false;
       setLoginBusy(false);
@@ -239,16 +238,12 @@ const Home = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const handleImageError = (e) => {
-    e.target.onerror = null;
-    e.target.src = "https://placehold.co/400x300/EEE/31343C?text=Product+Image";
-  };
-
   const handleLogoError = (e) => {
-    e.target.onerror = null;
-    e.target.src = "/images/logo-placeholder.png";
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = "/images/logo-placeholder.png";
   };
 
+  // ✅ Priority-1 CTA -> product details
   const goToPriorityOneProduct = () => {
     if (!products?.length) {
       document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
@@ -273,7 +268,13 @@ const Home = () => {
     navigate(`/products/${top.id}`);
   };
 
-  // ✅ ONE MODEL: always scroll track (desktop + mobile)
+  // ✅ Priority-2 products for carousel
+  const priority2Products = useMemo(() => {
+    const list = (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
+    return list.length ? list : products; // fallback optional
+  }, [products]);
+
+  // ✅ Carousel scroll
   const scrollCarousel = (dir) => {
     const el = trackRef.current;
     if (!el) return;
@@ -288,11 +289,7 @@ const Home = () => {
   const MobileRightButton = () => {
     if (!user) {
       return (
-        <button
-          className="login-nav-btn mobile-only"
-          onClick={handleGoogleLogin}
-          disabled={loginBusy}
-        >
+        <button className="login-nav-btn mobile-only" onClick={handleGoogleLogin} disabled={loginBusy}>
           {loginBusy ? "Signing in..." : "Login"}
         </button>
       );
@@ -326,6 +323,7 @@ const Home = () => {
 
         <div className="nav-links desktop-only">
           <a href="#home">Home</a>
+          <a href="#ad">Ad</a>
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
@@ -335,19 +333,9 @@ const Home = () => {
         <div className="auth-section desktop-only">
           {user ? (
             <div className="user-nav">
-              <button
-                className="accountBtn"
-                title="Account"
-                type="button"
-                onClick={() => navigate("/account")}
-              >
+              <button className="accountBtn" title="Account" type="button" onClick={() => navigate("/account")}>
                 {user.profile_pic ? (
-                  <img
-                    src={user.profile_pic}
-                    alt="Account"
-                    className="accountAvatar"
-                    referrerPolicy="no-referrer"
-                  />
+                  <img src={user.profile_pic} alt="Account" className="accountAvatar" referrerPolicy="no-referrer" />
                 ) : (
                   <User size={20} />
                 )}
@@ -406,6 +394,9 @@ const Home = () => {
               <a className="mobileMenuItem" href="#home" onClick={closeMenu}>
                 Home
               </a>
+              <a className="mobileMenuItem" href="#ad" onClick={closeMenu}>
+                Ad
+              </a>
               <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
                 Products
               </a>
@@ -440,7 +431,7 @@ const Home = () => {
         </div>
 
         <div className="hero-mobile-wrap">
-          <img className="hero-mobile-img" src="/images/hero-mobile.png" alt="Eka Bhumi" loading="lazy" />
+          <img className="hero-mobile-img" src="/images/hero-mobile.png" alt="Elvora" loading="lazy" />
           <div className="hero-cta mobile-cta">
             <button className="primary-btn" onClick={goToPriorityOneProduct}>
               Shop Now
@@ -449,28 +440,43 @@ const Home = () => {
         </div>
       </section>
 
-      {/* PRODUCTS */}
+      {/* HERO AD VIDEO – play once, no UI */}
+      <section id="ad" className="hero-ad">
+        <div className="hero-ad-inner">
+          <video
+            ref={videoRef}
+            className="hero-ad-video"
+            src="public/videos/hero-ad.mp4"
+            muted
+            playsInline
+            preload="metadata"
+            onCanPlay={(e) => {
+              e.currentTarget.play().catch(() => {});
+            }}
+            onEnded={(e) => {
+              e.currentTarget.pause();
+            }}
+          />
+        </div>
+      </section>
+
+      {/* PRODUCTS (Priority 2 carousel) */}
       <section id="products" className="product-preview">
         {error && <div className="error-message">⚠️ {error}</div>}
         {loading && <p className="loading-text">Loading products...</p>}
 
-        {!loading && products.length === 0 && !error && (
+        {!loading && priority2Products.length === 0 && !error && (
           <p style={{ textAlign: "center", color: "#666" }}>No products available</p>
         )}
 
-        {!loading && products.length > 0 && (
+        {!loading && priority2Products.length > 0 && (
           <div className="carousel-container">
-            <button
-              className="carousel-arrow prev"
-              onClick={() => scrollCarousel("prev")}
-              type="button"
-              aria-label="Previous"
-            >
+            <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">
               ‹
             </button>
 
             <div className="carousel-track" ref={trackRef}>
-              {products.map((p) => {
+              {priority2Products.map((p) => {
                 const qty = Number(p.quantity ?? 0);
                 const availableSoon = qty <= 0;
 
@@ -488,7 +494,10 @@ const Home = () => {
                       src={p.image_url}
                       alt={p.name}
                       className="product-image"
-                      onError={handleImageError}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "https://placehold.co/400x300/EEE/31343C?text=Product+Image";
+                      }}
                       loading="lazy"
                     />
 
@@ -510,12 +519,7 @@ const Home = () => {
               })}
             </div>
 
-            <button
-              className="carousel-arrow next"
-              onClick={() => scrollCarousel("next")}
-              type="button"
-              aria-label="Next"
-            >
+            <button className="carousel-arrow next" onClick={() => scrollCarousel("next")} type="button" aria-label="Next">
               ›
             </button>
           </div>
