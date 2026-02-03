@@ -1,5 +1,5 @@
 // src/api/authAPI.js
-const API_URL = process.env.REACT_APP_API_URL || "";
+const API_URL = process.env.REACT_APP_API_URL || "https://elvora-backend-l2g3.onrender.com";
 
 // Google OAuth login
 export const googleLogin = async (idToken) => {

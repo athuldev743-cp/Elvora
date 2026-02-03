@@ -1,5 +1,5 @@
 // src/api/adminAPI.js - UPDATED FOR VERCEL DEPLOYMENT
-const API_URL = process.env.REACT_APP_API_URL || "";
+const API_URL = process.env.REACT_APP_API_URL || "https://elvora-backend-l2g3.onrender.com";
 
 // Function to get the correct token
 const getAuthToken = () => {

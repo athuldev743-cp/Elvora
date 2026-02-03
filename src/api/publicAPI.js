@@ -1,6 +1,6 @@
 // src/api/publicAPI.js
 const API_BASE =
-  process.env.REACT_APP_API_URL || "";
+  process.env.REACT_APP_API_URL || "https://elvora-backend-l2g3.onrender.com";
 
 const getUrl = (endpoint) => API_BASE + endpoint;
 
