@@ -1,10 +1,22 @@
 // src/components/Buy.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { createOrder } from "../api/publicAPI";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import "./Buy.css";
+import { createOrder, createRazorpayOrder } from "../api/publicAPI";
 
-const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
+/**
+ * Props:
+ * open: boolean
+ * onClose: () => void
+ * product: { id, name, price, ... }
+ * quantity: number
+ * user: { name, email }
+ * onSuccess: () => void
+ * useRazorpay?: boolean   (default true)
+ */
+const BuyModal = ({ open, onClose, product, quantity, user, onSuccess, useRazorpay = true }) => {
   const [orderLoading, setOrderLoading] = useState(false);
+
+  const RZP_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID;
 
   const [orderForm, setOrderForm] = useState({
     fullName: "",
@@ -42,15 +54,20 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
     };
   }, [open]);
 
-  // ESC to close
+  // ESC to close (disable during loading)
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
+      if (e.key === "Escape" && !orderLoading) onClose?.();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onClose, orderLoading]);
+
+  const safeClose = useCallback(() => {
+    if (orderLoading) return; // prevent accidental close during payment/order
+    onClose?.();
+  }, [orderLoading, onClose]);
 
   if (!open) return null;
 
@@ -80,7 +97,82 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
     return true;
   };
 
-  const handleSubmit = async () => {
+  const openRazorpay = (rzpOrder) =>
+    new Promise((resolve, reject) => {
+      if (!window.Razorpay) return reject(new Error("Razorpay SDK not loaded"));
+      if (!RZP_KEY_ID) return reject(new Error("Razorpay key missing (REACT_APP_RAZORPAY_KEY_ID)"));
+
+      const options = {
+        key: RZP_KEY_ID,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency || "INR",
+        name: "Eka Bhumi",
+        description: "Secure payment",
+        order_id: rzpOrder.id,
+        prefill: {
+          name: orderForm.fullName || user?.name || "",
+          email: orderForm.email || user?.email || "",
+          contact: orderForm.phoneNumber || "",
+        },
+        theme: { color: "#F26722" },
+        handler: (response) => resolve(response),
+        modal: {
+          ondismiss: () => reject(new Error("Payment cancelled")),
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    });
+
+  // ✅ Flow 1: Razorpay payment + then place order
+  const handlePayAndSubmit = async () => {
+    if (!product) return;
+    if (!validateForm()) return;
+
+    setOrderLoading(true);
+    try {
+      // 1) Create Razorpay order (backend)
+      const rzpOrder = await createRazorpayOrder(totalPrice);
+
+      // 2) Open Razorpay Checkout
+      const payRes = await openRazorpay(rzpOrder);
+      // payRes: { razorpay_payment_id, razorpay_order_id, razorpay_signature }
+
+      // 3) Create your DB order
+      const orderData = {
+        product_id: product.id,
+        product_name: product.name,
+        quantity,
+        unit_price: product.price,
+        total_amount: Number(product.price) * Number(quantity),
+        customer_name: orderForm.fullName,
+        customer_email: orderForm.email,
+        customer_phone: orderForm.phoneNumber,
+        shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
+        notes: `${orderForm.notes || ""}\n[RZP] order=${payRes.razorpay_order_id} payment=${payRes.razorpay_payment_id}`.trim(),
+        status: "pending",
+        payment_status: "paid",
+      };
+
+      await createOrder(orderData);
+
+      alert("✅ Payment successful! Order placed. You will receive an email after admin confirms.");
+      onSuccess?.();
+    } catch (err) {
+      console.error(err);
+      const msg =
+        typeof err?.message === "string" && err.message.trim()
+          ? err.message
+          : "Payment/Order failed. Please try again.";
+      alert(msg);
+    } finally {
+      setOrderLoading(false);
+    }
+  };
+
+  // ✅ Flow 2: COD / normal pending order
+  const handleSubmitPending = async () => {
     if (!product) return;
     if (!validateForm()) return;
 
@@ -116,8 +208,11 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
     }
   };
 
+  const primaryClick = useRazorpay ? handlePayAndSubmit : handleSubmitPending;
+  const primaryLabel = useRazorpay ? `Pay & Place Order (₹${totalPrice.toFixed(2)})` : "✅ Confirm Order";
+
   return (
-    <div className="buy-overlay" onMouseDown={onClose}>
+    <div className="buy-overlay" onMouseDown={safeClose}>
       <div className="buy-modal" onMouseDown={(e) => e.stopPropagation()}>
         <div className="buy-head">
           <div>
@@ -125,7 +220,13 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
             <p className="buy-sub">Premium checkout • Clean details • Fast confirmation</p>
           </div>
 
-          <button className="buy-close" onClick={onClose} disabled={orderLoading} aria-label="Close">
+          <button
+            className="buy-close"
+            onClick={safeClose}
+            disabled={orderLoading}
+            aria-label="Close"
+            type="button"
+          >
             ×
           </button>
         </div>
@@ -140,12 +241,20 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
             </div>
             <div className="buy-row">
               <span>Price</span>
-              <span>₹{product?.price} × {quantity}</span>
+              <span>
+                ₹{product?.price} × {quantity}
+              </span>
             </div>
             <div className="buy-row buy-total">
               <span>Total</span>
               <span>₹{Number(totalPrice).toFixed(2)}</span>
             </div>
+
+            {useRazorpay && !RZP_KEY_ID ? (
+              <div className="buy-warn">
+                ⚠️ Razorpay key missing. Add <b>REACT_APP_RAZORPAY_KEY_ID</b> in frontend .env
+              </div>
+            ) : null}
           </div>
 
           {/* Form */}
@@ -201,22 +310,12 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
             <div className="buy-grid3">
               <div className="buy-field">
                 <label>City *</label>
-                <input
-                  name="city"
-                  value={orderForm.city}
-                  onChange={handleFormChange}
-                  placeholder="City"
-                />
+                <input name="city" value={orderForm.city} onChange={handleFormChange} placeholder="City" />
               </div>
 
               <div className="buy-field">
                 <label>State *</label>
-                <input
-                  name="state"
-                  value={orderForm.state}
-                  onChange={handleFormChange}
-                  placeholder="State"
-                />
+                <input name="state" value={orderForm.state} onChange={handleFormChange} placeholder="State" />
               </div>
 
               <div className="buy-field">
@@ -246,18 +345,23 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
         </div>
 
         <div className="buy-actions">
-          <button className="buy-btn buy-outline" onClick={onClose} disabled={orderLoading}>
+          <button className="buy-btn buy-outline" onClick={safeClose} disabled={orderLoading} type="button">
             Cancel
           </button>
 
-          <button className="buy-btn buy-primary" onClick={handleSubmit} disabled={orderLoading}>
+          <button
+            className="buy-btn buy-primary"
+            onClick={primaryClick}
+            disabled={orderLoading || (useRazorpay && !RZP_KEY_ID)}
+            type="button"
+          >
             {orderLoading ? (
               <>
                 <span className="buy-miniSpin" />
                 Processing...
               </>
             ) : (
-              "✅ Confirm Order"
+              primaryLabel
             )}
           </button>
         </div>

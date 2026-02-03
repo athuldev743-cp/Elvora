@@ -84,3 +84,19 @@ export async function fetchOrdersByEmail(email) {
 
   return await res.json();
 }
+
+
+export async function createRazorpayOrder(amount) {
+  const res = await fetch(getUrl("/payments/create-razorpay-order"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount }), // amount in rupees
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`createRazorpayOrder failed: ${res.status} ${text}`);
+  }
+
+  return await res.json(); // { id, amount, currency, ... }
+}

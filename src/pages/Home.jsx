@@ -127,6 +127,27 @@ const Home = () => {
     document.body.appendChild(script);
   }, []);
 
+  useEffect(() => {
+  const v = videoRef.current;
+  if (!v) return;
+
+  const obs = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        v.play().catch((err) => {
+          console.log("Autoplay blocked:", err);
+        });
+        obs.disconnect(); // ✅ play only once
+      }
+    },
+    { threshold: 0.5 }
+  );
+
+  obs.observe(v);
+  return () => obs.disconnect();
+}, []);
+
+
   // ✅ Handle Google response (credential)
   const handleGoogleResponse = useCallback(
     async (response) => {
@@ -441,24 +462,7 @@ const Home = () => {
       </section>
 
       {/* HERO AD VIDEO – play once, no UI */}
-      <section id="ad" className="hero-ad">
-        <div className="hero-ad-inner">
-          <video
-            ref={videoRef}
-            className="hero-ad-video"
-            src="public/videos/hero-ad.mp4"
-            muted
-            playsInline
-            preload="metadata"
-            onCanPlay={(e) => {
-              e.currentTarget.play().catch(() => {});
-            }}
-            onEnded={(e) => {
-              e.currentTarget.pause();
-            }}
-          />
-        </div>
-      </section>
+      
 
       {/* PRODUCTS (Priority 2 carousel) */}
       <section id="products" className="product-preview">
@@ -468,6 +472,26 @@ const Home = () => {
         {!loading && priority2Products.length === 0 && !error && (
           <p style={{ textAlign: "center", color: "#666" }}>No products available</p>
         )}
+
+<div style={{ padding: 10, fontWeight: 700 }}>
+  VIDEO URL TEST: <a href="/videos/hero-ad.mp4" target="_blank" rel="noreferrer">Open MP4</a>
+</div>
+
+
+<section id="ad" className="hero-ad">
+  <div className="hero-ad-inner">
+    <video
+      ref={videoRef}
+      className="hero-ad-video"
+      src="/videos/hero-ad.mp4"
+      muted
+      playsInline
+      preload="auto"
+      onEnded={(e) => e.currentTarget.pause()}
+    />
+  </div>
+</section>
+
 
         {!loading && priority2Products.length > 0 && (
           <div className="carousel-container">
