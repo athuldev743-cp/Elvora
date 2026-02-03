@@ -20,12 +20,20 @@ const Home = () => {
   const [error, setError] = useState("");
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
+
+  // ✅ Google Sign-In guards
+  const gsiReadyRef = useRef(false);
+  const gsiInitRef = useRef(false);
+  const gsiPromptingRef = useRef(false);
+  const [loginBusy, setLoginBusy] = useState(false);
 
   const trackRef = useRef(null);
   const navigate = useNavigate();
 
   const closeMenu = () => setMenuOpen(false);
 
+  // --- resize close menu (desktop)
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth > 992) setMenuOpen(false);
@@ -34,6 +42,7 @@ const Home = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // --- lock body scroll when menu open
   useEffect(() => {
     if (!menuOpen) return;
     const prev = document.body.style.overflow;
@@ -43,6 +52,7 @@ const Home = () => {
     };
   }, [menuOpen]);
 
+  // --- load existing user
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (!userData) return;
@@ -55,15 +65,14 @@ const Home = () => {
     }
   }, []);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
+  // --- mobile breakpoint
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 992);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
-useEffect(() => {
-  const onResize = () => setIsMobile(window.innerWidth <= 992);
-  window.addEventListener("resize", onResize);
-  return () => window.removeEventListener("resize", onResize);
-}, []);
-
-
+  // --- products loader
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -93,62 +102,126 @@ useEffect(() => {
     return () => window.removeEventListener("focus", onFocus);
   }, [loadProducts]);
 
+  // ✅ Load Google script ONCE
   useEffect(() => {
+    if (document.getElementById("gsi-script")) return;
+
     const script = document.createElement("script");
+    script.id = "gsi-script";
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
+
+    script.onload = () => {
+      gsiReadyRef.current = true;
+    };
+
+    script.onerror = () => {
+      console.error("Failed to load Google GSI script");
+      gsiReadyRef.current = false;
+    };
+
     document.body.appendChild(script);
   }, []);
 
-  const handleGoogleLogin = () => {
-    if (!window.google) {
+  // ✅ Handle Google response (credential)
+  const handleGoogleResponse = useCallback(
+    async (response) => {
+      try {
+        const payload = JSON.parse(atob(response.credential.split(".")[1]));
+        const userEmail = payload.email;
+
+        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+        const role = isAdmin ? "admin" : "user";
+
+        const userData = {
+          name: payload.name,
+          email: userEmail,
+          profile_pic: payload.picture,
+          role,
+          isAdmin,
+        };
+
+        localStorage.setItem("userToken", response.credential);
+        localStorage.setItem("userData", JSON.stringify(userData));
+        setUser(userData);
+
+        // optional server-side JWT for admin tools
+        try {
+          const jwtResponse = await convertGoogleToJWT(response.credential);
+          if (jwtResponse?.access_token) {
+            localStorage.setItem("adminToken", jwtResponse.access_token);
+          }
+        } catch (jwtError) {
+          console.error("JWT conversion failed:", jwtError);
+        }
+
+        closeMenu();
+        alert(isAdmin ? `Welcome Admin ${userData.name}!` : `Welcome ${userData.name}!`);
+      } catch (err) {
+        console.error("Login failed:", err);
+        alert("Login failed. Please try again.");
+      } finally {
+        // ✅ release locks (VERY IMPORTANT)
+        gsiPromptingRef.current = false;
+        setLoginBusy(false);
+      }
+    },
+    [closeMenu]
+  );
+
+  // ✅ Init GSI only ONCE
+  const ensureGsiInitialized = useCallback(() => {
+    if (!gsiReadyRef.current || !window.google) return false;
+    if (gsiInitRef.current) return true;
+
+    if (!GOOGLE_CLIENT_ID) {
+      console.error("Missing REACT_APP_GOOGLE_CLIENT_ID");
+      return false;
+    }
+
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: (resp) => handleGoogleResponse(resp),
+    });
+
+    gsiInitRef.current = true;
+    return true;
+  }, [handleGoogleResponse]);
+
+  // ✅ Login handler: prevents concurrent prompt() calls
+  const handleGoogleLogin = useCallback(() => {
+    if (loginBusy || gsiPromptingRef.current) return;
+
+    if (!gsiReadyRef.current || !window.google) {
       alert("Google login loading... Please try again.");
       return;
     }
-    window.google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse,
-    });
-    window.google.accounts.id.prompt();
-  };
 
-  const handleGoogleResponse = async (response) => {
-    try {
-      const payload = JSON.parse(atob(response.credential.split(".")[1]));
-      const userEmail = payload.email;
-
-      const isAdmin = ADMIN_EMAILS.includes(userEmail);
-      const role = isAdmin ? "admin" : "user";
-
-      const userData = {
-        name: payload.name,
-        email: userEmail,
-        profile_pic: payload.picture,
-        role,
-        isAdmin,
-      };
-
-      localStorage.setItem("userToken", response.credential);
-      localStorage.setItem("userData", JSON.stringify(userData));
-      setUser(userData);
-
-      try {
-        const jwtResponse = await convertGoogleToJWT(response.credential);
-        if (jwtResponse.access_token) {
-          localStorage.setItem("adminToken", jwtResponse.access_token);
-        }
-      } catch (jwtError) {
-        console.error("JWT conversion failed:", jwtError);
-      }
-
-      closeMenu();
-      alert(isAdmin ? `Welcome Admin ${userData.name}!` : `Welcome ${userData.name}!`);
-    } catch (err) {
-      console.error("Login failed:", err);
-      alert("Login failed. Please try again.");
+    const ok = ensureGsiInitialized();
+    if (!ok) {
+      alert("Google login not ready. Please check client ID / script load.");
+      return;
     }
-  };
+
+    gsiPromptingRef.current = true;
+    setLoginBusy(true);
+
+    // Prompt and listen for “not displayed / skipped”
+    window.google.accounts.id.prompt((notification) => {
+      // If popup not shown or user dismissed, unlock quickly
+      if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
+        gsiPromptingRef.current = false;
+        setLoginBusy(false);
+      }
+    });
+
+    // Safety unlock in case callback doesn't fire (prevents permanent lock)
+    setTimeout(() => {
+      gsiPromptingRef.current = false;
+      setLoginBusy(false);
+    }, 5000);
+  }, [ensureGsiInitialized, loginBusy]);
 
   const goToAdminDashboard = () => {
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
@@ -200,7 +273,7 @@ useEffect(() => {
     navigate(`/products/${top.id}`);
   };
 
-  // ✅ ONE MODEL: always scroll track (desktop + mobile) => no transform reflow bugs
+  // ✅ ONE MODEL: always scroll track (desktop + mobile)
   const scrollCarousel = (dir) => {
     const el = trackRef.current;
     if (!el) return;
@@ -215,8 +288,12 @@ useEffect(() => {
   const MobileRightButton = () => {
     if (!user) {
       return (
-        <button className="login-nav-btn mobile-only" onClick={handleGoogleLogin}>
-          Login
+        <button
+          className="login-nav-btn mobile-only"
+          onClick={handleGoogleLogin}
+          disabled={loginBusy}
+        >
+          {loginBusy ? "Signing in..." : "Login"}
         </button>
       );
     }
@@ -258,9 +335,19 @@ useEffect(() => {
         <div className="auth-section desktop-only">
           {user ? (
             <div className="user-nav">
-              <button className="accountBtn" title="Account" type="button" onClick={() => navigate("/account")}>
+              <button
+                className="accountBtn"
+                title="Account"
+                type="button"
+                onClick={() => navigate("/account")}
+              >
                 {user.profile_pic ? (
-                  <img src={user.profile_pic} alt="Account" className="accountAvatar" referrerPolicy="no-referrer" />
+                  <img
+                    src={user.profile_pic}
+                    alt="Account"
+                    className="accountAvatar"
+                    referrerPolicy="no-referrer"
+                  />
                 ) : (
                   <User size={20} />
                 )}
@@ -275,14 +362,13 @@ useEffect(() => {
               )}
             </div>
           ) : (
-            <button className="login-nav-btn" onClick={handleGoogleLogin}>
-              Login
+            <button className="login-nav-btn" onClick={handleGoogleLogin} disabled={loginBusy}>
+              {loginBusy ? "Signing in..." : "Login"}
             </button>
           )}
         </div>
 
         {isMobile && <MobileRightButton />}
-
       </nav>
 
       {menuOpen && user && (
