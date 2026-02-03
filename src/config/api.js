@@ -1,6 +1,6 @@
 // src/config/api.js
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com",
+  BASE_URL: process.env.REACT_APP_API_URL || "",
   
   // Endpoints
   ENDPOINTS: {

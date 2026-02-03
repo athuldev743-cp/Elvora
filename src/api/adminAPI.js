@@ -1,5 +1,5 @@
 // src/api/adminAPI.js - UPDATED FOR VERCEL DEPLOYMENT
-const API_URL = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 // Function to get the correct token
 const getAuthToken = () => {

@@ -1,7 +1,26 @@
 /* ===================== BLOG SECTION ===================== */
+/* ✅ Updated to match DIM YELLOW + MUTED GREEN palette
+   ✅ Responsiveness / breakpoints kept EXACTLY the same
+   ✅ Same structure, only colors + a few safe visual tweaks
+*/
+
+/* ===================== PALETTE (dim, not shiny) ===================== */
+:root{
+  --dim-yellow: #D6B85A;          /* primary accent */
+  --dim-yellow-2: #C9A94E;        /* hover accent */
+  --dim-yellow-soft: rgba(214,184,90,0.16);
+
+  --muted-green: #5F7E5C;         /* secondary accent */
+  --muted-green-2: #6A8B66;       /* hover green */
+  --muted-green-soft: rgba(95,126,92,0.14);
+
+  --charcoal: #2E2E2F;
+}
+
+/* ===================== BLOG SECTION ===================== */
 .blog-section {
   padding: 100px 60px;
-  background: white;
+  background: #FBFAF6; /* warm off-white */
   position: relative;
 }
 
@@ -32,13 +51,13 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: var(--dark-orange);
+  background: var(--dim-yellow); /* ✅ dim yellow */
   border-radius: 2px;
 }
 
 .section-subtitle {
   font-size: 18px;
-  color: #666;
+  color: #6F6B60; /* softer than #666 */
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
@@ -54,7 +73,7 @@
 
 /* Blog Card */
 .blog-card {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
@@ -62,6 +81,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  border: 1px solid rgba(214,184,90,0.12); /* subtle yellow edge */
 }
 
 .blog-card:hover {
@@ -91,14 +111,15 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background: var(--dark-orange);
-  color: white;
+  background: rgba(95,126,92,0.92); /* ✅ muted green badge */
+  color: #ffffff;
   padding: 6px 15px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  border: 1px solid rgba(255,255,255,0.22);
 }
 
 /* Blog Content */
@@ -114,7 +135,7 @@
   justify-content: space-between;
   margin-bottom: 15px;
   font-size: 13px;
-  color: #888;
+  color: #8A857A;
 }
 
 .blog-date, .blog-read-time {
@@ -138,27 +159,27 @@
   color: var(--charcoal);
   margin-bottom: 15px;
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 800;
   flex-grow: 1;
 }
 
 .blog-excerpt {
   font-size: 15px;
-  color: #666;
+  color: #6F6B60;
   line-height: 1.6;
   margin-bottom: 20px;
   flex-grow: 1;
 }
 
-/* Read More Button */
+/* Read More Button (anchor styled as button) */
 .blog-read-more {
   background: transparent;
-  color: var(--dark-orange);
-  border: 2px solid var(--dark-orange);
+  color: var(--muted-green);
+  border: 2px solid var(--muted-green);
   padding: 10px 25px;
   border-radius: 25px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -167,12 +188,14 @@
   gap: 8px;
   align-self: flex-start;
   margin-top: auto;
+  text-decoration: none; /* ✅ since it's an <a> */
 }
 
 .blog-read-more:hover {
-  background: var(--dark-orange);
-  color: white;
+  background: var(--muted-green);
+  color: #ffffff;
   transform: translateX(5px);
+  box-shadow: 0 10px 22px rgba(95,126,92,0.22);
 }
 
 .blog-read-more svg {
@@ -189,23 +212,28 @@
 }
 
 .view-all-btn {
-  background: linear-gradient(135deg, var(--dark-orange), #ff8c42);
-  color: white;
-  border: none;
+  background: linear-gradient(135deg, var(--dim-yellow), var(--dim-yellow-2));
+  color: var(--charcoal);
+  border: 1px solid rgba(214,184,90,0.35);
   padding: 16px 40px;
   border-radius: 30px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  box-shadow: 0 5px 20px rgba(242, 103, 34, 0.3);
+  box-shadow: 0 5px 20px rgba(214,184,90,0.22);
+  text-decoration: none; /* ✅ since it's an <a> */
+  display: inline-block; /* ✅ for anchor button sizing */
 }
 
 .view-all-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(242, 103, 34, 0.4);
+  box-shadow: 0 8px 25px rgba(95,126,92,0.22);
+  background: linear-gradient(135deg, var(--muted-green), var(--muted-green-2));
+  color: #ffffff;
+  border-color: rgba(95,126,92,0.35);
 }
 
 /* ===================== RESPONSIVE DESIGN ===================== */

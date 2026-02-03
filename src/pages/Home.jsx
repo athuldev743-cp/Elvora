@@ -241,9 +241,9 @@ useEffect(() => {
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           {!scrolled ? (
-            <img src="/images/logo.png" alt="Eka Bhumi" className="logo-img" onError={handleLogoError} />
+            <img src="/images/logo.png" alt="ELVORA" className="logo-img" onError={handleLogoError} />
           ) : (
-            <span className="text-logo">EKABHUMI</span>
+            <span className="text-logo"></span>
           )}
         </div>
 
@@ -346,7 +346,7 @@ useEffect(() => {
       )}
 
       {/* HERO */}
-      <section id="home" className="hero" style={{ backgroundImage: "url(/images/hero-mobile.png)" }}>
+      <section id="home" className="hero" style={{ backgroundImage: "url(/images/hero-desktop.png)" }}>
         <div className="hero-cta desktop-only">
           <button className="primary-btn" onClick={goToPriorityOneProduct}>
             Shop Now

@@ -1,5 +1,5 @@
 // src/api/authAPI.js
-const API_URL = process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 // Google OAuth login
 export const googleLogin = async (idToken) => {

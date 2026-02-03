@@ -1,371 +1,263 @@
-/* Footer.css */
+/* Footer.css — Simplified for your current Footer.jsx (Dim Yellow + Muted Green) */
 
-.footer {
-  background: #2E2E2F;
-  color: #fff;
+/* ===================== THEME TOKENS ===================== */
+:root{
+  --footer-bg: #1E1F1B;        /* deep warm charcoal */
+  --footer-bg-2: #161712;      /* bottom bar */
+  --panel: rgba(255,255,255,0.04);
+  --border: #2F312A;
+
+  --text: #E7E5DD;
+  --muted: #BDB9AB;
+  --muted-2: #9C988B;
+
+  --yellow: #D6B85A;           /* dim yellow */
+  --yellow-hover: #C9A94E;
+
+  --green: #5F7E5C;            /* muted green */
+  --green-hover: #6A8B66;
+
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ===================== ROOT ===================== */
+.footer{
+  background: var(--footer-bg);
+  color: var(--text);
   font-family: 'Arial', sans-serif;
 }
 
-.footer-top {
-  padding: 60px 0 30px;
-  border-bottom: 1px solid #444;
+/* Optional container (if you already have global container, this won’t break) */
+.container{
+  width: min(1200px, 92%);
+  margin: 0 auto;
 }
 
-.footer-grid {
+/* ===================== TOP ===================== */
+.footer-top{
+  padding: 56px 0 30px;
+  border-bottom: 1px solid var(--border);
+}
+
+.footer-grid{
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1.2fr 1.8fr; /* left logo column + right content column */
   gap: 40px;
+  align-items: start;
 }
 
-.footer-column {
-  margin-bottom: 30px;
+.footer-column{
+  min-width: 0;
 }
 
-.footer-logo .brand {
-  font-size: 28px;
-  font-weight: bold;
-  color: #fff;
-}
-
-.footer-logo .brand span {
-  color: #F26722;
-}
-
-.footer-about {
-  margin: 20px 0;
-  line-height: 1.6;
-  color: #ccc;
-}
-
-.color-palette {
-  margin-top: 30px;
-}
-
-.color-palette h4 {
-  color: #fff;
-  margin-bottom: 15px;
-  font-size: 16px;
-}
-
-.color-items {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.color-item {
+/* ===================== LOGO ===================== */
+.footer-logo{
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.color-swatch {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-}
-
-.color-swatch.dark-orange {
-  background: #F26722;
-}
-
-.color-swatch.light-orange {
-  background: #F2A254;
-}
-
-.color-swatch.dark-charcoal {
-  background: #2E2E2F;
-  border: 1px solid #444;
-}
-
-.color-name {
-  font-size: 12px;
-  color: #ccc;
-  line-height: 1.4;
-}
-
-.color-code {
-  color: #F2A254;
-}
-
-.footer-title {
-  color: #fff;
-  font-size: 18px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #F26722;
-}
-
-.footer-links {
-  list-style: none;
-  padding: 0;
-}
-
-.footer-links li {
+  gap: 12px;
   margin-bottom: 12px;
 }
 
-.footer-links a {
-  color: #ccc;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.footer-links a:hover {
-  color: #F26722;
-  padding-left: 5px;
-}
-
-.footer-comments {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-}
-
-.footer-comments li {
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #444;
-}
-
-.comment-author {
-  color: #F26722;
-  font-weight: bold;
-}
-
-.comment-product {
-  color: #ccc;
-  margin-left: 5px;
-}
-
-.twitter-feeds {
-  margin-bottom: 30px;
-}
-
-.tweet {
+.brand{
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #444;
-}
-
-.tweet:last-child {
-  border-bottom: none;
-}
-
-.tweet-icon {
-  color: #1DA1F2;
-  font-size: 20px;
-  margin-top: 3px;
-}
-
-.tweet-content p {
-  margin: 0 0 8px 0;
-  color: #ccc;
-  line-height: 1.5;
-}
-
-.tweet-link {
-  color: #F26722;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.tweet-link:hover {
-  text-decoration: underline;
-}
-
-.recent-posts {
-  list-style: none;
-  padding: 0;
-}
-
-.recent-posts li {
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #444;
-}
-
-.recent-posts li:last-child {
-  border-bottom: none;
-}
-
-.post-title {
-  color: #ccc;
-  text-decoration: none;
-  display: block;
-  margin-bottom: 5px;
-  transition: color 0.3s ease;
-}
-
-.post-title:hover {
-  color: #F26722;
-}
-
-.post-date {
-  color: #F2A254;
-  font-size: 12px;
-}
-
-.contact-info {
-  margin-bottom: 25px;
-}
-
-.contact-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 15px;
+  align-items: center;
   gap: 12px;
 }
 
-.contact-item i {
-  color: #F26722;
+.footer-logo-img{
+  height: 46px;          /* control logo size here */
+  width: auto;
+  max-width: 190px;      /* prevents huge logos */
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.35));
+}
+
+/* ===================== TITLES ===================== */
+.footer-title{
+  color: var(--text);
+  font-size: 18px;
+  margin: 0 0 18px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(214,184,90,.7);
+}
+
+/* ===================== CONTACT ===================== */
+.contact-info{
+  margin-bottom: 22px;
+}
+
+.contact-item{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.contact-item i{
+  color: var(--yellow);
   font-size: 16px;
   margin-top: 3px;
   width: 20px;
 }
 
-.contact-item span {
-  color: #ccc;
-  line-height: 1.5;
+.contact-item span{
+  color: var(--muted);
+  line-height: 1.6;
 }
 
-.social-links {
+/* ===================== SOCIAL ===================== */
+.social-links{
   display: flex;
   gap: 12px;
-  margin-bottom: 25px;
   flex-wrap: wrap;
+  margin-bottom: 22px;
 }
 
-.social-link {
+.social-link{
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: #F26722;
-  color: white;
-  display: flex;
+  border-radius: 999px;
+  background: rgba(95,126,92,.18);
+  border: 1px solid rgba(95,126,92,.35);
+  color: var(--text);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
   font-size: 16px;
 }
 
-.social-link:hover {
-  background: #F2A254;
-  transform: translateY(-3px);
-  box-shadow: 0 5px 15px rgba(242, 103, 34, 0.3);
+.social-link:hover{
+  transform: translateY(-2px);
+  background: rgba(214,184,90,.16);
+  border-color: rgba(214,184,90,.45);
 }
 
-.newsletter {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 20px;
+/* ===================== NEWSLETTER ===================== */
+.newsletter{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 18px;
+  border-radius: 10px;
 }
 
-.newsletter h4 {
-  color: #fff;
-  margin-bottom: 5px;
+.newsletter h4{
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  color: var(--text);
 }
 
-.newsletter p {
-  color: #ccc;
-  margin-bottom: 15px;
-  font-size: 14px;
+.newsletter p{
+  margin: 0 0 14px 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
-.newsletter-form {
+.newsletter-form{
   display: flex;
-  gap: 0;
+  align-items: stretch;
 }
 
-.newsletter-form input {
+.newsletter-form input{
   flex: 1;
-  padding: 12px 15px;
-  border: none;
-  border-radius: 4px 0 0 4px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  padding: 12px 14px;
+  border: 1px solid rgba(214,184,90,.25);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  background: rgba(0,0,0,.18);
+  color: var(--text);
   font-size: 14px;
+  outline: none;
 }
 
-.newsletter-form input::placeholder {
-  color: #999;
+.newsletter-form input::placeholder{
+  color: var(--muted-2);
 }
 
-.newsletter-form button {
-  background: #F26722;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 0 4px 4px 0;
+.newsletter-form input:focus{
+  border-color: rgba(214,184,90,.55);
+}
+
+.newsletter-form button{
+  padding: 12px 18px;
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
-  transition: background 0.3s ease;
+
+  background: rgba(214,184,90,.18);
+  border: 1px solid rgba(214,184,90,.35);
+  color: var(--text);
+
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
 
-.newsletter-form button:hover {
-  background: #F2A254;
+.newsletter-form button:hover{
+  transform: translateY(-1px);
+  background: rgba(95,126,92,.22);
+  border-color: rgba(95,126,92,.45);
 }
 
-.footer-bottom {
-  padding: 20px 0;
-  background: #1a1a1a;
+/* ===================== BOTTOM ===================== */
+.footer-bottom{
+  padding: 18px 0;
+  background: var(--footer-bg-2);
 }
 
-.footer-bottom-content {
+.footer-bottom-content{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
-.copyright {
-  color: #ccc;
+.copyright{
+  color: var(--muted);
   font-size: 14px;
 }
 
-.copyright a {
-  color: #F2A254;
+.copyright a{
+  color: var(--yellow);
   text-decoration: none;
   margin: 0 5px;
 }
 
-.copyright a:hover {
+.copyright a:hover{
+  color: var(--yellow-hover);
   text-decoration: underline;
 }
 
-.payment-methods {
+.payment-methods{
   display: flex;
-  gap: 20px;
+  gap: 18px;
 }
 
-.payment-methods i {
-  font-size: 28px;
-  color: #999;
-  transition: color 0.3s ease;
+.payment-methods i{
+  font-size: 26px;
+  color: rgba(231,229,221,.55);
+  transition: color .2s ease, transform .2s ease;
 }
 
-.payment-methods i:hover {
-  color: #fff;
+.payment-methods i:hover{
+  color: var(--text);
+  transform: translateY(-1px);
 }
 
-/* Responsive Design */
-@media (max-width: 992px) {
-  .footer-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 30px;
-  }
-}
-
-@media (max-width: 768px) {
-  .footer-grid {
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 992px){
+  .footer-grid{
     grid-template-columns: 1fr;
+    gap: 28px;
   }
-  
-  .footer-bottom-content {
+
+  .footer-title{
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 768px){
+  .footer-bottom-content{
     flex-direction: column;
     text-align: center;
-    gap: 15px;
   }
 }

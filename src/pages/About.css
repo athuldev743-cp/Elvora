@@ -1,19 +1,21 @@
 .about-page {
   width: 100%;
   height: 800px;
-
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-
-  /* ✅ remove black padding gaps */
   margin: 0;
   border-radius: 0;
+  background: #FBFAF6; /* fallback color */
+  overflow: hidden;
+}
 
+.about-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* ✅ no crop */
+  object-position: center;
   display: block;
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE (unchanged logic) */
 @media (max-width: 1200px) {
   .about-page { height: 500px; }
 }

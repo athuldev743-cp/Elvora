@@ -4,16 +4,59 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Testimonial = () => {
   const testimonials = useMemo(
-    () => [
-      { id: 1, name: "Priya Sharma", role: "Using for 6 months", text: "After struggling with hair fall for years, Redensyl has been a game-changer.", rating: 5, image: "testimonial1.jpg" },
-      { id: 2, name: "Rahul Mehta", role: "Customer for 1 year", text: "Natural ingredients and visible results within weeks. Highly recommended!", rating: 5, image: "testimonial2.jpg" },
-      { id: 3, name: "Anjali Patel", role: "Professional Stylist", text: "I recommend Eka Bhumih products to all my clients.", rating: 4, image: "testimonial3.jpg" },
-      { id: 4, name: "Sanjay Kumar", role: "Using for 8 months", text: "Finally found a solution for my dandruff problem.", rating: 5, image: "testimonial4.jpg" },
-      { id: 5, name: "Meera Nair", role: "Customer for 2 years", text: "From hair loss to healthy growth - incredible transformation.", rating: 5, image: "testimonial5.jpg" },
-      { id: 6, name: "Vikram Singh", role: "First-time user", text: "Impressed with the results in just 3 months.", rating: 4, image: "testimonial6.jpg" },
-    ],
-    []
-  );
+  () => [
+    {
+      id: 1,
+      name: "Anitha Menon",
+      role: "Mother of 2",
+      text: "Elvora ripened Nendran nutrition powder has become a daily staple for my kids. Easy to digest, filling, and completely natural.",
+      rating: 5,
+      image: "testimonial1.jpg",
+    },
+    {
+      id: 2,
+      name: "Arjun Nair",
+      role: "Fitness Enthusiast",
+      text: "I use the Nendran powder as a morning drink. Keeps me energetic for hours and tastes authentic, not artificial.",
+      rating: 5,
+      image: "testimonial2.jpg",
+    },
+    {
+      id: 3,
+      name: "Dr. Meera Krishnan",
+      role: "Nutrition Consultant",
+      text: "Ripened Nendran banana powder is excellent for gut health and energy. Elvora maintains purity and traditional processing.",
+      rating: 5,
+      image: "testimonial3.jpg",
+    },
+    {
+      id: 4,
+      name: "Rohit Sharma",
+      role: "Office Professional",
+      text: "The carbonated drink is refreshing without being overly sweet. Perfect alternative to regular soft drinks.",
+      rating: 4,
+      image: "testimonial4.jpg",
+    },
+    {
+      id: 5,
+      name: "Neha Verma",
+      role: "Regular Customer",
+      text: "Loved the mild fizz and natural flavor. You don’t feel bloated like other carbonated beverages.",
+      rating: 5,
+      image: "testimonial5.jpg",
+    },
+    {
+      id: 6,
+      name: "Suresh Pillai",
+      role: "Food Blogger",
+      text: "Elvora’s nutrition powder and carbonated drinks reflect a balance of tradition and modern taste. Very impressive quality.",
+      rating: 5,
+      image: "testimonial6.jpg",
+    },
+  ],
+  []
+);
+
 
   const trackRef = useRef(null);
 

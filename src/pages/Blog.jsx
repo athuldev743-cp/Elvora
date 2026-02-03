@@ -3,54 +3,52 @@ import "./Blog.css";
 
 const Blog = () => {
   // Blog data with Unsplash image URLs (UNCHANGED)
-  const blogPosts = [
-    {
-      id: 1,
-      title: "The Science Behind Hair Growth",
-      excerpt: "Learn how Redensyl stimulates hair follicles for natural growth.",
-      date: "Mar 15, 2024",
-      category: "Science",
-      readTime: "5 min read",
-      imageUrl:
-        "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80",
-      // ✅ href to studies/search page (edit anytime)
-      href: "https://pubmed.ncbi.nlm.nih.gov/?term=hair+follicle+growth",
-    },
-    {
-      id: 2,
-      title: "5 Natural Ingredients for Healthy Hair",
-      excerpt: "Discover the power of natural botanicals in hair care.",
-      date: "Feb 28, 2024",
-      category: "Tips",
-      readTime: "4 min read",
-      imageUrl:
-        "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80",
-      href: "https://pubmed.ncbi.nlm.nih.gov/?term=natural+ingredients+hair",
-    },
-    {
-      id: 3,
-      title: "Daily Hair Care Routine for 2024",
-      excerpt: "Optimize your hair care routine with our expert recommendations.",
-      date: "Feb 10, 2024",
-      category: "Routine",
-      readTime: "6 min read",
-      imageUrl:
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=80",
-      href: "https://pubmed.ncbi.nlm.nih.gov/?term=hair+care+routine",
-    },
-    {
-      id: 4,
-      title: "Understanding Hair Loss Causes",
-      excerpt:
-        "A comprehensive guide to common hair loss factors and solutions.",
-      date: "Jan 25, 2024",
-      category: "Education",
-      readTime: "7 min read",
-      imageUrl:
-        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80",
-      href: "https://pubmed.ncbi.nlm.nih.gov/?term=causes+of+hair+loss",
-    },
-  ];
+ // Blog data with Unsplash image URLs (UPDATED for Elvora food products)
+
+
+ const blogPosts = [
+  {
+    id: 1,
+    title: "Why Ripened Nendran Is a Nutrition Powerhouse",
+    excerpt: "Learn how ripened Nendran supports energy, digestion, and everyday wellness.",
+    date: "Mar 15, 2024",
+    category: "Nutrition",
+    readTime: "5 min read",
+    imageUrl: "/images/nendran-banana.jpg",
+  },
+  {
+    id: 2,
+    title: "Easy Breakfast: Nendran Nutrition Powder Drinks",
+    excerpt: "Quick recipes you can make in 2 minutes—perfect for kids and busy mornings.",
+    date: "Feb 28, 2024",
+    category: "Recipes",
+    readTime: "4 min read",
+    imageUrl: "/images/nendran-powder-drink.jpg",
+  },
+  {
+    id: 3,
+    title: "What Makes a Good Carbonated Drink?",
+    excerpt: "Balance, mild fizz, and clean flavor—how to choose a refreshing beverage.",
+    date: "Feb 10, 2024",
+    category: "Beverages",
+    readTime: "6 min read",
+    imageUrl: "/images/carbonated-drink.jpg",
+  },
+  {
+    id: 4,
+    title: "Clean Ingredients: How to Read Food Labels",
+    excerpt: "A simple guide to spotting fillers, added sugars, and what to prioritize instead.",
+    date: "Jan 25, 2024",
+    category: "Education",
+    readTime: "7 min read",
+    imageUrl: "/images/food-labels.jpg",
+  },
+];
+
+
+
+
+
 
   return (
     <section id="blog" className="blog-section">

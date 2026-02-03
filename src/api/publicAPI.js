@@ -1,6 +1,6 @@
 // src/api/publicAPI.js
 const API_BASE =
-  process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com";
+  process.env.REACT_APP_API_URL || "";
 
 const getUrl = (endpoint) => API_BASE + endpoint;
 
