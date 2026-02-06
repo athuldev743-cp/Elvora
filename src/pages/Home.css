@@ -229,10 +229,13 @@ body{
 /* =========================================================
    0) COMPANY VISION FULL PAGE
    ========================================================= */
+.companyVisionFull,
+.featuredPremium{
+  margin: 0 !important;
+  padding: 0 !important;
+}   
 .companyVisionFull{
   width: 100%;
-  padding: 0;
-  margin: 0;
   background: #fbfaf6;
 }
 
@@ -240,7 +243,8 @@ body{
   width: 100%;
   height: auto;
   display: block;
-  object-fit: contain; /* ✅ never crop */
+  object-fit: contain; /* ✅ no zoom */
+  background: #fbfaf6;
 }
 
 /* =========================================================
@@ -403,34 +407,51 @@ body{
 .featuredPremium{
   position: relative;
   width: 100%;
-  background: #000;
   overflow: hidden;
+
+  /* ✅ prevents black gaps */
+  background: #fbfaf6;
 }
 
-/* ✅ IMAGE CONTROLS HEIGHT — NO ZOOM */
+/* ✅ image controls the section height */
 .featuredPremiumImg{
   width: 100%;
-  height: auto;              /* natural height */
-  min-height: 520px;         /* ⬅️ INCREASE HEIGHT HERE */
-  max-height: 75vh;          /* prevents too tall */
-  object-fit: contain;       /* ✅ NO CROP */
   display: block;
-  background: #000;
+
+  height: 92vh;
+  max-height: 850px;
+
+  object-fit: contain;     /* ✅ never zoom */
+  object-position: center; /* ✅ centered */
+  background: #fbfaf6;     /* ✅ fill letterbox */
 }
 
-/* TEXT OVERLAY */
+/* overlay stays on top */
 .featuredPremiumOverlay{
   position: absolute;
   inset: 0;
   display: flex;
   align-items: flex-end;
-  padding: 0 16px 18px;
+  padding: 0 16px 22px;
   background: linear-gradient(
     to top,
-    rgba(0,0,0,.70),
-    rgba(0,0,0,.35),
+    rgba(0,0,0,.72),
+    rgba(0,0,0,.34),
     rgba(0,0,0,0)
   );
+}
+
+.featuredLeftCenter{
+  text-align: left;
+  max-width: 540px;
+}
+
+.featuredManualText{
+  margin-top: 10px;
+  margin-bottom: 14px;
+  color: rgba(255,255,255,0.92);
+  font-size: 15px;
+  line-height: 1.45;
 }
 
 .featuredPremiumContent{
@@ -870,15 +891,29 @@ body{
 }
 
 /* ✅ Small phones (≤480px) */
-@media (max-width:480px){
-  .featuredPremium{ min-height:68vh; }
-  .featuredPremiumOverlay{ min-height:68vh; }
+@media (max-width: 480px){
   .featuredPremiumImg{
-    min-height: 420px;   /* small phones */
+    height: 560px;      /* ✅ more height for small phones */
+    max-height: 82vh;
   }
 
-  .product-card{ height:390px !important; }
-  .product-image{ height:280px !important; }
+
+ .primary-btn--featured{
+    padding: 12px 22px !important; /* ✅ smaller button */
+    font-size: 14px !important;
+    border-radius: 999px !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+  }
+
+  .featuredName{
+    font-size: 30px !important;
+    line-height: 1.08 !important;
+  }
+
+  .featuredManualText{
+    font-size: 14px !important;
+  }
 }
 
 /* ===== FULL BLEED SECTION OVERRIDE (About) ===== */
@@ -887,4 +922,12 @@ body{
   margin:0 !important;
   width:100% !important;
   background:transparent !important;
+}
+
+@media (max-width: 768px){
+  .featuredPremiumImg{
+    height: 520px;      /* ✅ increases height */
+    max-height: 78vh;   /* ✅ safe limit */
+    object-fit: contain; /* ✅ no crop */
+  }
 }

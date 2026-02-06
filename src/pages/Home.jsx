@@ -465,60 +465,56 @@ export default function Home() {
         </div>
       )}
 
-      {/* 0) COMPANY VISION (FULL PAGE) */}
-      <section id="company-vision" className="companyVisionFull">
-        <img
-          className="companyVisionImg"
-          src="/images/company-vision.png"
-          alt="ELVORA Company Vision"
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
-          }}
-        />
-      </section>
+    {/* 0) COMPANY VISION (FULL PAGE) */}
+<section id="company-vision" className="companyVisionFull">
+  <img
+    className="companyVisionImg"
+    src="/images/company-vision.png"
+    alt="ELVORA Company Vision"
+    loading="lazy"
+    onError={(e) => {
+      e.currentTarget.onerror = null;
+      e.currentTarget.src =
+        "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
+    }}
+  />
+</section>
 
-      {/* 1) PREMIUM HERO (MODERN) */}
-     
+{/* 2) FEATURED PRODUCT */}
+<section id="featured" className="featuredPremium">
+  <img
+    className="featuredPremiumImg"
+    src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
+    alt="Featured product"
+    loading="lazy"
+  />
 
-      {/* 2) FEATURED PRODUCT (P1 IMAGE FULL + LEFT OVERLAY HIGHLIGHTS) */}
-      <section id="featured" className="featuredPremium">
-        <img
-  className="featuredPremiumImg"
-  src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
-  alt="Featured product"
-/>
+  <div className="featuredPremiumOverlay">
+    <div className="featuredPremiumContent featuredLeftCenter">
+      <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
 
-       <div className="featuredPremiumOverlay">
-  <div className="featuredPremiumContent featuredLeftCenter">
-    
-    <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
+      {/* ✅ manual 2 lines */}
+      <p className="featuredManualText">
+        Clean ingredients • gentle everyday use
+        <br />
+        Fast absorption • non-greasy finish
+      </p>
 
-    {/* ✅ manual 2 lines (not fetched) */}
-    <p className="featuredManualText">
-      Clean ingredients • gentle everyday use
-      <br />
-      Fast absorption • non-greasy finish
-    </p>
-
-    <div className="featuredCtas">
-      <button
-        className="primary-btn"
-        type="button"
-        onClick={goToPriorityOneProduct}
-        disabled={!priorityOneProduct?.id}
-      >
-        Shop Now
-      </button>
+      <div className="featuredCtas">
+        <button
+          className="primary-btn primary-btn--featured"
+          type="button"
+          onClick={goToPriorityOneProduct}
+          disabled={!priorityOneProduct?.id}
+        >
+          Shop Now
+        </button>
+      </div>
     </div>
-
-    {!priorityOneProduct?.id && (
-      <p className="featuredWarn">⚠️ No featured product found (priority=1). Set one in admin.</p>
-    )}
   </div>
-</div>
-      </section>
+</section>
+
+   
 
       {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
       <section id="products" className="product-preview">
