@@ -473,9 +473,7 @@ const Home = () => {
           <p style={{ textAlign: "center", color: "#666" }}>No products available</p>
         )}
 
-<div style={{ padding: 10, fontWeight: 700 }}>
-  VIDEO URL TEST: <a href="/videos/hero-ad.mp4" target="_blank" rel="noreferrer">Open MP4</a>
-</div>
+
 
 
 <section id="ad" className="hero-ad">

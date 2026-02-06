@@ -100,3 +100,15 @@ export async function createRazorpayOrder(amount) {
 
   return await res.json(); // { id, amount, currency, ... }
 }
+ export async function verifyRazorpayPayment(payRes) {
+  const res = await fetch(getUrl("/payments/verify"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payRes),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Payment verify failed: ${res.status} ${text}`);
+  }
+  return await res.json();
+}

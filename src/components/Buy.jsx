@@ -1,7 +1,7 @@
 // src/components/Buy.jsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import "./Buy.css";
-import { createOrder, createRazorpayOrder } from "../api/publicAPI";
+import { createOrder, createRazorpayOrder, verifyRazorpayPayment } from "../api/publicAPI";
 
 /**
  * Props:
@@ -133,29 +133,34 @@ const BuyModal = ({ open, onClose, product, quantity, user, onSuccess, useRazorp
     setOrderLoading(true);
     try {
       // 1) Create Razorpay order (backend)
-      const rzpOrder = await createRazorpayOrder(totalPrice);
+     // 1) Create Razorpay order (backend)
+const rzpOrder = await createRazorpayOrder(totalPrice);
 
-      // 2) Open Razorpay Checkout
-      const payRes = await openRazorpay(rzpOrder);
-      // payRes: { razorpay_payment_id, razorpay_order_id, razorpay_signature }
+// 2) Open Razorpay Checkout
+const payRes = await openRazorpay(rzpOrder);
 
-      // 3) Create your DB order
-      const orderData = {
-        product_id: product.id,
-        product_name: product.name,
-        quantity,
-        unit_price: product.price,
-        total_amount: Number(product.price) * Number(quantity),
-        customer_name: orderForm.fullName,
-        customer_email: orderForm.email,
-        customer_phone: orderForm.phoneNumber,
-        shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
-        notes: `${orderForm.notes || ""}\n[RZP] order=${payRes.razorpay_order_id} payment=${payRes.razorpay_payment_id}`.trim(),
-        status: "pending",
-        payment_status: "paid",
-      };
+// 2.5) ✅ VERIFY PAYMENT SIGNATURE (backend)
+await verifyRazorpayPayment(payRes);
 
-      await createOrder(orderData);
+// 3) Create your DB order
+const orderData = {
+  product_id: product.id,
+  product_name: product.name,
+  quantity,
+  unit_price: product.price,
+  total_amount: Number(product.price) * Number(quantity),
+  customer_name: orderForm.fullName,
+  customer_email: orderForm.email,
+  customer_phone: orderForm.phoneNumber,
+  shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
+  notes: `${orderForm.notes || ""}\n[RZP] order=${payRes.razorpay_order_id} payment=${payRes.razorpay_payment_id}`.trim(),
+  status: "pending",
+  payment_status: "paid",
+  razorpay_order_id: payRes.razorpay_order_id,
+  razorpay_payment_id: payRes.razorpay_payment_id,
+};
+
+await createOrder(orderData);
 
       alert("✅ Payment successful! Order placed. You will receive an email after admin confirms.");
       onSuccess?.();
