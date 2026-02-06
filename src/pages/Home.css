@@ -235,10 +235,9 @@ body{
   transform:scale(1.03);
   box-shadow:0 22px 45px rgba(214,184,90,.45);
 }
+
 .hero-ad-video { border: 3px solid red !important; height: 400px !important; }
 .hero-ad-inner { border: 3px solid blue !important; }
-
-
 
 /* mobile hero elements hidden on desktop */
 .hero-mobile-wrap{ display:none; }
@@ -314,7 +313,7 @@ body{
   top:12px;
   right:12px;
   z-index:6;
-  background:rgba(95,126,92,.92); /* ✅ muted green */
+  background:rgba(95,126,92,.92);
   color:#fff;
   padding:6px 10px;
   border-radius:999px;
@@ -424,7 +423,7 @@ body{
 .carousel-arrow:hover{
   transform:translateY(-50%) scale(1.06);
   background:rgba(255,255,255,.98);
-  box-shadow:0 16px 34px rgba(0,0,0,.14), 0 0 0 4px var(--dim-yellow-soft); /* ✅ dim yellow glow */
+  box-shadow:0 16px 34px rgba(0,0,0,.14), 0 0 0 4px var(--dim-yellow-soft);
 }
 .carousel-arrow.prev{ left:12px; }
 .carousel-arrow.next{ right:12px; }
@@ -514,32 +513,22 @@ body{
   object-fit:cover;
 }
 
-/* ===================== LAPTOP ONLY (keep your look) ===================== */
-/* ===================== LAPTOP ONLY (1200–1600px) ===================== */
 /* ===================== LAPTOP ONLY (show 5 cards) ===================== */
 @media (min-width:1200px) and (max-width:1600px){
+  .carousel-container{ max-width:none; margin:0; }
 
-  /* No max-width -> allow full row of 5 */
-  .carousel-container{
-    max-width:none;
-    margin:0;
-  }
-
-  /* No extra padding -> no white gaps */
   .carousel-track{
     padding:0 !important;
     gap:16px !important;
     justify-content:flex-start !important;
   }
 
-  /* ✅ 5 cards per view: 4 gaps × 16px = 64px */
   .product-card{
     flex: 0 0 calc((100% - 64px) / 5);
     max-width: calc((100% - 64px) / 5);
     height:500px;
   }
 
-  /* image fills the card height */
   .product-image{
     width:100%;
     height:100%;
@@ -550,13 +539,10 @@ body{
   }
 }
 
-
 /* =========================================================
    ✅ MOBILE/TABLET (≤992px)
    ========================================================= */
 @media (max-width:992px){
-
-  /* NAVBAR */
   .nav-links{ display:none !important; }
   .auth-section{ display:none !important; }
   .desktop-only{ display:none !important; }
@@ -582,7 +568,6 @@ body{
     border-radius:999px;
   }
 
-  /* HERO (mobile) */
   .hero{
     background-image:none !important;
     margin-top:80px !important;
@@ -630,7 +615,6 @@ body{
     margin:0 !important;
   }
 
-  /* PRODUCTS (mobile) */
   .product-preview{ padding:26px 15px; }
   .product-preview h2{ font-size:32px; margin-bottom:18px; }
 
@@ -675,7 +659,6 @@ body{
   }
 }
 
-
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
   .hero-mobile-img{
@@ -684,4 +667,484 @@ body{
   }
   .product-card{ height:410px !important; }
   .product-image{ height:300px !important; }
+}
+
+/* =========================================================
+   ✅ NEW (OLD BLOCKS YOU ALREADY HAD) - KEEP AS IS
+   (These won't affect if you don't use them.)
+   ========================================================= */
+.company-vision{
+  background:#D6B85A;
+  padding:120px 60px 50px;
+}
+.company-vision-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap:28px;
+  align-items:center;
+}
+.company-copy{
+  background: rgba(255,255,255,.86);
+  border:1px solid rgba(46,46,47,.14);
+  border-radius:18px;
+  padding:26px 24px;
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+.company-kicker{
+  display:inline-flex;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.4px;
+  background: var(--dim-yellow-soft);
+  border:1px solid rgba(214,184,90,.35);
+  color: var(--charcoal);
+  margin-bottom:10px;
+}
+.company-title{
+  font-size:34px;
+  line-height:1.15;
+  color:var(--charcoal);
+  margin:0 0 10px;
+  font-weight:900;
+}
+.company-desc{
+  color:#444;
+  font-size:15px;
+  line-height:1.6;
+  margin:0 0 16px;
+}
+.company-points{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:12px;
+  margin:14px 0 18px;
+}
+.company-point{
+  background:#fff;
+  border:1px solid rgba(46,46,47,.12);
+  border-radius:14px;
+  padding:12px 12px;
+}
+.cp-title{
+  font-weight:900;
+  color:var(--charcoal);
+  margin-bottom:6px;
+}
+.cp-text{
+  font-size:13px;
+  color:#555;
+  line-height:1.4;
+}
+.company-ctaRow{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.secondary-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50px;
+  border:1px solid rgba(46,46,47,.20);
+  background:rgba(255,255,255,.92);
+  color:var(--charcoal);
+  padding:16px 30px;
+  font-size:16px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 10px 22px rgba(0,0,0,.10);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.secondary-btn:hover{
+  transform:scale(1.02);
+  box-shadow:0 16px 30px rgba(0,0,0,.12);
+}
+.company-visual{
+  width:100%;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(46,46,47,.14);
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+  background:rgba(255,255,255,.65);
+}
+.company-visual img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+.featured-product{
+  background:#D6B85A;
+  padding:40px 60px 20px;
+}
+.featured-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:28px;
+  align-items:center;
+}
+.featured-left{
+  background: rgba(255,255,255,.88);
+  border:1px solid rgba(46,46,47,.14);
+  border-radius:18px;
+  padding:26px 24px;
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+.featured-kicker{
+  display:inline-flex;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.4px;
+  background: rgba(95,126,92,.14);
+  border:1px solid rgba(95,126,92,.30);
+  color: var(--charcoal);
+  margin-bottom:10px;
+}
+.featured-title{
+  font-size:30px;
+  line-height:1.15;
+  margin:0 0 10px;
+  color:var(--charcoal);
+  font-weight:900;
+}
+.featured-desc{
+  font-size:14px;
+  line-height:1.6;
+  color:#444;
+  margin:0 0 14px;
+}
+.featured-highlights{
+  list-style:none;
+  padding:0;
+  margin:0 0 18px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.featured-highlights li{
+  background:#fff;
+  border:1px solid rgba(46,46,47,.12);
+  border-radius:14px;
+  padding:12px 12px;
+  font-weight:800;
+  color:#333;
+  box-shadow:0 6px 18px rgba(0,0,0,.07);
+}
+.featured-right{ width:100%; }
+.featured-imgWrap{
+  width:100%;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(46,46,47,.14);
+  box-shadow:0 12px 30px rgba(0,0,0,.12);
+  background:#fff;
+}
+.featured-imgWrap img{
+  width:100%;
+  height:520px;
+  display:block;
+  object-fit:cover;
+  object-position:center;
+}
+
+/* Keep your responsiveness for these old blocks (unchanged) */
+@media (max-width:992px){
+  .company-vision{ padding:100px 15px 22px; }
+  .company-vision-inner{ grid-template-columns: 1fr; gap:14px; }
+  .company-title{ font-size:26px; }
+  .company-points{ grid-template-columns: 1fr; }
+  .company-visual img{ height:240px; object-fit:cover; }
+
+  .featured-product{ padding:20px 15px 10px; }
+  .featured-inner{ grid-template-columns: 1fr; gap:14px; }
+  .featured-title{ font-size:24px; }
+  .featured-imgWrap img{ height:340px; }
+}
+
+/* =========================================================
+   ✅ NEW STRUCTURE YOU NEED NOW:
+   Company full-page image + Featured split (Priority 1)
+   (ADDED without touching your existing breakpoints)
+   ========================================================= */
+
+/* ===================== COMPANY HERO (FULL PAGE IMAGE) ===================== */
+.companyHero{
+  position:relative;
+  width:100%;
+  height:100vh;
+  margin-top:80px; /* navbar */
+  overflow:hidden;
+  background:#000;
+}
+
+.companyHeroImg{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+.companyHeroOverlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  padding:28px 60px;
+  background:linear-gradient(to top, rgba(0,0,0,.60), rgba(0,0,0,.05));
+}
+
+.companyHeroCard{
+  width:min(720px, 92vw);
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(46,46,47,.14);
+  border-radius:18px;
+  padding:18px 18px;
+  box-shadow:0 14px 36px rgba(0,0,0,.22);
+}
+
+.companyHeroKicker{
+  display:inline-flex;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:900;
+  background:var(--dim-yellow-soft);
+  border:1px solid rgba(214,184,90,.35);
+  color:var(--charcoal);
+  margin-bottom:10px;
+}
+
+.companyHeroTitle{
+  margin:0 0 8px;
+  font-size:30px;
+  line-height:1.15;
+  font-weight:900;
+  color:var(--charcoal);
+}
+
+.companyHeroDesc{
+  margin:0 0 14px;
+  color:#333;
+  line-height:1.6;
+  font-weight:700;
+  font-size:14px;
+}
+
+.companyHeroCtas{ display:flex; gap:12px; flex-wrap:wrap; }
+
+/* ===================== FEATURED SPLIT ===================== */
+.featuredSplit{
+  width:100%;
+  min-height:100vh;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  background:#D6B85A;
+}
+
+.featuredLeft{
+  padding:120px 60px 60px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  justify-content:center;
+}
+
+.featuredKicker{
+  display:inline-flex;
+  width:max-content;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:900;
+  background:rgba(95,126,92,.14);
+  border:1px solid rgba(95,126,92,.30);
+  color:var(--charcoal);
+}
+
+.featuredName{
+  margin:0;
+  font-size:34px;
+  line-height:1.1;
+  font-weight:900;
+  color:var(--charcoal);
+}
+
+.featuredHighlights{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:6px 0 6px;
+}
+
+.fhItem{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(46,46,47,.12);
+  border-radius:14px;
+  padding:12px 12px;
+  font-weight:900;
+  color:#333;
+  box-shadow:0 8px 20px rgba(0,0,0,.10);
+}
+
+.featuredRight{
+  position:relative;
+  min-height:100vh;
+  overflow:hidden;
+  background:#fff;
+}
+
+.featuredImg{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+/* ===================== MOBILE (ONLY adds styling for new sections) ===================== */
+@media (max-width:992px){
+  .companyHeroOverlay{ padding:18px 15px; }
+  .companyHeroTitle{ font-size:24px; }
+
+  .featuredSplit{ grid-template-columns: 1fr; }
+  .featuredLeft{ padding:26px 15px 18px; }
+  .featuredRight{ min-height:380px; }
+}
+
+/* =========================================================
+   CLEAN FEATURED HERO (uses hero-desktop.png background)
+   - Left overlay text only
+   - No card backgrounds
+   - Compact height
+   ========================================================= */
+
+/* replace the big split with a clean hero */
+.featuredSplit{
+  position:relative;
+  width:100%;
+  min-height:70vh;            /* ✅ smaller than 100vh */
+  display:block;              /* ✅ remove 2-column grid */
+  background:#000;
+  overflow:hidden;
+
+  /* ✅ use your hero desktop image as background */
+  background-image:url("/images/hero-desktop.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+
+/* subtle dark overlay for readability */
+.featuredSplit::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to right,
+    rgba(0,0,0,.55) 0%,
+    rgba(0,0,0,.25) 45%,
+    rgba(0,0,0,0) 75%
+  );
+  pointer-events:none;
+}
+
+/* left content overlay */
+.featuredLeft{
+  position:relative;
+  z-index:2;
+  max-width:640px;
+
+  /* ✅ smaller + clean spacing */
+  padding:120px 60px 60px; /* keeps navbar offset feel */
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  justify-content:center;
+}
+
+/* remove right column completely */
+.featuredRight{ display:none !important; }
+.featuredImg{ display:none !important; }
+
+/* kicker becomes simple text (no pill bg) */
+.featuredKicker{
+  background:transparent !important;
+  border:none !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  color:rgba(255,255,255,.88) !important;
+  font-weight:900;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  font-size:13px;
+}
+
+/* product name on hero */
+.featuredName{
+  color:#fff !important;
+  font-size:40px;
+  line-height:1.05;
+  font-weight:900;
+  margin:0;
+  text-shadow:0 10px 30px rgba(0,0,0,.45);
+}
+
+/* highlight list becomes plain text lines */
+.featuredHighlights{
+  margin:10px 0 12px !important;
+  gap:8px !important;
+}
+
+.fhItem{
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  box-shadow:none !important;
+
+  color:rgba(255,255,255,.92) !important;
+  font-weight:800;
+  font-size:15px;
+  line-height:1.35;
+  text-shadow:0 8px 22px rgba(0,0,0,.45);
+}
+
+/* keep your button, but tighter spacing */
+.featuredLeft .primary-btn{
+  width:max-content;
+  padding:16px 40px;
+  font-size:18px;
+  margin-top:6px;
+}
+
+/* ===================== MOBILE ===================== */
+@media (max-width:992px){
+  .featuredSplit{
+    min-height:60vh;
+    background-position:center;
+  }
+
+  .featuredLeft{
+    padding:110px 15px 30px; /* ✅ smaller */
+    max-width:92vw;
+  }
+
+  .featuredName{
+    font-size:28px;
+  }
+
+  .fhItem{
+    font-size:14px;
+  }
+
+  .featuredLeft .primary-btn{
+    padding:14px 34px;
+    font-size:16px;
+  }
 }

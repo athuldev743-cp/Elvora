@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
@@ -8,11 +9,11 @@ import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { ADMIN_EMAILS } from "../config/auth";
 import { convertGoogleToJWT } from "../api/adminAPI";
-import { User } from "lucide-react"; // ✅ you were using <User/> but import was missing
+import { User } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
-const Home = () => {
+export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,21 +23,18 @@ const Home = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
 
-  // ✅ Google Sign-In guards
+  // Google Sign-In guards
   const gsiReadyRef = useRef(false);
   const gsiInitRef = useRef(false);
   const gsiPromptingRef = useRef(false);
   const [loginBusy, setLoginBusy] = useState(false);
-
-  // ✅ Video ref (plays once)
-  const videoRef = useRef(null);
 
   const trackRef = useRef(null);
   const navigate = useNavigate();
 
   const closeMenu = () => setMenuOpen(false);
 
-  // --- resize close menu (desktop)
+  // resize close menu (desktop)
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth > 992) setMenuOpen(false);
@@ -45,7 +43,7 @@ const Home = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // --- lock body scroll when menu open
+  // lock body scroll when menu open
   useEffect(() => {
     if (!menuOpen) return;
     const prev = document.body.style.overflow;
@@ -55,7 +53,7 @@ const Home = () => {
     };
   }, [menuOpen]);
 
-  // --- load existing user
+  // load existing user
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (!userData) return;
@@ -68,14 +66,14 @@ const Home = () => {
     }
   }, []);
 
-  // --- mobile breakpoint
+  // mobile breakpoint
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 992);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // --- products loader
+  // products loader
   const loadProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -85,6 +83,7 @@ const Home = () => {
     } catch (err) {
       console.error("Failed to load products", err);
       setError("Temporary issue loading products.");
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -92,20 +91,22 @@ const Home = () => {
 
   useEffect(() => {
     loadProducts();
+
     const syncProducts = (e) => {
       if (e.key === "productsUpdated") loadProducts();
     };
     window.addEventListener("storage", syncProducts);
-    return () => window.removeEventListener("storage", syncProducts);
-  }, [loadProducts]);
 
-  useEffect(() => {
     const onFocus = () => loadProducts();
     window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+
+    return () => {
+      window.removeEventListener("storage", syncProducts);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [loadProducts]);
 
-  // ✅ Load Google script ONCE
+  // load Google script once
   useEffect(() => {
     if (document.getElementById("gsi-script")) return;
 
@@ -127,28 +128,6 @@ const Home = () => {
     document.body.appendChild(script);
   }, []);
 
-  useEffect(() => {
-  const v = videoRef.current;
-  if (!v) return;
-
-  const obs = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        v.play().catch((err) => {
-          console.log("Autoplay blocked:", err);
-        });
-        obs.disconnect(); // ✅ play only once
-      }
-    },
-    { threshold: 0.5 }
-  );
-
-  obs.observe(v);
-  return () => obs.disconnect();
-}, []);
-
-
-  // ✅ Handle Google response (credential)
   const handleGoogleResponse = useCallback(
     async (response) => {
       try {
@@ -193,7 +172,6 @@ const Home = () => {
     [closeMenu]
   );
 
-  // ✅ Init GSI only ONCE
   const ensureGsiInitialized = useCallback(() => {
     if (!gsiReadyRef.current || !window.google) return false;
     if (gsiInitRef.current) return true;
@@ -212,7 +190,6 @@ const Home = () => {
     return true;
   }, [handleGoogleResponse]);
 
-  // ✅ Login handler: prevents concurrent prompt() calls
   const handleGoogleLogin = useCallback(() => {
     if (loginBusy || gsiPromptingRef.current) return;
 
@@ -264,17 +241,21 @@ const Home = () => {
     e.currentTarget.src = "/images/logo-placeholder.png";
   };
 
-  // ✅ Priority-1 CTA -> product details
-  const goToPriorityOneProduct = () => {
-    if (!products?.length) {
-      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
+  // Priority-1 product (featured)
+  const priorityOneProduct = useMemo(() => {
+    const list = Array.isArray(products) ? products : [];
+    const p1 = list.find((p) => Number(p.priority) === 1);
+    if (p1) return p1;
+    return [...list].sort((a, b) => Number(a.priority ?? 9999) - Number(b.priority ?? 9999))[0] || null;
+  }, [products]);
 
-    const priorityOne = products.find((p) => Number(p.priority) === 1);
-    const top =
-      priorityOne ||
-      [...products].sort((a, b) => Number(a.priority ?? 9999) - Number(b.priority ?? 9999))[0];
+  // Only priority=2 for carousel (NO fallback)
+  const priority2Products = useMemo(() => {
+    return (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
+  }, [products]);
+
+  const goToPriorityOneProduct = useCallback(() => {
+    const top = priorityOneProduct;
 
     if (!top?.id) {
       document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
@@ -287,15 +268,8 @@ const Home = () => {
     }
 
     navigate(`/products/${top.id}`);
-  };
+  }, [priorityOneProduct, user, handleGoogleLogin, navigate]);
 
-  // ✅ Priority-2 products for carousel
-  const priority2Products = useMemo(() => {
-    const list = (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
-    return list.length ? list : products; // fallback optional
-  }, [products]);
-
-  // ✅ Carousel scroll
   const scrollCarousel = (dir) => {
     const el = trackRef.current;
     if (!el) return;
@@ -333,6 +307,7 @@ const Home = () => {
 
   return (
     <>
+      {/* NAV */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           {!scrolled ? (
@@ -343,8 +318,8 @@ const Home = () => {
         </div>
 
         <div className="nav-links desktop-only">
-          <a href="#home">Home</a>
-          <a href="#ad">Ad</a>
+          <a href="#company">Company</a>
+          <a href="#featured">Featured</a>
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
@@ -380,6 +355,7 @@ const Home = () => {
         {isMobile && <MobileRightButton />}
       </nav>
 
+      {/* MOBILE MENU */}
       {menuOpen && user && (
         <div className="mobileMenuOverlay" onMouseDown={closeMenu}>
           <div className="mobileMenuPanel" onMouseDown={(e) => e.stopPropagation()}>
@@ -412,11 +388,11 @@ const Home = () => {
             </div>
 
             <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#home" onClick={closeMenu}>
-                Home
+              <a className="mobileMenuItem" href="#company" onClick={closeMenu}>
+                Company
               </a>
-              <a className="mobileMenuItem" href="#ad" onClick={closeMenu}>
-                Ad
+              <a className="mobileMenuItem" href="#featured" onClick={closeMenu}>
+                Featured
               </a>
               <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
                 Products
@@ -443,41 +419,100 @@ const Home = () => {
         </div>
       )}
 
-      {/* HERO */}
-      <section id="home" className="hero" style={{ backgroundImage: "url(/images/hero-desktop.png)" }}>
-        <div className="hero-cta desktop-only">
-          <button className="primary-btn" onClick={goToPriorityOneProduct}>
-            Shop Now
-          </button>
-        </div>
-
-        <div className="hero-mobile-wrap">
-          <img className="hero-mobile-img" src="/images/hero-mobile.png" alt="Elvora" loading="lazy" />
-          <div className="hero-cta mobile-cta">
-            <button className="primary-btn" onClick={goToPriorityOneProduct}>
-              Shop Now
-            </button>
+      {/* 1) COMPANY VISION */}
+      <section id="company" className="companyHero">
+        <img
+          className="companyHeroImg"
+          src="/images/company-vision.png"
+          alt="ELVORA vision"
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
+          }}
+        />
+        <div className="companyHeroOverlay">
+          <div className="companyHeroCard">
+            <span className="companyHeroKicker">ELVORA</span>
+            <h1 className="companyHeroTitle">Vision-led care. Clean, consistent, everyday.</h1>
+            <p className="companyHeroDesc">
+              We build premium personal-care products with comfort-first formulas and clear purpose — simple routines
+              that actually work.
+            </p>
+            <div className="companyHeroCtas">
+              <button
+                className="primary-btn"
+                type="button"
+                onClick={() => document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" })}
+              >
+                See Featured Product
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* HERO AD VIDEO – play once, no UI */}
-      
+      {/* 2) FEATURED (inline background to avoid CSS resolve errors) */}
+      <section
+        id="featured"
+        className="featuredSplit"
+        style={{
+          backgroundImage: "url(/images/hero-desktop.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="featuredLeft">
+          <span className="featuredKicker">Featured Product</span>
 
-      {/* PRODUCTS (Priority 2 carousel) */}
+          <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
+
+          <div className="featuredHighlights">
+            <div className="fhItem">Clean ingredients • gentle everyday use</div>
+            <div className="fhItem">Fast absorption • non-greasy finish</div>
+            <div className="fhItem">Designed for consistent long-term care</div>
+            <div className="fhItem">Premium feel • simple routine</div>
+          </div>
+
+          <button
+            className="primary-btn"
+            type="button"
+            onClick={goToPriorityOneProduct}
+            disabled={!priorityOneProduct?.id}
+          >
+            Shop Now
+          </button>
+
+          {!priorityOneProduct?.id && (
+            <p style={{ marginTop: 10, color: "#333", fontWeight: 700 }}>
+              ⚠️ No featured product found (priority=1). Set one in admin.
+            </p>
+          )}
+        </div>
+
+        <div className="featuredRight">
+          <img
+            className="featuredImg"
+            src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
+            alt={priorityOneProduct?.name || "Featured product"}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "https://placehold.co/1200x1200/EEE/31343C?text=Priority+1+Product";
+            }}
+          />
+        </div>
+      </section>
+
+      {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
       <section id="products" className="product-preview">
         {error && <div className="error-message">⚠️ {error}</div>}
         {loading && <p className="loading-text">Loading products...</p>}
 
         {!loading && priority2Products.length === 0 && !error && (
-          <p style={{ textAlign: "center", color: "#666" }}>No products available</p>
+          <p style={{ textAlign: "center", color: "#666" }}>No priority-2 products available</p>
         )}
-
-
-
-
-
-
 
         {!loading && priority2Products.length > 0 && (
           <div className="carousel-container">
@@ -504,11 +539,11 @@ const Home = () => {
                       src={p.image_url}
                       alt={p.name}
                       className="product-image"
+                      loading="lazy"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.src = "https://placehold.co/400x300/EEE/31343C?text=Product+Image";
                       }}
-                      loading="lazy"
                     />
 
                     <div className="product-info">
@@ -519,7 +554,6 @@ const Home = () => {
                         onClick={onView}
                         type="button"
                         disabled={availableSoon}
-                        title={availableSoon ? "Available soon" : user ? "View details" : "Login to view"}
                       >
                         View Details
                       </button>
@@ -551,6 +585,5 @@ const Home = () => {
       <Footer />
     </>
   );
-};
+}
 
-export default Home;
