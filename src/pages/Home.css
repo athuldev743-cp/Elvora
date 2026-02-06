@@ -399,35 +399,37 @@ body{
 /* =========================================================
    2) FEATURED PREMIUM
    ========================================================= */
+/* ===== FEATURED SECTION ===== */
 .featuredPremium{
-  position:relative;
-  width:100%;
-  min-height:92vh;
-  overflow:hidden;
-  background:#000;
+  position: relative;
+  width: 100%;
+  background: #000;
+  overflow: hidden;
 }
 
-.featuredPremiumBg{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  transform:scale(1.02);
+/* ✅ IMAGE CONTROLS HEIGHT — NO ZOOM */
+.featuredPremiumImg{
+  width: 100%;
+  height: auto;              /* natural height */
+  min-height: 520px;         /* ⬅️ INCREASE HEIGHT HERE */
+  max-height: 75vh;          /* prevents too tall */
+  object-fit: contain;       /* ✅ NO CROP */
+  display: block;
+  background: #000;
 }
 
+/* TEXT OVERLAY */
 .featuredPremiumOverlay{
-  position:relative;
-  z-index:2;
-  min-height:92vh;
-  display:flex;
-  align-items:center;
-  padding:120px 60px 60px;
-  background:linear-gradient(
-    to right,
-    rgba(0,0,0,.62) 0%,
-    rgba(0,0,0,.35) 45%,
-    rgba(0,0,0,0) 78%
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 16px 18px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.70),
+    rgba(0,0,0,.35),
+    rgba(0,0,0,0)
   );
 }
 
@@ -871,6 +873,9 @@ body{
 @media (max-width:480px){
   .featuredPremium{ min-height:68vh; }
   .featuredPremiumOverlay{ min-height:68vh; }
+  .featuredPremiumImg{
+    min-height: 420px;   /* small phones */
+  }
 
   .product-card{ height:390px !important; }
   .product-image{ height:280px !important; }

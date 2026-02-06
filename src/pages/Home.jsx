@@ -484,13 +484,11 @@ export default function Home() {
 
       {/* 2) FEATURED PRODUCT (P1 IMAGE FULL + LEFT OVERLAY HIGHLIGHTS) */}
       <section id="featured" className="featuredPremium">
-        <div
-          className="featuredPremiumBg"
-          style={{
-            backgroundImage: `url(${priorityOneProduct?.image_url || "/images/feature-placeholder.png"})`,
-          }}
-          aria-label="Featured product background"
-        />
+        <img
+  className="featuredPremiumImg"
+  src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
+  alt="Featured product"
+/>
 
        <div className="featuredPremiumOverlay">
   <div className="featuredPremiumContent featuredLeftCenter">
