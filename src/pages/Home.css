@@ -538,3 +538,27 @@ body{
   width:100% !important;
   background:transparent !important;
 }
+
+/* ✅ FIX: remove the big empty gap between Company Vision and Featured (mobile) */
+@media (max-width: 992px){
+  .companyVisionFull{
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fbfaf6 !important;
+  }
+
+  .companyVisionImg{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 !important;
+  }
+
+  /* also ensure the next section starts immediately */
+  .featuredPremium{
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
