@@ -476,19 +476,7 @@ const Home = () => {
 
 
 
-<section id="ad" className="hero-ad">
-  <div className="hero-ad-inner">
-    <video
-      ref={videoRef}
-      className="hero-ad-video"
-      src="/videos/hero-ad.mp4"
-      muted
-      playsInline
-      preload="auto"
-      onEnded={(e) => e.currentTarget.pause()}
-    />
-  </div>
-</section>
+
 
 
         {!loading && priority2Products.length > 0 && (
