@@ -492,54 +492,34 @@ export default function Home() {
           aria-label="Featured product background"
         />
 
-        <div className="featuredPremiumOverlay">
-          <div className="featuredPremiumContent">
-            <span className="featuredKicker">Featured • Priority 1</span>
-            <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
+       <div className="featuredPremiumOverlay">
+  <div className="featuredPremiumContent featuredLeftCenter">
+    <span className="featuredKicker">Featured • Priority 1</span>
+    <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
 
-            <p className="featuredTagline">
-              Premium feel • comfort-first formula • designed for consistent daily care.
-            </p>
+    {/* ✅ manual 2 lines (not fetched) */}
+    <p className="featuredManualText">
+      Clean ingredients • gentle everyday use
+      <br />
+      Fast absorption • non-greasy finish
+    </p>
 
-            {featuredHighlights.length > 0 ? (
-              <div className="featuredBullets">
-                {featuredHighlights.map((h, idx) => (
-                  <div className="fbItem" key={idx}>
-                    <span className="fbDot" />
-                    <span className="fbText">{h}</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="featuredBullets">
-                <div className="fbItem">
-                  <span className="fbDot" />
-                  <span className="fbText">Clean ingredients • gentle everyday use</span>
-                </div>
-                <div className="fbItem">
-                  <span className="fbDot" />
-                  <span className="fbText">Fast absorption • non-greasy finish</span>
-                </div>
-                <div className="fbItem">
-                  <span className="fbDot" />
-                  <span className="fbText">Designed for consistent long-term care</span>
-                </div>
-              </div>
-            )}
+    <div className="featuredCtas">
+      <button
+        className="primary-btn"
+        type="button"
+        onClick={goToPriorityOneProduct}
+        disabled={!priorityOneProduct?.id}
+      >
+        Shop Now
+      </button>
+    </div>
 
-            <div className="featuredCtas">
-              <button className="primary-btn" type="button" onClick={goToPriorityOneProduct} disabled={!priorityOneProduct?.id}>
-                Shop Now
-              </button>
-
-             
-            </div>
-
-            {!priorityOneProduct?.id && (
-              <p className="featuredWarn">⚠️ No featured product found (priority=1). Set one in admin.</p>
-            )}
-          </div>
-        </div>
+    {!priorityOneProduct?.id && (
+      <p className="featuredWarn">⚠️ No featured product found (priority=1). Set one in admin.</p>
+    )}
+  </div>
+</div>
       </section>
 
       {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}

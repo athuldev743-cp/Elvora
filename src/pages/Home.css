@@ -236,26 +236,34 @@ body{
    ========================================================= */
 /* FULL-WIDTH vision section */
 /* FULL-WIDTH COMPANY VISION */
+/* COMPANY VISION */
 .companyVisionFull{
   width: 100%;
-  margin: 0;
   padding: 0;
-  background: #FBFAF6;
-  overflow: hidden;
+  margin: 0;
+  background: #fbfaf6;
 }
 
-/* Image controls its own height (NO zoom, NO crop) */
 .companyVisionImg{
-  width: 100%;        /* ✅ full screen width */
-  height: auto;       /* ✅ natural height */
-  display: block;
-  object-fit: contain; /* safety (no crop) */
+  width: 100%;
+  height: auto;        /* ✅ no fixed height */
+  display: block;      /* ✅ removes inline-img gap */
+  object-fit: contain; /* ✅ never zoom/crop */
 }
 
-.companyVisionFull,
-.companyVisionFull *{
-  margin: 0;
-  padding: 0;
+/* Mobile: kill the extra white space */
+@media (max-width: 768px){
+  .companyVisionFull{
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* also ensure next section doesn't add top gap */
+  .featuredPremium{
+    margin-top: 0 !important;
+  }
 }
 /* =========================================================
    1) PREMIUM HERO (premiumHero)
@@ -894,7 +902,7 @@ body{
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
   .companyVisionFull{ height:86vh; }
-  .product-card{ height:410px !important; }
+  .product-card{ height:220px !important; }
   .product-image{ height:300px !important; }
 }
 /* ===== FULL BLEED SECTION OVERRIDE (About) ===== */
@@ -903,4 +911,34 @@ body{
   margin:0 !important;
   width:100% !important;
   background:transparent !important;
+}
+
+/* Mobile: show full product image in carousel */
+@media (max-width: 768px){
+  .product-card{
+    overflow: hidden;
+  }
+
+  .product-image{
+    width: 100%;
+    height: 260px;       /* adjust if you want */
+    object-fit: contain; /* ✅ no crop */
+    object-position: center;
+    background: #fff;    /* looks clean if image has transparent/odd ratio */
+    display: block;
+  }
+}
+
+.featuredLeftCenter{
+  text-align: left;
+  align-self: center;        /* if parent is flex */
+}
+
+.featuredManualText{
+  margin-top: 10px;
+  margin-bottom: 16px;
+  color: rgba(255,255,255,0.9);
+  font-size: 15px;
+  line-height: 1.45;
+  max-width: 520px;
 }
