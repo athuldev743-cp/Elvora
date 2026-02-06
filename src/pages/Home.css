@@ -1,9 +1,5 @@
 /* src/pages/Home.css
-   ✅ Matches your CURRENT Home.jsx classes:
-   - companyVisionFull, companyVisionImg
-   - premiumHero...
-   - featuredPremium...
-   - product-preview carousel...
+   ✅ Matches your CURRENT Home.jsx classes
 */
 
 /* ===================== TOKENS ===================== */
@@ -20,10 +16,9 @@
   --ink-soft: #666;
   --border: rgba(46,46,47,0.14);
 
-  /* keep old variable names your other css may rely on */
   --white:#ffffff;
   --dark-orange: var(--dim-yellow);
-  --light-orange: var(--muted-green); /* ✅ fix: was 'green' */
+  --light-orange: var(--muted-green);
 }
 
 /* ===================== GLOBAL RESET ===================== */
@@ -232,11 +227,8 @@ body{
 }
 
 /* =========================================================
-   0) COMPANY VISION FULL PAGE (companyVisionFull)
+   0) COMPANY VISION FULL PAGE
    ========================================================= */
-/* FULL-WIDTH vision section */
-/* FULL-WIDTH COMPANY VISION */
-/* COMPANY VISION */
 .companyVisionFull{
   width: 100%;
   padding: 0;
@@ -246,27 +238,13 @@ body{
 
 .companyVisionImg{
   width: 100%;
-  height: auto;        /* ✅ no fixed height */
-  display: block;      /* ✅ removes inline-img gap */
-  object-fit: contain; /* ✅ never zoom/crop */
+  height: auto;
+  display: block;
+  object-fit: contain; /* ✅ never crop */
 }
 
-/* Mobile: kill the extra white space */
-@media (max-width: 768px){
-  .companyVisionFull{
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* also ensure next section doesn't add top gap */
-  .featuredPremium{
-    margin-top: 0 !important;
-  }
-}
 /* =========================================================
-   1) PREMIUM HERO (premiumHero)
+   1) PREMIUM HERO
    ========================================================= */
 .premiumHero{
   width:100%;
@@ -352,9 +330,7 @@ body{
   flex-wrap:wrap;
 }
 
-.premiumHeroRight{
-  width:100%;
-}
+.premiumHeroRight{ width:100%; }
 
 .premiumHeroGlassCard{
   width:100%;
@@ -421,8 +397,7 @@ body{
 }
 
 /* =========================================================
-   2) FEATURED PREMIUM (featuredPremium)
-   Priority-1 image as full background + left overlay
+   2) FEATURED PREMIUM
    ========================================================= */
 .featuredPremium{
   position:relative;
@@ -495,44 +470,26 @@ body{
   margin:14px 0 18px;
 }
 
-.fbItem{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
-  color:rgba(255,255,255,.92);
-  font-weight:900;
-  text-shadow:0 10px 26px rgba(0,0,0,.45);
-}
-
-.fbDot{
-  width:10px;
-  height:10px;
-  border-radius:999px;
-  background:var(--dim-yellow);
-  margin-top:6px;
-  flex:0 0 10px;
-  box-shadow:0 0 0 4px rgba(214,184,90,.18);
-}
-
-.fbText{
-  font-size:15px;
-  line-height:1.45;
-}
-
 .featuredCtas{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
 }
 
-.featuredWarn{
-  margin-top:12px;
-  font-weight:900;
-  color:#fff;
-  opacity:.92;
+/* your manual text */
+.featuredLeftCenter{ text-align:left; }
+.featuredManualText{
+  margin-top:10px;
+  margin-bottom:16px;
+  color: rgba(255,255,255,0.9);
+  font-size: 15px;
+  line-height: 1.45;
+  max-width: 520px;
 }
 
-/* ===================== PRODUCTS / CAROUSEL ===================== */
+/* =========================================================
+   3) PRODUCTS / CAROUSEL
+   ========================================================= */
 .product-preview{
   background:#f8f9fa;
   padding:50px 60px;
@@ -552,10 +509,7 @@ body{
 }
 .loading-text{ text-align:center; color:#444; }
 
-.carousel-container{
-  position:relative;
-  overflow:hidden;
-}
+.carousel-container{ position:relative; overflow:hidden; }
 
 .carousel-track{
   display:flex;
@@ -603,13 +557,16 @@ body{
   box-shadow:0 10px 22px rgba(0,0,0,.14);
 }
 
+/* ✅ Default carousel image behavior (non-mobile) */
 .product-image{
   width:100%;
-  height:auto;
-  object-fit:contain;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
   display:block;
 }
 
+/* gradient + info overlay */
 .product-card::after{
   content:"";
   position:absolute;
@@ -837,13 +794,23 @@ body{
     border-radius:999px;
   }
 
-  /* company image still full height but safe on mobile */
-  .companyVisionFull{ height:92vh; }
+  /* ✅ remove mobile gap between vision and featured */
+  .companyVisionFull{ margin:0 !important; padding:0 !important; }
+  .featuredPremium{ margin-top:0 !important; }
 
   .premiumHero{ padding:26px 15px 16px; }
   .premiumHeroInner{ grid-template-columns: 1fr; gap:14px; }
   .premiumTitle{ font-size:26px; }
   .premiumStats{ grid-template-columns: 1fr; }
+
+  /* ✅ Featured image: DO NOT CROP on mobile */
+  .featuredPremiumBg{
+    background-size:contain !important;
+    background-position:center !important;
+    background-repeat:no-repeat !important;
+    background-color:#000; /* fills empty */
+    transform:none !important; /* remove zoom */
+  }
 
   .featuredPremiumOverlay{
     padding:100px 15px 26px;
@@ -871,12 +838,13 @@ body{
     border-radius:18px !important;
   }
 
+  /* ✅ Carousel image: DO NOT CROP on mobile */
   .product-image{
     width:100% !important;
     height:310px !important;
-    object-fit:cover !important;
+    object-fit:contain !important;
     object-position:center !important;
-    display:block !important;
+    background:#fff;
   }
 
   .product-card::after{ height:95px !important; }
@@ -901,44 +869,17 @@ body{
 
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
-  .companyVisionFull{ height:86vh; }
-  .product-card{ height:220px !important; }
-  .product-image{ height:300px !important; }
+  .featuredPremium{ min-height:68vh; }
+  .featuredPremiumOverlay{ min-height:68vh; }
+
+  .product-card{ height:390px !important; }
+  .product-image{ height:280px !important; }
 }
+
 /* ===== FULL BLEED SECTION OVERRIDE (About) ===== */
 .pageSection.aboutFull{
   padding:0 !important;
   margin:0 !important;
   width:100% !important;
   background:transparent !important;
-}
-
-/* Mobile: show full product image in carousel */
-@media (max-width: 768px){
-  .product-card{
-    overflow: hidden;
-  }
-
-  .product-image{
-    width: 100%;
-    height: 260px;       /* adjust if you want */
-    object-fit: contain; /* ✅ no crop */
-    object-position: center;
-    background: #fff;    /* looks clean if image has transparent/odd ratio */
-    display: block;
-  }
-}
-
-.featuredLeftCenter{
-  text-align: left;
-  align-self: center;        /* if parent is flex */
-}
-
-.featuredManualText{
-  margin-top: 10px;
-  margin-bottom: 16px;
-  color: rgba(255,255,255,0.9);
-  font-size: 15px;
-  line-height: 1.45;
-  max-width: 520px;
 }

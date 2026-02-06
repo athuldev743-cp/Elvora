@@ -494,7 +494,7 @@ export default function Home() {
 
        <div className="featuredPremiumOverlay">
   <div className="featuredPremiumContent featuredLeftCenter">
-    <span className="featuredKicker">Featured • Priority 1</span>
+    
     <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
 
     {/* ✅ manual 2 lines (not fetched) */}
