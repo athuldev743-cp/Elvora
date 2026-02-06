@@ -13,6 +13,46 @@ import { User } from "lucide-react";
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
+// ---------- helpers ----------
+function safeText(v) {
+  return String(v ?? "").trim();
+}
+
+/**
+ * Extracts highlight bullets from product.description.
+ * Supports:
+ * - lines starting with -, •, * (bullets)
+ * - numbered lists "1) ..." or "1. ..."
+ * - otherwise: split by "." into short sentences (fallback)
+ */
+function extractHighlights(description, max = 5) {
+  const text = safeText(description);
+  if (!text) return [];
+
+  // Normalize newlines
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  // 1) Bullet-like lines
+  const bulletLines = lines
+    .map((l) => l.replace(/^(?:[-•*]\s+|\d+[.)]\s+)/, "").trim())
+    .filter((l) => l.length >= 6 && l.length <= 90);
+
+  // If we have "real" bullets (more than 1), use them
+  if (bulletLines.length >= 2) return bulletLines.slice(0, max);
+
+  // 2) Sentence fallback
+  const sentences = text
+    .replace(/\s+/g, " ")
+    .split(".")
+    .map((s) => s.trim())
+    .filter((s) => s.length >= 10 && s.length <= 110);
+
+  return sentences.slice(0, max);
+}
+
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [products, setProducts] = useState([]);
@@ -128,49 +168,46 @@ export default function Home() {
     document.body.appendChild(script);
   }, []);
 
-  const handleGoogleResponse = useCallback(
-    async (response) => {
+  const handleGoogleResponse = useCallback(async (response) => {
+    try {
+      const payload = JSON.parse(atob(response.credential.split(".")[1]));
+      const userEmail = payload.email;
+
+      const isAdmin = ADMIN_EMAILS.includes(userEmail);
+      const role = isAdmin ? "admin" : "user";
+
+      const userData = {
+        name: payload.name,
+        email: userEmail,
+        profile_pic: payload.picture,
+        role,
+        isAdmin,
+      };
+
+      localStorage.setItem("userToken", response.credential);
+      localStorage.setItem("userData", JSON.stringify(userData));
+      setUser(userData);
+
+      // optional server-side JWT for admin tools
       try {
-        const payload = JSON.parse(atob(response.credential.split(".")[1]));
-        const userEmail = payload.email;
-
-        const isAdmin = ADMIN_EMAILS.includes(userEmail);
-        const role = isAdmin ? "admin" : "user";
-
-        const userData = {
-          name: payload.name,
-          email: userEmail,
-          profile_pic: payload.picture,
-          role,
-          isAdmin,
-        };
-
-        localStorage.setItem("userToken", response.credential);
-        localStorage.setItem("userData", JSON.stringify(userData));
-        setUser(userData);
-
-        // optional server-side JWT for admin tools
-        try {
-          const jwtResponse = await convertGoogleToJWT(response.credential);
-          if (jwtResponse?.access_token) {
-            localStorage.setItem("adminToken", jwtResponse.access_token);
-          }
-        } catch (jwtError) {
-          console.error("JWT conversion failed:", jwtError);
+        const jwtResponse = await convertGoogleToJWT(response.credential);
+        if (jwtResponse?.access_token) {
+          localStorage.setItem("adminToken", jwtResponse.access_token);
         }
-
-        closeMenu();
-        alert(isAdmin ? `Welcome Admin ${userData.name}!` : `Welcome ${userData.name}!`);
-      } catch (err) {
-        console.error("Login failed:", err);
-        alert("Login failed. Please try again.");
-      } finally {
-        gsiPromptingRef.current = false;
-        setLoginBusy(false);
+      } catch (jwtError) {
+        console.error("JWT conversion failed:", jwtError);
       }
-    },
-    [closeMenu]
-  );
+
+      closeMenu();
+      alert(isAdmin ? `Welcome Admin ${userData.name}!` : `Welcome ${userData.name}!`);
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Login failed. Please try again.");
+    } finally {
+      gsiPromptingRef.current = false;
+      setLoginBusy(false);
+    }
+  }, []);
 
   const ensureGsiInitialized = useCallback(() => {
     if (!gsiReadyRef.current || !window.google) return false;
@@ -249,6 +286,11 @@ export default function Home() {
     return [...list].sort((a, b) => Number(a.priority ?? 9999) - Number(b.priority ?? 9999))[0] || null;
   }, [products]);
 
+  // Priority-1 highlights from description
+  const featuredHighlights = useMemo(() => {
+    return extractHighlights(priorityOneProduct?.description, 5);
+  }, [priorityOneProduct]);
+
   // Only priority=2 for carousel (NO fallback)
   const priority2Products = useMemo(() => {
     return (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
@@ -258,7 +300,7 @@ export default function Home() {
     const top = priorityOneProduct;
 
     if (!top?.id) {
-      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" });
       return;
     }
 
@@ -318,7 +360,8 @@ export default function Home() {
         </div>
 
         <div className="nav-links desktop-only">
-          <a href="#company">Company</a>
+          <a href="#company-vision">Company</a>
+          <a href="#hero">Hero</a>
           <a href="#featured">Featured</a>
           <a href="#products">Products</a>
           <a href="#about">About</a>
@@ -388,8 +431,11 @@ export default function Home() {
             </div>
 
             <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#company" onClick={closeMenu}>
+              <a className="mobileMenuItem" href="#company-vision" onClick={closeMenu}>
                 Company
+              </a>
+              <a className="mobileMenuItem" href="#hero" onClick={closeMenu}>
+                Hero
               </a>
               <a className="mobileMenuItem" href="#featured" onClick={closeMenu}>
                 Featured
@@ -419,89 +465,80 @@ export default function Home() {
         </div>
       )}
 
-      {/* 1) COMPANY VISION */}
-      <section id="company" className="companyHero">
+      {/* 0) COMPANY VISION (FULL PAGE) */}
+      <section id="company-vision" className="companyVisionFull">
         <img
-          className="companyHeroImg"
+          className="companyVisionImg"
           src="/images/company-vision.png"
-          alt="ELVORA vision"
+          alt="ELVORA Company Vision"
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
           }}
         />
-        <div className="companyHeroOverlay">
-          <div className="companyHeroCard">
-            <span className="companyHeroKicker">ELVORA</span>
-            <h1 className="companyHeroTitle">Vision-led care. Clean, consistent, everyday.</h1>
-            <p className="companyHeroDesc">
-              We build premium personal-care products with comfort-first formulas and clear purpose — simple routines
-              that actually work.
-            </p>
-            <div className="companyHeroCtas">
-              <button
-                className="primary-btn"
-                type="button"
-                onClick={() => document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                See Featured Product
-              </button>
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* 2) FEATURED (inline background to avoid CSS resolve errors) */}
-      <section
-        id="featured"
-        className="featuredSplit"
-        style={{
-          backgroundImage: "url(/images/hero-desktop.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="featuredLeft">
-          <span className="featuredKicker">Featured Product</span>
+      {/* 1) PREMIUM HERO (MODERN) */}
+     
 
-          <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
+      {/* 2) FEATURED PRODUCT (P1 IMAGE FULL + LEFT OVERLAY HIGHLIGHTS) */}
+      <section id="featured" className="featuredPremium">
+        <div
+          className="featuredPremiumBg"
+          style={{
+            backgroundImage: `url(${priorityOneProduct?.image_url || "/images/feature-placeholder.png"})`,
+          }}
+          aria-label="Featured product background"
+        />
 
-          <div className="featuredHighlights">
-            <div className="fhItem">Clean ingredients • gentle everyday use</div>
-            <div className="fhItem">Fast absorption • non-greasy finish</div>
-            <div className="fhItem">Designed for consistent long-term care</div>
-            <div className="fhItem">Premium feel • simple routine</div>
-          </div>
+        <div className="featuredPremiumOverlay">
+          <div className="featuredPremiumContent">
+            <span className="featuredKicker">Featured • Priority 1</span>
+            <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
 
-          <button
-            className="primary-btn"
-            type="button"
-            onClick={goToPriorityOneProduct}
-            disabled={!priorityOneProduct?.id}
-          >
-            Shop Now
-          </button>
-
-          {!priorityOneProduct?.id && (
-            <p style={{ marginTop: 10, color: "#333", fontWeight: 700 }}>
-              ⚠️ No featured product found (priority=1). Set one in admin.
+            <p className="featuredTagline">
+              Premium feel • comfort-first formula • designed for consistent daily care.
             </p>
-          )}
-        </div>
 
-        <div className="featuredRight">
-          <img
-            className="featuredImg"
-            src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
-            alt={priorityOneProduct?.name || "Featured product"}
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "https://placehold.co/1200x1200/EEE/31343C?text=Priority+1+Product";
-            }}
-          />
+            {featuredHighlights.length > 0 ? (
+              <div className="featuredBullets">
+                {featuredHighlights.map((h, idx) => (
+                  <div className="fbItem" key={idx}>
+                    <span className="fbDot" />
+                    <span className="fbText">{h}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="featuredBullets">
+                <div className="fbItem">
+                  <span className="fbDot" />
+                  <span className="fbText">Clean ingredients • gentle everyday use</span>
+                </div>
+                <div className="fbItem">
+                  <span className="fbDot" />
+                  <span className="fbText">Fast absorption • non-greasy finish</span>
+                </div>
+                <div className="fbItem">
+                  <span className="fbDot" />
+                  <span className="fbText">Designed for consistent long-term care</span>
+                </div>
+              </div>
+            )}
+
+            <div className="featuredCtas">
+              <button className="primary-btn" type="button" onClick={goToPriorityOneProduct} disabled={!priorityOneProduct?.id}>
+                Shop Now
+              </button>
+
+             
+            </div>
+
+            {!priorityOneProduct?.id && (
+              <p className="featuredWarn">⚠️ No featured product found (priority=1). Set one in admin.</p>
+            )}
+          </div>
         </div>
       </section>
 
@@ -570,9 +607,9 @@ export default function Home() {
         )}
       </section>
 
-      <section id="about" className="pageSection">
-        <About />
-      </section>
+     <section id="about" className="pageSection aboutFull">
+  <About />
+</section>
 
       <section id="blog" className="pageSection">
         <Blog />
@@ -586,4 +623,3 @@ export default function Home() {
     </>
   );
 }
-
