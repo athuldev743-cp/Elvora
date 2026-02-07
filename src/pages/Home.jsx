@@ -490,24 +490,19 @@ export default function Home() {
   />
 
   <div className="featuredPremiumOverlay">
-    <div className="featuredPremiumContent featuredLeftCenter">
-      
-
-      {/* ✅ manual 2 lines */}
-     
-      <div className="featuredCtas">
-        <button
-          className="primary-btn primary-btn--featured"
-          type="button"
-          onClick={goToPriorityOneProduct}
-          disabled={!priorityOneProduct?.id}
-        >
-          Shop Now
-        </button>
-      </div>
+    <div className="featuredPremiumContent">
+      <button
+        className="primary-btn primary-btn--featured"
+        type="button"
+        onClick={goToPriorityOneProduct}
+        disabled={!priorityOneProduct?.id}
+      >
+        Shop Now
+      </button>
     </div>
   </div>
 </section>
+
 
    
 
