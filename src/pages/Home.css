@@ -26,12 +26,14 @@ html, body {
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding-top: 80px !important;
+  /* REMOVED padding-top so navbar overlays/sits at top */
+  padding-top: 0 !important; 
 }
 
 /* ===================== NAVBAR ===================== */
 .navbar {
-  position: fixed;
+  /* Changed from fixed to absolute so it scrolls away */
+  position: absolute; 
   top: 0; left: 0; right: 0;
   height: 80px;
   width: 100%;
@@ -42,14 +44,11 @@ body {
   padding: 0 40px;
   z-index: 1000;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
 }
 
-.navbar.scrolled {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
+/* Hide standard links on mobile to prevent "CompanyHeroFeatured" mess */
+.desktop-only { display: flex; }
+.mobile-only { display: none; }
 
 .logo {
   display: flex;
@@ -102,61 +101,74 @@ body {
   cursor: pointer;
 }
 
-.desktop-only { display: flex; }
-.mobile-only { display: none; }
+/* ===================== SECTIONS (DESKTOP) ===================== */
 
-/* ===================== HERO & SECTIONS (DESKTOP) ===================== */
+/* 1. COMPANY VISION */
+/* Width 100%, Height Auto -> Fits width, adjusts height, NO CROP */
 .companyVisionFull {
   width: 100%;
+  height: 600px; /* Fixed height you requested */
   display: block;
-  line-height: 0;
   position: relative;
+  background: #fbfaf6;
+  margin-bottom: 20px;
+  line-height: 0;
 }
 
 .companyVisionImg {
   width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
+  height: 100%;      /* Fill the 600px container */
+  object-fit: cover; /* FORCE 100% Width (Trims top/bottom to fit) */
+  object-position: center; /* Keeps the center of the image visible */
 }
 
+/* 2. HERO FEATURED SECTION */
 .featuredPremium {
   position: relative;
   width: 100%;
-  background: #fbfaf6; /* Matches image background to hide gaps */
-  overflow: hidden;
+  height: auto; /* Let image define height */
+  background: #fbfaf6; 
+  display: block;
+  line-height: 0;
 }
 
 .featuredPremiumImg {
   width: 100%;
-  height: 90vh;
-  max-height: 850px;
+  height: auto; /* Natural height */
   display: block;
-  object-fit: cover; /* Desktop usually looks better with cover */
-  object-position: center;
+  object-fit: contain; /* Full width, no crop */
 }
 
+/* Desktop Button Position */
 .featuredPremiumOverlay {
   position: absolute;
-  bottom: 40px;
-  left: 40px;
+  bottom: 50px;
+  left: 60px;
   z-index: 10;
+  background: transparent;
+  width: auto;
+  height: auto;
 }
 
-/* Updated Button Color (Yellow) */
+/* Desktop Button Style */
 .primary-btn--featured {
-  background: var(--dim-yellow) !important; /* Force Yellow */
-  color: #000 !important; /* Black text for contrast */
+  background: var(--dim-yellow) !important;
+  color: #000 !important;
   border: none;
-  padding: 16px 40px;
+  
+  /* INCREASED SIZES HERE: */
+  padding: 24px 65px;  /* Was 18px 45px */
+  font-size: 24px;     /* Was 18px */
+  
   border-radius: 50px;
-  font-weight: 800;
-  font-size: 18px;
+  font-weight: 900;    /* Made slightly bolder */
   cursor: pointer;
   text-transform: uppercase;
   box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4);
   transition: transform 0.2s ease;
+  letter-spacing: 1px;
 }
+
 .primary-btn--featured:hover {
   transform: scale(1.05);
   background: #e3c460 !important;
@@ -170,7 +182,7 @@ body {
 
 .carousel-container {
   position: relative;
-  padding: 0 40px;
+  padding: 0 60px;
 }
 
 .carousel-track {
@@ -184,62 +196,88 @@ body {
 .carousel-track::-webkit-scrollbar { display: none; }
 
 .product-card {
-  flex: 0 0 280px;
+  flex: 0 0 calc((100% - 60px) / 4); 
+  max-width: calc((100% - 60px) / 4);
+  height: 450px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
 }
 
 .product-image {
   width: 100%;
-  height: 250px;
-  object-fit: cover;
+  height: 100%;
+  object-fit: contain;
   display: block;
+  padding: 20px;
+  background: #fff;
 }
 
 .product-info {
-  padding: 15px;
-  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(255,255,255,0.95) 20%, rgba(255,255,255,0));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
 }
 
 .product-name {
-  font-weight: 700;
-  display: block;
-  margin-bottom: 10px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(255,255,255,1);
 }
 
 .view-details-btn {
-  width: 100%;
-  padding: 8px 0;
-  background: var(--muted-green);
-  color: white;
+  width: auto;
+  min-width: 140px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, var(--dim-yellow), #e3c460);
+  color: #000;
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(214, 184, 90, 0.3);
 }
 
 .carousel-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px; height: 40px;
+  width: 48px; height: 48px;
   background: #fff;
-  border: 1px solid #eee;
+  border: 1px solid rgba(0,0,0,0.05);
   border-radius: 50%;
   cursor: pointer;
   z-index: 10;
-  font-size: 20px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
-.carousel-arrow.prev { left: 0; }
-.carousel-arrow.next { right: 0; }
+.carousel-arrow.prev { left: 10px; }
+.carousel-arrow.next { right: 10px; }
 
+/* ===================== MOBILE MENU OVERLAY ===================== */
 .mobileMenuOverlay {
   position: fixed;
   inset: 0;
@@ -275,25 +313,22 @@ body {
 }
 
 /* =========================================================
-   ✅ MOBILE / TABLET FIXES (Max-width: 992px)
+   ✅ MOBILE / TABLET OVERRIDES (Max-width: 992px)
    ========================================================= */
 @media (max-width: 992px) {
   
-  body { padding-top: 60px !important; }
-
+  /* Ensure Links are hidden so they don't break layout */
   .desktop-only { display: none !important; }
   .mobile-only { display: flex !important; }
 
   .navbar {
     height: 60px !important;
     padding: 0 15px !important;
+    /* ensure absolute positioning stays for mobile too */
+    position: absolute !important; 
   }
-
-  .logo-img {
-    height: 40px !important;
-    min-height: 0 !important;
-    width: auto !important;
-  }
+  
+  .logo-img { height: 40px !important; width: auto !important; }
 
   .hamburger {
     background: none;
@@ -309,110 +344,83 @@ body {
     border-radius: 2px;
   }
 
-  /* 1. COMPANY VISION - 50vh Banner, No Gaps */
+  /* 1. COMPANY VISION */
   #company-vision.companyVisionFull {
-    height: 50vh !important;
+    /* Height Auto + Width 100% = Full width, no crop */
+    height: auto !important; 
     width: 100% !important;
     display: block !important;
+    margin-bottom: 15px !important;
   }
+  
   .companyVisionImg {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important; /* Fills the 50vh space completely */
-    object-position: center !important;
+    height: auto !important;
+    object-fit: contain !important; /* Forces 100% width fit */
+    display: block !important;
   }
 
-  /* 2. HERO PRODUCT - More Height, NO ZOOM (Contain) */
+  /* 2. HERO PRODUCT */
   #featured.featuredPremium {
-    height: 75vh !important; /* Taller container */
-    background: #fbfaf6 !important; /* Matches image bg color */
+    height: auto !important; /* Let image size determine height */
+    background: #fbfaf6 !important;
     display: block !important;
   }
   .featuredPremiumImg {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important; /* Shows full image, no cropping */
-    object-position: center bottom !important; /* Anchors image */
-    background: #fbfaf6 !important;
+    height: auto !important;
+    object-fit: contain !important; /* Full width, no crop */
+    display: block !important;
   }
 
-  /* 3. BUTTON - Yellow, overlay adjustment */
+  /* 3. HERO BUTTON - Bottom Left Overlay */
   .featuredPremiumOverlay {
     position: absolute !important;
     bottom: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    left: 15px !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
     width: auto !important;
     background: transparent !important;
     display: flex !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
   }
   .primary-btn--featured {
-    padding: 12px 30px !important;
-    font-size: 15px !important;
+    padding: 10px 24px !important;
+    font-size: 14px !important;
     white-space: nowrap !important;
-    background: var(--dim-yellow) !important; /* Yellow */
-    color: #000 !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
   }
 
-  /* 4. PRODUCT CAROUSEL - 2 Products, Overlay Button */
-  .product-preview {
-    padding: 30px 0 !important;
-  }
-  .carousel-container {
-    padding: 0 !important;
-  }
+  /* 4. PRODUCT CAROUSEL MOBILE */
+  .product-preview { padding: 30px 0 !important; }
+  .carousel-container { padding: 0 !important; }
   .carousel-arrow { display: none !important; }
   
   .carousel-track {
     padding: 0 12px 20px !important;
-    gap: 12px !important; /* Small gap between cards */
+    gap: 12px !important;
   }
-
   .product-card {
-    /* Calculated to show 2 cards: (100vw - padding - gap) / 2 */
-    flex: 0 0 44vw !important; 
+    flex: 0 0 44vw !important;
     max-width: 44vw !important;
-    height: 280px !important; /* Fixed height for uniformity */
-    margin: 0 !important;
-    position: relative !important;
+    height: 280px !important;
   }
-
-  .product-image {
-    width: 100% !important;
-    height: 100% !important; /* Takes full card height */
-    padding: 0 !important; /* NO PADDING requested */
-    object-fit: contain !important; /* 100% Fit NO CROP requested */
-    background: #fff !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* Hide standard info text on mobile to make room for overlay button */
+  .product-image { padding: 0 !important; }
   .product-info {
-    position: absolute !important;
-    inset: 0 !important;
+    padding: 10px !important;
     background: transparent !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
-    pointer-events: none !important; /* Let clicks pass through if needed */
+    justify-content: flex-end !important;
   }
-
-  .product-name {
-    display: none !important; /* Hide name to focus on image/button */
-  }
-
+  .product-name { display: none !important; }
   .view-details-btn {
-    pointer-events: auto !important;
-    width: auto !important;
-    margin-bottom: 15px !important;
-    padding: 6px 16px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-bottom: 5px !important;
+    padding: 8px 0 !important;
     font-size: 12px !important;
-    background: rgba(95, 126, 92, 0.9) !important; /* Semi-transparent green */
+    background: rgba(214, 184, 90, 0.95) !important;
     backdrop-filter: blur(4px);
-    border-radius: 20px !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
   }
 }
