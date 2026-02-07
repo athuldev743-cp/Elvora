@@ -562,3 +562,32 @@ body{
     padding-top: 0 !important;
   }
 }
+/* ✅ HARD OVERRIDE (mobile): kill any forced height on the vision section */
+@media (max-width: 992px){
+  section#company-vision.companyVisionFull{
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    line-height: 0 !important; /* prevents any inline gap */
+    background: #fbfaf6 !important;
+  }
+
+  section#company-vision.companyVisionFull > img.companyVisionImg{
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+  }
+
+  /* ✅ make sure the next section doesn't add top gap */
+  section#featured.featuredPremium{
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
