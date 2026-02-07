@@ -274,14 +274,34 @@ body {
   box-shadow: 0 12px 30px rgba(0,0,0,0.1);
 }
 
+/* ===================== AVAILABLE SOON OVERLAY ===================== */
+.available-soon-badge {
+  position: absolute;
+  top: 15px;         /* Distance from top */
+  right: 15px;       /* Distance from right */
+  z-index: 20;       /* Sit ON TOP of the image */
+  
+  background: rgba(95, 126, 92, 0.95); /* Green background */
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  pointer-events: none; /* Let clicks pass through if needed */
+}
+
+/* ===================== PRODUCT IMAGE (NO PADDING) ===================== */
 .product-image {
   width: 100%;
   height: 100%;
   
-  /* 2. FORCE FILL (Cover) & REMOVE PADDING */
-  padding: 0; 
-  object-fit: cover; /* Forces image to touch all edges */
-  object-position: center; /* Keeps bottle centered */
+  /* FORCE FULL FILL & NO PADDING */
+  padding: 0 !important; 
+  object-fit: cover !important; 
+  object-position: center;
   
   display: block;
   background: #fff;

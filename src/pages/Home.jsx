@@ -286,31 +286,49 @@ export default function Home() {
     return [...list].sort((a, b) => Number(a.priority ?? 9999) - Number(b.priority ?? 9999))[0] || null;
   }, [products]);
 
+  const goToPriorityOneProduct = useCallback(() => {
+    const top = priorityOneProduct;
+
+    if (!top?.id) {
+      // If no product is loaded yet, just scroll to the carousel
+      document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    // Require login if not logged in
+    if (!user) {
+      handleGoogleLogin();
+      return;
+    }
+
+    // Go to product details
+    navigate(`/products/${top.id}`);
+  }, [priorityOneProduct, user, handleGoogleLogin, navigate]);
+
   // Priority-1 highlights from description
   const featuredHighlights = useMemo(() => {
     return extractHighlights(priorityOneProduct?.description, 5);
   }, [priorityOneProduct]);
 
   // Only priority=2 for carousel (NO fallback)
+  // UPDATED: Sorts so available products appear before "Available Soon"
   const priority2Products = useMemo(() => {
-    return (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
+    const list = (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
+    
+    return list.sort((a, b) => {
+      const qtyA = Number(a.quantity ?? 0);
+      const qtyB = Number(b.quantity ?? 0);
+      const isAvailableA = qtyA > 0;
+      const isAvailableB = qtyB > 0;
+
+      // If A is available and B is not, A comes first (-1)
+      if (isAvailableA && !isAvailableB) return -1;
+      // If B is available and A is not, B comes first (1)
+      if (!isAvailableA && isAvailableB) return 1;
+      // Otherwise keep original order
+      return 0;
+    });
   }, [products]);
-
-  const goToPriorityOneProduct = useCallback(() => {
-    const top = priorityOneProduct;
-
-    if (!top?.id) {
-      document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (!user) {
-      handleGoogleLogin();
-      return;
-    }
-
-    navigate(`/products/${top.id}`);
-  }, [priorityOneProduct, user, handleGoogleLogin, navigate]);
 
   const scrollCarousel = (dir) => {
     const el = trackRef.current;
@@ -360,7 +378,6 @@ export default function Home() {
         </div>
 
         <div className="nav-links desktop-only">
-          
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
@@ -429,7 +446,6 @@ export default function Home() {
             </div>
 
             <div className="mobileMenuSection">
-              
               <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
                 Products
               </a>
@@ -455,45 +471,40 @@ export default function Home() {
         </div>
       )}
 
-    {/* 0) COMPANY VISION (FULL PAGE) */}
-<section id="company-vision" className="companyVisionFull">
-  <img
-    className="companyVisionImg"
-    src="/images/company-vision.png"
-    alt="ELVORA Company Vision"
-    loading="lazy"
-    onError={(e) => {
-      e.currentTarget.onerror = null;
-      e.currentTarget.src =
-        "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
-    }}
-  />
-</section>
+      {/* 0) COMPANY VISION (FULL PAGE) */}
+      <section id="company-vision" className="companyVisionFull">
+        <img
+          className="companyVisionImg"
+          src="/images/company-vision.png"
+          alt="ELVORA Company Vision"
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src =
+              "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
+          }}
+        />
+      </section>
 
-{/* 2) FEATURED PRODUCT */}
-{/* 2) FEATURED PRODUCT */}
-{/* 2) FEATURED PRODUCT */}
-<section id="featured" className="featuredPremium">
-  <img
-    className="featuredPremiumImg"
-    src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
-    alt="Featured product"
-    loading="lazy"
-  />
-  <div className="featuredPremiumOverlay">
-    <button
-      className="primary-btn primary-btn--featured"
-      type="button"
-      onClick={goToPriorityOneProduct}
-      disabled={!priorityOneProduct?.id}
-    >
-      SHOP NOW
-    </button>
-  </div>
-</section>
-
-
-   
+      {/* 2) FEATURED PRODUCT */}
+      <section id="featured" className="featuredPremium">
+        <img
+          className="featuredPremiumImg"
+          src={priorityOneProduct?.image_url || "/images/feature-placeholder.png"}
+          alt="Featured product"
+          loading="lazy"
+        />
+        <div className="featuredPremiumOverlay">
+          <button
+            className="primary-btn primary-btn--featured"
+            type="button"
+            onClick={goToPriorityOneProduct}
+            disabled={!priorityOneProduct?.id}
+          >
+            SHOP NOW
+          </button>
+        </div>
+      </section>
 
       {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
       <section id="products" className="product-preview">
@@ -560,9 +571,9 @@ export default function Home() {
         )}
       </section>
 
-     <section id="about" className="pageSection aboutFull">
-  <About />
-</section>
+      <section id="about" className="pageSection aboutFull">
+        <About />
+      </section>
 
       <section id="blog" className="pageSection">
         <Blog />
