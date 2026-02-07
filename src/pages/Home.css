@@ -437,6 +437,9 @@ body{
 /* =========================================================
    ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
    ========================================================= */
+/* =========================================================
+   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
+   ========================================================= */
 @media (max-width:992px){
   .nav-links{ display:none !important; }
   .auth-section{ display:none !important; }
@@ -466,24 +469,19 @@ body{
     height:50px !important;
   }
 
-  /* ✅ COMPANY VISION - Clean layout */
+  /* ✅ COMPANY VISION - Remove ALL gaps and space */
   section#company-vision.companyVisionFull{
     width: 100% !important;
-    height: 60vh !important;
-    min-height: 300px !important;
-    max-height: 400px !important;
-    margin: 70px 0 0 0 !important;
+    height: 50vh !important;
+    min-height: 250px !important;
+    margin-top: 70px !important; /* Account for fixed navbar */
     padding: 0 !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     line-height: 0 !important;
-    position: relative !important;
   }
 
-  section#company-vision.companyVisionFull > img.companyVisionImg{
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+  .companyVisionImg{
     width: 100% !important;
     height: 100% !important;
     display: block !important;
@@ -494,20 +492,16 @@ body{
     padding: 0 !important;
   }
 
-  /* ✅ HERO FEATURED - Like reference image */
+  /* ✅ HERO FEATURED - Remove ALL gaps and dark overlay */
   section#featured.featuredPremium{
     width: 100% !important;
-    height: 85vh !important;
-    min-height: 500px !important;
-    max-height: 700px !important;
+    height: 70vh !important;
+    min-height: 400px !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   .featuredPremiumImg{
@@ -521,25 +515,15 @@ body{
     padding: 0 !important;
   }
 
-  /* ✅ Overlay with product info like reference image */
+  /* ✅ Shop Now button ONLY - Bottom LEFT corner (NO dark overlay) */
   .featuredPremiumOverlay{
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.2) 0%,
-      rgba(0, 0, 0, 0.1) 30%,
-      rgba(0, 0, 0, 0.7) 80%,
-      rgba(0, 0, 0, 0.8) 100%
-    ) !important;
-    display: flex !important;
-    align-items: flex-end !important;
-    justify-content: center !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    background: transparent !important;
     z-index: 2 !important;
-    padding: 0 0 50px 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .featuredPremiumContent{
@@ -547,71 +531,42 @@ body{
     backdrop-filter: none !important;
     padding: 0 !important;
     border-radius: 0 !important;
-    text-align: center !important;
-    width: 90% !important;
-    max-width: 400px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-    align-items: center !important;
+    margin: 0 !important;
   }
 
-  /* Product Brand Styling like reference image */
-  .featuredProductBrand{
-    color: white !important;
-    text-align: center !important;
-    width: 100% !important;
+  /* HIDE all text labels */
+  .featuredProductBrand,
+  .brandName,
+  .productName,
+  .productType {
+    display: none !important;
   }
 
-  .brandName{
-    font-size: 24px !important;
-    font-weight: 900 !important;
-    letter-spacing: 1px !important;
-    margin-bottom: 5px !important;
-    text-transform: uppercase !important;
-  }
-
-  .productName{
-    font-size: 20px !important;
-    font-weight: 700 !important;
-    margin-bottom: 5px !important;
-    color: #f0f0f0 !important;
-  }
-
-  .productType{
-    font-size: 18px !important;
-    font-weight: 800 !important;
-    letter-spacing: 2px !important;
-    color: var(--dim-yellow) !important;
-    text-transform: uppercase !important;
-  }
-
-  /* Shop Now Button */
+  /* Shop Now Button ONLY */
   .primary-btn--featured{
-    padding: 16px 40px !important;
-    font-size: 18px !important;
-    font-weight: 900 !important;
+    padding: 14px 30px !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
     background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow)) !important;
     border: none !important;
     border-radius: 50px !important;
     color: white !important;
     cursor: pointer !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
     transition: transform 0.2s ease !important;
     text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    min-width: 220px !important;
-    margin-top: 10px !important;
+    letter-spacing: 1px !important;
+    min-width: 160px !important;
   }
 
   .primary-btn--featured:hover{
     transform: scale(1.05) !important;
   }
 
-  /* ✅ PRODUCTS section */
+  /* ✅ PRODUCTS section - NO gap after hero */
   .product-preview{
     margin: 0 !important;
-    padding: 30px 0 !important;
+    padding: 20px 0 !important;
     background: #f8f9fa !important;
   }
 
@@ -629,69 +584,61 @@ body{
   }
 
   .product-image{
-    height: 300px !important;
+    height: 280px !important;
     object-fit: contain !important;
     background: #fff !important;
-    padding: 20px !important;
+    padding: 15px !important;
   }
 
   .product-card::after{ 
-    height: 120px !important;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.8) 0%,
-      rgba(0, 0, 0, 0.4) 50%,
-      transparent 100%
-    ) !important;
+    height: 100px !important;
   }
   
   .product-info{ 
-    padding: 15px 10px 20px !important;
-    gap: 10px !important;
-  }
-  
-  .product-name{
-    font-size: 18px !important;
-    font-weight: 900 !important;
-    color: white !important;
+    padding: 12px 10px 15px !important;
   }
 }
 
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
   section#company-vision.companyVisionFull{
-    height: 50vh !important;
-    min-height: 250px !important;
-    max-height: 350px !important;
+    height: 40vh !important;
+    min-height: 200px !important;
   }
 
   section#featured.featuredPremium{
-    height: 80vh !important;
-    min-height: 450px !important;
-    max-height: 600px !important;
-  }
-
-  .brandName{
-    font-size: 22px !important;
-  }
-
-  .productName{
-    font-size: 18px !important;
-  }
-
-  .productType{
-    font-size: 16px !important;
-    letter-spacing: 1.5px !important;
+    height: 60vh !important;
+    min-height: 350px !important;
   }
 
   .primary-btn--featured {
-    padding: 14px 32px !important;
-    font-size: 16px !important;
-    min-width: 200px !important;
-    letter-spacing: 1.5px !important;
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    min-width: 140px !important;
   }
   
   .product-image{ 
-    height: 260px !important;
+    height: 240px !important;
+  }
+}
+
+/* ✅ Very small phones (≤360px) */
+@media (max-width:360px){
+  section#company-vision.companyVisionFull{
+    height: 35vh !important;
+    min-height: 180px !important;
+  }
+
+  section#featured.featuredPremium{
+    height: 55vh !important;
+    min-height: 320px !important;
+  }
+
+  .primary-btn--featured {
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+    min-width: 120px !important;
+    left: 15px !important;
+    bottom: 15px !important;
   }
 }
