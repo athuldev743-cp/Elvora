@@ -461,141 +461,145 @@ body{
     border-radius:999px;
   }
 
-  /* ✅ COMPANY VISION = banner 50vh (NO zoom, NO gap) */
+  /* ✅ COMPANY VISION = banner (NO zoom, NO gap) */
   section#company-vision.companyVisionFull{
-    height: 50vh !important;
-    min-height: 240px !important;
-    max-height: 420px !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:hidden;
-    background:#fbfaf6 !important;
-    line-height:0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 200px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #fbfaf6 !important;
+    line-height: 0 !important;
+    display: block !important;
   }
 
   section#company-vision.companyVisionFull > img.companyVisionImg{
-    width:100% !important;
-    height:100% !important;
-    display:block !important;
-    object-fit:contain !important;
-    object-position:center !important;
-    background:#fbfaf6 !important;
-    margin:0 !important;
-    padding:0 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 50vh !important;
+    display: block !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: #fbfaf6 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* ✅ HERO FEATURED = 100vh (NO zoom/crop) */
+  /* ✅ HERO FEATURED = (NO zoom/crop, NO gap after Company Vision) */
   section#featured.featuredPremium{
-    height: 100svh !important;
-    margin:0 !important;
-    padding:0 !important;
-    overflow:hidden;
-    background:#fbfaf6 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 300px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: #fbfaf6 !important;
+    display: block !important;
     position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
   }
 
   .featuredPremiumImg{
-    width:100% !important;
-    height:100% !important;
-    display:block !important;
-    object-fit:contain !important;
-    object-position:center !important;
-    background:#fbfaf6 !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    z-index: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: 70vh !important;
+    display: block !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    background: #fbfaf6 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* ✅ Overlay button - centered on image */
+  /* ✅ Overlay button - LEFT BOTTOM side (NO background label) */
   .featuredPremiumOverlay{
     position: absolute !important;
-    inset: 0 !important;
+    bottom: 20px !important;
+    left: 16px !important;
+    right: auto !important;
+    top: auto !important;
     background: transparent !important;
     display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    align-items: flex-end !important;
+    justify-content: flex-start !important;
     z-index: 2 !important;
-    padding:0 !important;
+    padding: 0 !important;
+    width: auto !important;
   }
 
   .featuredPremiumContent{
-    position: relative !important;
-    text-align: center !important;
-    background: rgba(0, 0, 0, 0.5) !important;
-    padding: 20px !important;
-    border-radius: 20px !important;
-    backdrop-filter: blur(10px) !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
   }
 
   .featuredName{ display:none !important; }
   .featuredManualText{ display:none !important; }
 
   .primary-btn--featured{
-    padding: 16px 32px !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
+    padding: 12px 24px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
     background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow)) !important;
     border: none !important;
-    border-radius: 50px !important;
+    border-radius: 30px !important;
     color: white !important;
     cursor: pointer !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
     transition: transform 0.2s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
   }
 
   .primary-btn--featured:hover{
     transform: scale(1.05) !important;
   }
 
-  /* ✅ remove gap between hero and products */
+  /* ✅ PRODUCTS section */
   .product-preview{
-    margin:0 !important;
-    padding:16px 0 !important;
+    margin: 0 !important;
+    padding: 20px 0 !important;
+    background: #f8f9fa !important;
   }
 
   .carousel-track{
-    padding:10px 0 14px !important;
-    margin:0 !important;
-    gap:14px !important;
+    padding: 10px 0 14px !important;
+    margin: 0 !important;
+    gap: 14px !important;
   }
 
   .product-card{
-    flex:0 0 100vw !important;
-    max-width:100vw !important;
-    margin:0 !important;
-    border-radius:18px !important;
+    flex: 0 0 90vw !important;
+    max-width: 90vw !important;
+    margin: 0 5vw !important;
+    border-radius: 18px !important;
   }
 
   .product-image{
-    height:320px !important;
-    object-fit:contain !important;
-    background:#fff !important;
+    height: 280px !important;
+    object-fit: contain !important;
+    background: #fff !important;
   }
 
-  .product-card::after{ height:95px !important; }
-  .product-info{ padding:10px 12px 12px !important; }
-} /* END of @media (max-width:992px) */
+  .product-card::after{ height: 95px !important; }
+  .product-info{ padding: 10px 12px 12px !important; }
+}
 
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
-  section#company-vision.companyVisionFull{
-    height:46vh !important;
-    min-height:200px !important;
-    max-height:320px !important;
+  section#company-vision.companyVisionFull > img.companyVisionImg{
+    max-height: 40vh !important;
   }
 
   .featuredPremiumImg{
-    height:100svh !important;
+    max-height: 60vh !important;
   }
 
-  .product-image{ height:280px !important; }
-  
   .primary-btn--featured {
-    padding: 14px 28px !important;
-    font-size: 16px !important;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
   }
+  
+  .product-image{ height: 240px !important; }
 }
