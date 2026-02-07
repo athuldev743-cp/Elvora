@@ -1,4 +1,5 @@
 /* src/pages/Home.css */
+/* ✅ COMPLETELY FIXED VERSION - NO GAPS, MOBILE WORKING */
 
 /* ===================== TOKENS ===================== */
 :root{
@@ -31,8 +32,8 @@ html,body{
 
 body{
   font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-  /* ⚡ CRITICAL: Body padding for fixed navbar - MUST BE HERE (not in media query) */
-  padding-top: 80px !important; /* Desktop navbar height */
+  /* FIX: Body padding for fixed navbar */
+  padding-top: 80px !important;
 }
 
 .pageSection{ background:#D6B85A; }
@@ -222,12 +223,12 @@ body{
   width:100%;
   height:auto;
   display:block;
-  object-fit:contain; /* ✅ no zoom */
+  object-fit:contain;
   background:#fbfaf6;
 }
 
 /* =========================================================
-   2) FEATURED PREMIUM (Hero)
+   2) FEATURED PREMIUM (Hero) - DESKTOP
    ========================================================= */
 .featuredPremium{
   position: relative;
@@ -244,13 +245,11 @@ body{
   display:block;
   object-position:center;
   background:#fbfaf6;
-  /* desktop default */
   height:92vh;
   max-height:850px;
   object-fit:cover;
 }
 
-/* overlay (only button) */
 .featuredPremiumOverlay{
   position:absolute;
   inset:0;
@@ -286,7 +285,7 @@ body{
   position:relative;
   isolation:isolate;
   z-index:1;
-  margin:0 !important;     /* ✅ no gap below featured */
+  margin:0 !important;
 }
 
 .carousel-container{ position:relative; overflow:hidden; }
@@ -329,7 +328,6 @@ body{
   font-weight:900;
 }
 
-/* desktop default image */
 .product-image{
   width:100%;
   height:100%;
@@ -431,12 +429,12 @@ body{
 }
 
 /* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY (NO DUPLICATES)
+   ✅ MOBILE/TABLET (≤992px) - FIXED NO GAPS
    ========================================================= */
 @media (max-width:992px){
   /* Update body padding for mobile navbar */
   body {
-    padding-top: 70px !important; /* Mobile navbar height */
+    padding-top: 70px !important;
   }
   
   .nav-links{ display:none !important; }
@@ -523,9 +521,11 @@ body{
     background: #fbfaf6 !important;
     margin: 0 !important;
     padding: 0 !important;
+    /* Override desktop styles */
+    max-height: none !important;
+    height: 100% !important;
   }
 
-  /* SHOP NOW BUTTON - BOTTOM LEFT */
   .featuredPremiumOverlay{
     position: absolute !important;
     bottom: 25px !important;
@@ -534,6 +534,19 @@ body{
     z-index: 10 !important;
     padding: 0 !important;
     margin: 0 !important;
+    /* Reset desktop styles */
+    inset: auto !important;
+    display: block !important;
+    align-items: normal !important;
+    justify-content: normal !important;
+  }
+
+  /* Hide desktop content in mobile */
+  .featuredPremiumContent,
+  .featuredLeftCenter,
+  .featuredName,
+  .featuredCtas {
+    display: none !important;
   }
 
   .primary-btn--featured{
@@ -551,7 +564,7 @@ body{
     min-width: 160px !important;
   }
 
-  /* PRODUCTS SECTION - NO GAP AFTER HERO */
+  /* PRODUCTS SECTION - NO GAP */
   .product-preview{
     width: 100% !important;
     margin: 0 !important;
@@ -612,5 +625,9 @@ body{
     min-width: 140px !important;
     bottom: 20px !important;
     left: 15px !important;
+  }
+  
+  .product-image{ 
+    height: 240px !important;
   }
 }
