@@ -66,8 +66,16 @@ function AddProduct({
               type="number"
               name="priority"
               placeholder="Enter priority"
-              value={newProduct.priority ?? "1"}
-              onChange={(e) => update({ priority: e.target.value })}
+              value={newProduct.priority ?? "2"}
+              onChange={(e) => {
+                const val = e.target.value;
+                // ✅ FIX: If priority is NOT 1, clear image2 immediately
+                const isOne = parseInt(val, 10) === 1;
+                update({ 
+                  priority: val,
+                  image2: isOne ? newProduct.image2 : null 
+                });
+              }}
               required
               min="1"
               step="1"
@@ -106,7 +114,7 @@ function AddProduct({
                 update({ image: e.target.files[0] });
               }
             }}
-            required={!newProduct.image} // Required if not already set
+            required={!newProduct.image}
           />
           <small>Select a product image (JPEG, PNG, etc.)</small>
 
@@ -115,9 +123,9 @@ function AddProduct({
           )}
         </div>
 
-        {/* ✅ NEW: HERO IMAGE (Priority 1 Only) */}
+        {/* ✅ HERO IMAGE (Only visible if Priority is 1) */}
         {isPriorityOne && (
-          <div className="formGroup" style={{background: '#f9f9f9', padding: 15, borderRadius: 8}}>
+          <div className="formGroup highlight-group">
             <label>Hero Banner Image (Priority 1) *</label>
             <input
               type="file"
@@ -127,7 +135,7 @@ function AddProduct({
                   update({ image2: e.target.files[0] });
                 }
               }}
-              required={!newProduct.image2} // Required if priority=1
+              required={!newProduct.image2} // Only required when visible
             />
             <small>Upload a wide banner image for the hero section.</small>
             {newProduct.image2 && (
