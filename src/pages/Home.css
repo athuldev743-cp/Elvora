@@ -474,6 +474,64 @@ body {
   .logo-img { height: 40px !important; width: auto !important; }
 
   /* ===================== MODERN HAMBURGER ===================== */
+/* ===================== MOBILE MENU ACCOUNT FIX ===================== */
+
+/* 1. Reset the main button container */
+button.mobileMenuItem {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100%;
+  padding: 12px 0;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none; /* iOS fix */
+}
+
+/* 2. Force the Icon Wrapper to be a Perfect Circle */
+.mmIcon {
+  /* Strict Dimensions */
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important; /* Prevents squishing */
+  
+  /* Circle Shape */
+  border-radius: 50% !important;
+  
+  /* Hiding the square corners of the image */
+  overflow: hidden !important;
+  
+  /* Centering the content */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Spacing from text */
+  margin-right: 12px !important;
+  
+  /* Background (only if image fails) */
+  background: #eee;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* 3. Force the Image inside to fill the circle */
+.mmAvatar {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 50% !important; /* Double insurance */
+}
+
+/* 4. Fix for the "User" fallback icon if no image */
+.mmIcon svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #555;
+}
+
 .hamburger {
   background: transparent;
   border: none;
