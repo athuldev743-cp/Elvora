@@ -4,6 +4,27 @@ const API_BASE =
 
 const getUrl = (endpoint) => API_BASE + endpoint;
 
+// ✅ Helper to fix image URLs (handles local paths, backslashes, and Cloudinary)
+const processImageUrl = (imageUrl) => {
+  if (!imageUrl) return ""; // Return empty string if null
+
+  let processed = imageUrl.replace(/\\/g, "/");
+  
+  // If it's already a full URL (Cloudinary, S3, etc.), return it
+  if (processed.startsWith("http")) return processed;
+
+  // Ensure it starts with /
+  if (!processed.startsWith("/")) processed = "/" + processed;
+
+  // specific fix for some cloudinary edge cases if protocol is missing
+  if (processed.includes("res.cloudinary.com") && !processed.startsWith("http")) {
+    return `https:${processed}`;
+  }
+
+  // Otherwise assume it's a local static file on the backend
+  return `${API_BASE}${processed}`;
+};
+
 export async function fetchProducts() {
   const res = await fetch(getUrl("/products"), {
     headers: {
@@ -21,19 +42,12 @@ export async function fetchProducts() {
 
   const data = await res.json();
 
-  return (Array.isArray(data) ? data : []).map((p) => {
-    let imageUrl = p.image_url;
-    if (!imageUrl) return p;
-
-    imageUrl = imageUrl.replace(/\\/g, "/");
-    if (imageUrl.startsWith("http")) return { ...p, image_url: imageUrl };
-
-    if (!imageUrl.startsWith("/")) imageUrl = "/" + imageUrl;
-    if (imageUrl.includes("res.cloudinary.com"))
-      return { ...p, image_url: `https:${imageUrl}` };
-
-    return { ...p, image_url: `${API_BASE}${imageUrl}` };
-  });
+  // ✅ Process both image_url and image2_url
+  return (Array.isArray(data) ? data : []).map((p) => ({
+    ...p,
+    image_url: processImageUrl(p.image_url),
+    image2_url: processImageUrl(p.image2_url), // Handle second image
+  }));
 }
 
 export async function fetchProductById(id) {
@@ -48,9 +62,15 @@ export async function fetchProductById(id) {
     throw new Error(`Failed to fetch product: ${res.status} ${text}`);
   }
 
-  return await res.json();
-}
+  const data = await res.json();
 
+  // ✅ Process images for single product details too
+  return {
+    ...data,
+    image_url: processImageUrl(data.image_url),
+    image2_url: processImageUrl(data.image2_url),
+  };
+}
 
 export async function createOrder(orderData) {
   const url = getUrl("/orders");
@@ -73,9 +93,12 @@ export async function createOrder(orderData) {
 }
 
 export async function fetchOrdersByEmail(email) {
-  const res = await fetch(getUrl(`/orders?email=${encodeURIComponent(email)}`), {
-    headers: { Accept: "application/json" },
-  });
+  const res = await fetch(
+    getUrl(`/orders?email=${encodeURIComponent(email)}`),
+    {
+      headers: { Accept: "application/json" },
+    }
+  );
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -84,7 +107,6 @@ export async function fetchOrdersByEmail(email) {
 
   return await res.json();
 }
-
 
 export async function createRazorpayOrder(amount) {
   const res = await fetch(getUrl("/payments/create-razorpay-order"), {
@@ -100,7 +122,8 @@ export async function createRazorpayOrder(amount) {
 
   return await res.json(); // { id, amount, currency, ... }
 }
- export async function verifyRazorpayPayment(payRes) {
+
+export async function verifyRazorpayPayment(payRes) {
   const res = await fetch(getUrl("/payments/verify"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },

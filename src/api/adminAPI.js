@@ -145,3 +145,22 @@ export const approveOrder = async (orderId) => {
   });
   return handleResponse(response);
 };
+
+
+// Add this to src/api/adminAPI.js
+
+export const updateProduct = async (id, formData) => {
+  const token = getAuthToken();
+
+  const response = await fetch(`${API_URL}/admin/update-product/${id}`, {
+    method: "PUT",
+    headers: { 
+      Authorization: `Bearer ${token}`,
+      // Note: Do NOT set Content-Type here. 
+      // The browser automatically sets it to multipart/form-data with the correct boundary for file uploads.
+    },
+    body: formData,
+  });
+
+  return handleResponse(response);
+};

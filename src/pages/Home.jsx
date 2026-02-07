@@ -48,8 +48,7 @@ function extractHighlights(description, max = 5) {
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   
-  // ✅ FIX 1: Initialize 'products' from LocalStorage if available
-  // This solves the Cold Start blank screen issue.
+  // 1. Initialize from Cache
   const [products, setProducts] = useState(() => {
     try {
       const cached = localStorage.getItem("cachedProducts");
@@ -59,9 +58,8 @@ export default function Home() {
     }
   });
 
-  // ✅ FIX 2: Only show loading spinner if we have NO cached data
+  // 2. Loading is true ONLY if we have NO data to show yet
   const [loading, setLoading] = useState(products.length === 0);
-  
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
 
@@ -118,23 +116,23 @@ export default function Home() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ FIX 3: Fetch fresh data in background & Update Cache
+  // products loader
   const loadProducts = useCallback(async () => {
     try {
-      // Note: We do NOT set loading(true) here. 
-      // We let the old data show while we fetch new data.
+      console.log("Fetching products...");
       const data = await fetchProducts();
+      console.log("Products received:", data);
+
       const list = Array.isArray(data) ? data : [];
       
       setProducts(list);
-      // Save to cache for NEXT time
       localStorage.setItem("cachedProducts", JSON.stringify(list));
       setError("");
     } catch (err) {
       console.error("Failed to load products", err);
-      // Only show error if we have ZERO data to show
+      // Only show error if we have NO data
       if (products.length === 0) {
-        setError("Temporary issue loading products.");
+        setError("Server is waking up... Please wait or click Retry.");
       }
     } finally {
       setLoading(false);
@@ -157,6 +155,13 @@ export default function Home() {
       window.removeEventListener("focus", onFocus);
     };
   }, [loadProducts]);
+
+  // Manual Retry Handler
+  const handleRetry = () => {
+    setLoading(true);
+    setError("");
+    loadProducts();
+  };
 
   // load Google script once
   useEffect(() => {
@@ -293,6 +298,7 @@ export default function Home() {
   // Priority-1 product (featured)
   const priorityOneProduct = useMemo(() => {
     const list = Array.isArray(products) ? products : [];
+    // Strict Type Coercion to ensure we match "1" or 1
     const p1 = list.find((p) => Number(p.priority) === 1);
     if (p1) return p1;
     // Fallback: If no Priority 1, take the first one (from cache or live)
@@ -321,7 +327,6 @@ export default function Home() {
   }, [priorityOneProduct]);
 
   // Only priority=2 for carousel (NO fallback)
-  // Sorts so available products appear before "Available Soon"
   const priority2Products = useMemo(() => {
     const list = (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
     
@@ -331,11 +336,8 @@ export default function Home() {
       const isAvailableA = qtyA > 0;
       const isAvailableB = qtyB > 0;
 
-      // If A is available and B is not, A comes first (-1)
       if (isAvailableA && !isAvailableB) return -1;
-      // If B is available and A is not, B comes first (1)
       if (!isAvailableA && isAvailableB) return 1;
-      // Otherwise keep original order
       return 0;
     });
   }, [products]);
@@ -518,16 +520,37 @@ export default function Home() {
 
       {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
       <section id="products" className="product-preview">
-        {error && <div className="error-message">⚠️ {error}</div>}
-        
-        {/* Only show "Loading..." if the cache is truly empty */}
+        {/* If loading and NO products, show Spinner */}
         {loading && products.length === 0 && <p className="loading-text">Loading products...</p>}
 
-        {!loading && priority2Products.length === 0 && !error && (
+        {/* If Error and NO products, show Error + Retry */}
+        {error && products.length === 0 && (
+          <div className="error-container" style={{ textAlign: 'center', padding: '40px' }}>
+            <div className="error-message">⚠️ {error}</div>
+            <button 
+              onClick={handleRetry} 
+              style={{
+                marginTop: '15px',
+                padding: '10px 20px',
+                backgroundColor: '#2E2E2F',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Retry Connection
+            </button>
+          </div>
+        )}
+
+        {/* If Loaded but Empty, show message */}
+        {products.length === 0 && !loading && !error && (
           <p style={{ textAlign: "center", color: "#666" }}>No priority-2 products available</p>
         )}
 
-        {/* Render Carousel as soon as data exists (even if it's old cache) */}
+        {/* If Products Exist (Cache or Live), Show Carousel */}
         {priority2Products.length > 0 && (
           <div className="carousel-container">
             <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">

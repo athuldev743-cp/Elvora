@@ -23,10 +23,10 @@ function AdminDashboard() {
   const [error, setError] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // ✅ NEW: selected product for update
+  // selected product for update
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // ✅ single newProduct state (with quantity)
+  // ✅ NEW: Added image2 to state
   const [newProduct, setNewProduct] = useState({
     name: "",
     price: "",
@@ -34,14 +34,15 @@ function AdminDashboard() {
     priority: "1",
     quantity: "0",
     image: null,
+    image2: null, // <--- Hero Image
   });
 
   const API_BASE = useMemo(
-    () => process.env.REACT_APP_API_URL || "https://ekb-backend.onrender.com",
+    () => process.env.REACT_APP_API_URL || "https://elvora-backend-l2g3.onrender.com",
     []
   );
 
-  // ✅ Approved selection + cleared ids (frontend-only)
+  // Approved selection + cleared ids (frontend-only)
   const [approvedSelected, setApprovedSelected] = useState(() => new Set());
   const [clearedApprovedIds, setClearedApprovedIds] = useState(() => {
     try {
@@ -155,7 +156,7 @@ function AdminDashboard() {
     }
   }, [activeTab, fetchProducts, products.length, loadingProducts]);
 
-  // ✅ reset selection when leaving update tab
+  // reset selection when leaving update tab
   useEffect(() => {
     if (activeTab !== "updateProduct") {
       setSelectedProduct(null);
@@ -198,6 +199,7 @@ function AdminDashboard() {
     }
   };
 
+  // ✅ UPDATED: Handle Add Product (with image2)
   const handleAddProduct = async (e) => {
     e.preventDefault();
 
@@ -216,7 +218,14 @@ function AdminDashboard() {
       formData.append("description", newProduct.description);
       formData.append("priority", newProduct.priority || "1");
       formData.append("quantity", String(newProduct.quantity ?? "0"));
+      
+      // Main Image
       formData.append("image", newProduct.image);
+
+      // ✅ NEW: Append Hero Image if it exists
+      if (newProduct.image2) {
+        formData.append("image2", newProduct.image2);
+      }
 
       const res = await fetch(`${API_BASE}/admin/create-product`, {
         method: "POST",
@@ -231,6 +240,7 @@ function AdminDashboard() {
 
       setShowAddForm(false);
 
+      // Reset state
       setNewProduct({
         name: "",
         price: "",
@@ -238,6 +248,7 @@ function AdminDashboard() {
         priority: "1",
         quantity: "0",
         image: null,
+        image2: null, // Reset image2
       });
 
       await fetchProducts();
@@ -250,14 +261,14 @@ function AdminDashboard() {
     }
   };
 
-  // ✅ NEW: update product submit (frontend ready; backend can be added later)
+  // ✅ UPDATED: Handle Update Product (with image2)
   const handleUpdateProduct = useCallback(
     async (payload) => {
       try {
         const token = await ensureJWTToken();
         if (!token) throw new Error("Admin token missing. Please login again as admin.");
 
-        // payload: { id, name, price, description, priority, quantity, imageFile? }
+        // payload: { id, name, price, description, priority, quantity, imageFile?, image2File? }
         const formData = new FormData();
         formData.append("name", payload.name);
         formData.append("price", String(payload.price));
@@ -265,13 +276,16 @@ function AdminDashboard() {
         formData.append("priority", String(payload.priority ?? "1"));
         formData.append("quantity", String(payload.quantity ?? "0"));
 
-        // optional image
+        // Optional Main Image
         if (payload.imageFile) {
           formData.append("image", payload.imageFile);
         }
 
-        // ✅ Decide endpoint: you will implement later in backend
-        // Suggested: PUT /admin/update-product/{id}
+        // ✅ NEW: Optional Hero Image
+        if (payload.image2File) {
+          formData.append("image2", payload.image2File);
+        }
+
         const res = await fetch(`${API_BASE}/admin/update-product/${payload.id}`, {
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },
@@ -603,7 +617,7 @@ function AdminDashboard() {
             </div>
           )}
 
-          {/* ✅ Update Product */}
+          {/* Update Product */}
           {activeTab === "updateProduct" && (
             <div className={styles.card}>
               {!selectedProduct ? (
