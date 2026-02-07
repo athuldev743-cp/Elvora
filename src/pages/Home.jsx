@@ -491,7 +491,7 @@ export default function Home() {
 
   <div className="featuredPremiumOverlay">
     <div className="featuredPremiumContent featuredLeftCenter">
-      <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
+      
 
       {/* ✅ manual 2 lines */}
      
