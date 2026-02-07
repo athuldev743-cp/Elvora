@@ -438,14 +438,27 @@ body{
    ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
    ========================================================= */
 /* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
+   ✅ MOBILE/TABLET (≤992px) - GAP-FREE FIX
    ========================================================= */
 @media (max-width:992px){
+  /* Reset ALL sections to remove any default browser spacing */
+  body, html, section, div {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  
   .nav-links{ display:none !important; }
   .auth-section{ display:none !important; }
   .desktop-only{ display:none !important; }
   .mobile-only{ display:inline-flex !important; }
-  .navbar{ padding:0 16px !important; height: 70px !important; }
+  .navbar{ 
+    padding:0 16px !important; 
+    height: 70px !important;
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+  }
 
   .hamburger{
     display:flex !important;
@@ -469,16 +482,17 @@ body{
     height:50px !important;
   }
 
-  /* ✅ COMPANY VISION - Remove ALL gaps and space */
+  /* ⚡ CRITICAL FIX: COMPANY VISION - NO GAPS */
   section#company-vision.companyVisionFull{
-    width: 100% !important;
+    width: 100vw !important;
     height: 50vh !important;
-    min-height: 250px !important;
-    margin-top: 70px !important; /* Account for fixed navbar */
+    margin: 70px 0 0 0 !important;
     padding: 0 !important;
+    display: block !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     line-height: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .companyVisionImg{
@@ -492,16 +506,17 @@ body{
     padding: 0 !important;
   }
 
-  /* ✅ HERO FEATURED - Remove ALL gaps and dark overlay */
+  /* ⚡ CRITICAL FIX: HERO FEATURED - NO GAPS */
   section#featured.featuredPremium{
-    width: 100% !important;
+    width: 100vw !important;
     height: 70vh !important;
-    min-height: 400px !important;
     margin: 0 !important;
     padding: 0 !important;
+    display: block !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     position: relative !important;
+    box-sizing: border-box !important;
   }
 
   .featuredPremiumImg{
@@ -515,10 +530,10 @@ body{
     padding: 0 !important;
   }
 
-  /* ✅ Shop Now button ONLY - Bottom LEFT corner (NO dark overlay) */
+  /* Shop Now Button - Bottom Left */
   .featuredPremiumOverlay{
     position: absolute !important;
-    bottom: 20px !important;
+    bottom: 25px !important;
     left: 20px !important;
     background: transparent !important;
     z-index: 2 !important;
@@ -526,23 +541,11 @@ body{
     margin: 0 !important;
   }
 
-  .featuredPremiumContent{
-    background: transparent !important;
-    backdrop-filter: none !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* HIDE all text labels */
-  .featuredProductBrand,
-  .brandName,
-  .productName,
-  .productType {
+  /* Hide all text labels */
+  .featuredProductBrand{
     display: none !important;
   }
 
-  /* Shop Now Button ONLY */
   .primary-btn--featured{
     padding: 14px 30px !important;
     font-size: 16px !important;
@@ -563,11 +566,19 @@ body{
     transform: scale(1.05) !important;
   }
 
-  /* ✅ PRODUCTS section - NO gap after hero */
+  /* ⚡ CRITICAL FIX: PRODUCTS SECTION - NO GAPS */
   .product-preview{
+    width: 100vw !important;
     margin: 0 !important;
-    padding: 20px 0 !important;
+    padding: 20px 0 30px 0 !important;
     background: #f8f9fa !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
+
+  .carousel-container{ 
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .carousel-track{
@@ -603,42 +614,21 @@ body{
 @media (max-width:480px){
   section#company-vision.companyVisionFull{
     height: 40vh !important;
-    min-height: 200px !important;
   }
 
   section#featured.featuredPremium{
     height: 60vh !important;
-    min-height: 350px !important;
   }
 
   .primary-btn--featured {
     padding: 12px 24px !important;
     font-size: 14px !important;
     min-width: 140px !important;
+    left: 15px !important;
+    bottom: 20px !important;
   }
   
   .product-image{ 
     height: 240px !important;
-  }
-}
-
-/* ✅ Very small phones (≤360px) */
-@media (max-width:360px){
-  section#company-vision.companyVisionFull{
-    height: 35vh !important;
-    min-height: 180px !important;
-  }
-
-  section#featured.featuredPremium{
-    height: 55vh !important;
-    min-height: 320px !important;
-  }
-
-  .primary-btn--featured {
-    padding: 10px 20px !important;
-    font-size: 13px !important;
-    min-width: 120px !important;
-    left: 15px !important;
-    bottom: 15px !important;
   }
 }

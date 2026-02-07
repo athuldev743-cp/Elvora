@@ -482,6 +482,7 @@ export default function Home() {
 
 {/* 2) FEATURED PRODUCT */}
 {/* 2) FEATURED PRODUCT */}
+{/* 2) FEATURED PRODUCT */}
 <section id="featured" className="featuredPremium">
   <img
     className="featuredPremiumImg"
@@ -489,26 +490,15 @@ export default function Home() {
     alt="Featured product"
     loading="lazy"
   />
-
   <div className="featuredPremiumOverlay">
-    <div className="featuredPremiumContent">
-      {/* Brand/Product Name like reference image */}
-      <div className="featuredProductBrand">
-       
-       
-        
-      </div>
-      
-      {/* Shop Now Button */}
-      <button
-        className="primary-btn primary-btn--featured"
-        type="button"
-        onClick={goToPriorityOneProduct}
-        disabled={!priorityOneProduct?.id}
-      >
-        SHOP NOW
-      </button>
-    </div>
+    <button
+      className="primary-btn primary-btn--featured"
+      type="button"
+      onClick={goToPriorityOneProduct}
+      disabled={!priorityOneProduct?.id}
+    >
+      SHOP NOW
+    </button>
   </div>
 </section>
 
