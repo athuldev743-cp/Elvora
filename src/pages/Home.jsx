@@ -483,20 +483,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* 0) COMPANY VISION (FULL PAGE) */}
-      <section id="company-vision" className="companyVisionFull">
-        <img
-          className="companyVisionImg"
-          src="/images/company-vision.png"
-          alt="ELVORA Company Vision"
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src =
-              "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
-          }}
-        />
-      </section>
+     
 
       {/* 2) FEATURED PRODUCT */}
       <section id="featured" className="featuredPremium">
@@ -518,94 +505,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
-      <section id="products" className="product-preview">
-        {/* If loading and NO products, show Spinner */}
-        {loading && products.length === 0 && <p className="loading-text">Loading products...</p>}
-
-        {/* If Error and NO products, show Error + Retry */}
-        {error && products.length === 0 && (
-          <div className="error-container" style={{ textAlign: 'center', padding: '40px' }}>
-            <div className="error-message">⚠️ {error}</div>
-            <button 
-              onClick={handleRetry} 
-              style={{
-                marginTop: '15px',
-                padding: '10px 20px',
-                backgroundColor: '#2E2E2F',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Retry Connection
-            </button>
-          </div>
-        )}
-
-        {/* If Loaded but Empty, show message */}
-        {products.length === 0 && !loading && !error && (
-          <p style={{ textAlign: "center", color: "#666" }}>No priority-2 products available</p>
-        )}
-
-        {/* If Products Exist (Cache or Live), Show Carousel */}
-        {priority2Products.length > 0 && (
-          <div className="carousel-container">
-            <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">
-              ‹
-            </button>
-
-            <div className="carousel-track" ref={trackRef}>
-              {priority2Products.map((p) => {
-                const qty = Number(p.quantity ?? 0);
-                const availableSoon = qty <= 0;
-
-                const onView = () => {
-                  if (availableSoon) return;
-                  if (!user) return handleGoogleLogin();
-                  navigate(`/products/${p.id}`);
-                };
-
-                return (
-                  <div className="product-card" key={p.id}>
-                    {availableSoon && <div className="available-soon-badge">Available Soon</div>}
-
-                    <img
-                      src={p.image_url}
-                      alt={p.name}
-                      className="product-image"
-                      loading="lazy"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = "https://placehold.co/400x300/EEE/31343C?text=Product+Image";
-                      }}
-                    />
-
-                    <div className="product-info">
-                      <span className="product-name">{p.name}</span>
-
-                      <button
-                        className={`view-details-btn ${availableSoon ? "isDisabled" : ""}`}
-                        onClick={onView}
-                        type="button"
-                        disabled={availableSoon}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <button className="carousel-arrow next" onClick={() => scrollCarousel("next")} type="button" aria-label="Next">
-              ›
-            </button>
-          </div>
-        )}
-      </section>
 
       <section id="about" className="pageSection aboutFull">
         <About />
