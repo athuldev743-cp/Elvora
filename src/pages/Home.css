@@ -31,6 +31,8 @@ html,body{
 
 body{
   font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  /* ⚡ CRITICAL: Body padding for fixed navbar - MUST BE HERE (not in media query) */
+  padding-top: 80px !important; /* Desktop navbar height */
 }
 
 .pageSection{ background:#D6B85A; }
@@ -429,23 +431,12 @@ body{
 }
 
 /* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
-   ========================================================= */
-/* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
-   ========================================================= */
-/* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY
-   ========================================================= */
-/* =========================================================
-   ✅ MOBILE/TABLET (≤992px) - GAP-FREE FIX
+   ✅ MOBILE/TABLET (≤992px) - SINGLE MEDIA QUERY (NO DUPLICATES)
    ========================================================= */
 @media (max-width:992px){
-  /* Reset ALL sections to remove any default browser spacing */
-  body, html, section, div {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
+  /* Update body padding for mobile navbar */
+  body {
+    padding-top: 70px !important; /* Mobile navbar height */
   }
   
   .nav-links{ display:none !important; }
@@ -455,9 +446,6 @@ body{
   .navbar{ 
     padding:0 16px !important; 
     height: 70px !important;
-    position: fixed !important;
-    top: 0 !important;
-    z-index: 1000 !important;
   }
 
   .hamburger{
@@ -482,20 +470,24 @@ body{
     height:50px !important;
   }
 
-  /* ⚡ CRITICAL FIX: COMPANY VISION - NO GAPS */
+  /* COMPANY VISION - NO GAPS */
   section#company-vision.companyVisionFull{
-    width: 100vw !important;
+    width: 100% !important;
     height: 50vh !important;
-    margin: 70px 0 0 0 !important;
+    min-height: 300px !important;
+    margin: 0 !important;
     padding: 0 !important;
     display: block !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     line-height: 0 !important;
-    box-sizing: border-box !important;
+    position: relative !important;
   }
 
-  .companyVisionImg{
+  section#company-vision.companyVisionFull > img.companyVisionImg{
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
     display: block !important;
@@ -506,20 +498,23 @@ body{
     padding: 0 !important;
   }
 
-  /* ⚡ CRITICAL FIX: HERO FEATURED - NO GAPS */
+  /* HERO FEATURED - NO GAPS */
   section#featured.featuredPremium{
-    width: 100vw !important;
+    width: 100% !important;
     height: 70vh !important;
+    min-height: 400px !important;
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
     overflow: hidden !important;
     background: #fbfaf6 !important;
     position: relative !important;
-    box-sizing: border-box !important;
   }
 
   .featuredPremiumImg{
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: 100% !important;
     display: block !important;
@@ -530,20 +525,15 @@ body{
     padding: 0 !important;
   }
 
-  /* Shop Now Button - Bottom Left */
+  /* SHOP NOW BUTTON - BOTTOM LEFT */
   .featuredPremiumOverlay{
     position: absolute !important;
     bottom: 25px !important;
     left: 20px !important;
     background: transparent !important;
-    z-index: 2 !important;
+    z-index: 10 !important;
     padding: 0 !important;
     margin: 0 !important;
-  }
-
-  /* Hide all text labels */
-  .featuredProductBrand{
-    display: none !important;
   }
 
   .primary-btn--featured{
@@ -555,25 +545,19 @@ body{
     border-radius: 50px !important;
     color: white !important;
     cursor: pointer !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
-    transition: transform 0.2s ease !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     min-width: 160px !important;
   }
 
-  .primary-btn--featured:hover{
-    transform: scale(1.05) !important;
-  }
-
-  /* ⚡ CRITICAL FIX: PRODUCTS SECTION - NO GAPS */
+  /* PRODUCTS SECTION - NO GAP AFTER HERO */
   .product-preview{
-    width: 100vw !important;
+    width: 100% !important;
     margin: 0 !important;
-    padding: 20px 0 30px 0 !important;
+    padding: 20px 0 !important;
     background: #f8f9fa !important;
     display: block !important;
-    box-sizing: border-box !important;
   }
 
   .carousel-container{ 
@@ -600,35 +584,33 @@ body{
     background: #fff !important;
     padding: 15px !important;
   }
-
-  .product-card::after{ 
-    height: 100px !important;
-  }
-  
-  .product-info{ 
-    padding: 12px 10px 15px !important;
-  }
 }
 
-/* ✅ Small phones (≤480px) */
+/* Small phones (≤480px) */
 @media (max-width:480px){
+  body {
+    padding-top: 60px !important;
+  }
+  
+  .navbar {
+    height: 60px !important;
+  }
+  
   section#company-vision.companyVisionFull{
     height: 40vh !important;
+    min-height: 250px !important;
   }
 
   section#featured.featuredPremium{
     height: 60vh !important;
+    min-height: 350px !important;
   }
 
   .primary-btn--featured {
     padding: 12px 24px !important;
     font-size: 14px !important;
     min-width: 140px !important;
-    left: 15px !important;
     bottom: 20px !important;
-  }
-  
-  .product-image{ 
-    height: 240px !important;
+    left: 15px !important;
   }
 }
