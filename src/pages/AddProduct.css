@@ -1,3 +1,5 @@
+/* AddProduct.css */
+
 .addFormContainer {
   margin-top: 16px;
   padding: 16px;
@@ -16,6 +18,21 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 12px;
+}
+
+/* ✅ NEW: Highlight style for Priority 1 Hero Image section */
+.highlight-group {
+  background-color: #fffdf5; /* Light cream/yellow */
+  border: 1px dashed #d6b85a; /* Brand yellow border */
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .grid2 {
@@ -91,10 +108,5 @@
   background: #fff;
 }
 
-.submitBtn:hover {
-  opacity: 0.92;
-}
-
-.cancelBtn:hover {
-  background: #f7f7f7;
-}
+.submitBtn:hover { opacity: 0.92; }
+.cancelBtn:hover { background: #f7f7f7; }

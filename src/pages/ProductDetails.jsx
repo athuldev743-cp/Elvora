@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProductById } from "../api/publicAPI";
-import BuyModal from "../components/Buy"; // <-- new component
+import BuyModal from "../components/Buy"; 
 import "./ProductDetails.css";
 
 const ProductDetails = () => {
@@ -130,6 +130,9 @@ const ProductDetails = () => {
     );
   }
 
+  // ✅ CHECK: Is this a "Hero" product (Priority 1 + Has 2nd Image)?
+  const isHeroProduct = Number(product.priority) === 1 && product.image2_url;
+
   return (
     <div className="pd-page">
       {/* Header */}
@@ -141,35 +144,46 @@ const ProductDetails = () => {
       </div>
 
       {/* Premium Card */}
-      <div className="pd-card">
+      <div className={`pd-card ${isHeroProduct ? "pd-card-hero" : ""}`}>
+        
+        {/* ✅ NEW: Priority 1 Hero Banner (Second Image) */}
+        {isHeroProduct && (
+          <div className="pd-hero-banner">
+            <img 
+              src={product.image2_url} 
+              alt={`${product.name} Lifestyle`} 
+              className="pd-hero-img"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         <div className="pd-grid">
-          {/* Image */}
-          {/* Image */}
-<div className="pd-imageWrap">
-  <img
-    src={product.image_url}
-    alt={product.name}
-    className="pd-image"
-    onError={handleImageError}
-    loading="lazy"
-  />
+          {/* Main Product Image (Bottle) */}
+          <div className="pd-imageWrap">
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="pd-image"
+              onError={handleImageError}
+              loading="lazy"
+            />
 
-  {/* 🔥 Primary CTA under image */}
-  <button
-    className="pd-btn pd-btn-primary pd-buy-under-image"
-    onClick={handleBuyNow}
-    disabled={!user}
-  >
-    Buy Now
-  </button>
+            {/* 🔥 Primary CTA under image */}
+            <button
+              className="pd-btn pd-btn-primary pd-buy-under-image"
+              onClick={handleBuyNow}
+              disabled={!user}
+            >
+              Buy Now
+            </button>
 
-  {!user && (
-    <div className="pd-image-loginHint">
-      Login required to purchase
-    </div>
-  )}
-</div>
-
+            {!user && (
+              <div className="pd-image-loginHint">
+                Login required to purchase
+              </div>
+            )}
+          </div>
 
           {/* Content */}
           <div className="pd-content">
@@ -233,8 +247,6 @@ const ProductDetails = () => {
                 Add to Cart
               </button>
 
-              
-
               {!user ? (
                 <div className="pd-loginHint">
                   Please login to continue checkout.
@@ -252,7 +264,7 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* Buy Modal (separate component + separate CSS) */}
+      {/* Buy Modal */}
       <BuyModal
         open={showBuy}
         onClose={() => setShowBuy(false)}
@@ -261,7 +273,6 @@ const ProductDetails = () => {
         user={user}
         onSuccess={() => {
           setShowBuy(false);
-          // You can redirect after success:
           navigate("/");
         }}
       />

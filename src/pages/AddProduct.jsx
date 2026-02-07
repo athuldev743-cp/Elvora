@@ -1,3 +1,4 @@
+// src/components/admin/AddProduct.jsx
 import "./AddProduct.css";
 
 function AddProduct({
@@ -11,6 +12,9 @@ function AddProduct({
   if (!showAddForm) return null;
 
   const update = (patch) => setNewProduct({ ...newProduct, ...patch });
+
+  // Check if Priority is 1
+  const isPriorityOne = parseInt(newProduct.priority || "2", 10) === 1;
 
   return (
     <div className="addFormContainer">
@@ -78,7 +82,6 @@ function AddProduct({
               placeholder="Enter quantity (0 = Available Soon)"
               value={newProduct.quantity ?? "0"}
               onChange={(e) => {
-                // keep it as string for FormData, but clamp to >= 0
                 const v = e.target.value;
                 if (v === "") return update({ quantity: "" });
                 const n = Math.max(0, parseInt(v, 10) || 0);
@@ -92,8 +95,9 @@ function AddProduct({
           </div>
         </div>
 
+        {/* MAIN IMAGE */}
         <div className="formGroup">
-          <label>Product Image *</label>
+          <label>Product Image (Main) *</label>
           <input
             type="file"
             accept="image/*"
@@ -102,7 +106,7 @@ function AddProduct({
                 update({ image: e.target.files[0] });
               }
             }}
-            required
+            required={!newProduct.image} // Required if not already set
           />
           <small>Select a product image (JPEG, PNG, etc.)</small>
 
@@ -110,6 +114,27 @@ function AddProduct({
             <div className="filePreview">Selected: {newProduct.image.name}</div>
           )}
         </div>
+
+        {/* ✅ NEW: HERO IMAGE (Priority 1 Only) */}
+        {isPriorityOne && (
+          <div className="formGroup" style={{background: '#f9f9f9', padding: 15, borderRadius: 8}}>
+            <label>Hero Banner Image (Priority 1) *</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  update({ image2: e.target.files[0] });
+                }
+              }}
+              required={!newProduct.image2} // Required if priority=1
+            />
+            <small>Upload a wide banner image for the hero section.</small>
+            {newProduct.image2 && (
+              <div className="filePreview">Selected: {newProduct.image2.name}</div>
+            )}
+          </div>
+        )}
 
         <div className="formButtons">
           <button type="submit" className="submitBtn">
