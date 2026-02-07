@@ -1,37 +1,39 @@
 /* src/pages/Home.css
-   ✅ Works with your CURRENT Home.jsx classes
-   Goal:
-   - Company Vision = banner ~50vh (NOT zoomed) + NO gap below
-   - Featured (hero product) = 100vh on mobile, show ONLY "Shop Now" button (hide texts)
-   - No gap between Featured and Products carousel
-   - Carousel: remove side padding on mobile
+   ✅ Matches your CURRENT Home.jsx classes
 */
 
 /* ===================== TOKENS ===================== */
 :root{
-  --dim-yellow:#D6B85A;
-  --dim-yellow-soft:rgba(214,184,90,0.16);
+  --dim-yellow: #D6B85A;
+  --dim-yellow-soft: rgba(214,184,90,0.16);
 
-  --muted-green:#5F7E5C;
-  --muted-green-soft:rgba(95,126,92,0.14);
+  --muted-green: #5F7E5C;
+  --muted-green-soft: rgba(95,126,92,0.14);
 
-  --charcoal:#2E2E2F;
-  --border:rgba(46,46,47,0.14);
+  --charcoal: #2E2E2F;
+  --surface: #ffffff;
+  --ink: #333;
+  --ink-soft: #666;
+  --border: rgba(46,46,47,0.14);
 
   --white:#ffffff;
-  --dark-orange:var(--dim-yellow);
-  --light-orange:var(--muted-green);
+  --dark-orange: var(--dim-yellow);
+  --light-orange: var(--muted-green);
 }
 
-/* ===================== RESET ===================== */
+/* ===================== GLOBAL RESET ===================== */
 *{margin:0;padding:0;box-sizing:border-box;}
+
 html,body{
   width:100%;
   max-width:100%;
   overflow-x:hidden;
   background:#D6B85A;
 }
-body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+}
 
 .pageSection{ background:#D6B85A; }
 
@@ -53,13 +55,21 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   transition:all .35s ease;
   box-shadow:0 2px 20px rgba(0,0,0,.08);
 }
+
 .navbar.scrolled{
   background:rgba(255,255,255,.12);
   backdrop-filter:blur(15px);
   box-shadow:0 2px 20px rgba(0,0,0,.05);
 }
 
-.logo{ display:flex; align-items:center; height:80px; flex-shrink:0; }
+.logo{
+  display:flex;
+  align-items:center;
+  height:80px;
+  position:relative;
+  flex-shrink:0;
+}
+
 .logo-img{
   height:70px !important;
   width:auto !important;
@@ -67,7 +77,9 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   min-width:120px;
   object-fit:contain;
   display:block;
+  transition:all .35s ease;
 }
+
 .text-logo{
   font-size:28px;
   font-weight:900;
@@ -78,6 +90,7 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   height:80px;
 }
 
+/* Desktop nav links */
 .nav-links{
   display:flex;
   gap:32px;
@@ -86,6 +99,7 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   flex:1;
   justify-content:center;
 }
+
 .nav-links a{
   color:#333;
   text-decoration:none;
@@ -97,6 +111,7 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   align-items:center;
 }
 .nav-links a:hover{ color:var(--dim-yellow); }
+
 .nav-links a::after{
   content:'';
   position:absolute;
@@ -109,19 +124,38 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
 }
 .nav-links a:hover::after{ width:100%; }
 
-.auth-section{ display:flex; align-items:center; position:relative; z-index:2000; flex-shrink:0; }
+/* Auth (desktop) */
+.auth-section{
+  display:flex;
+  align-items:center;
+  position:relative;
+  z-index:2000;
+  flex-shrink:0;
+}
+
 .user-nav{ display:flex; align-items:center; gap:15px; }
 .user-greeting{ font-size:14px; color:var(--charcoal); font-weight:600; }
 
-.accountBtn{ background:transparent; border:none; cursor:pointer; padding:6px; border-radius:50%; }
+.accountBtn{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  padding:6px;
+  border-radius:50%;
+}
 .accountBtn:hover{ background:rgba(0,0,0,.08); }
-.accountAvatar{ width:28px;height:28px; border-radius:50%; object-fit:cover; }
+
+.accountAvatar{
+  width:28px;height:28px;
+  border-radius:50%;
+  object-fit:cover;
+}
 
 .login-nav-btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  background:linear-gradient(135deg,var(--muted-green),var(--dim-yellow));
+  background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
   color:#fff;
   border:none;
   padding:10px 28px;
@@ -130,7 +164,13 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   font-weight:800;
   cursor:pointer;
   box-shadow:0 5px 15px rgba(214,184,90,.28);
+  transition:transform .15s ease, box-shadow .15s ease;
 }
+.login-nav-btn:hover{
+  transform:scale(1.03);
+  box-shadow:0 10px 25px rgba(214,184,90,.40);
+}
+
 .admin-dashboard-btn{
   background:linear-gradient(135deg,var(--charcoal),#444);
   color:#fff;
@@ -142,11 +182,12 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   cursor:pointer;
 }
 
+/* Hamburger hidden by default (desktop/laptop) */
 .hamburger{ display:none; }
 
-/* ===================== BUTTONS ===================== */
+/* ===================== BUTTONS (shared) ===================== */
 .primary-btn{
-  background:linear-gradient(135deg,var(--muted-green),var(--dim-yellow));
+  background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
   color:#fff;
   border:none;
   padding:18px 44px;
@@ -154,102 +195,90 @@ body{ font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
   font-size:18px;
   font-weight:900;
   cursor:pointer;
+  letter-spacing:.6px;
   text-transform:uppercase;
   box-shadow:0 15px 35px rgba(214,184,90,.28);
+  transition:transform .15s ease, box-shadow .15s ease;
 }
-.primary-btn:disabled{ opacity:.6; cursor:not-allowed; }
+.primary-btn:hover{
+  transform:scale(1.03);
+  box-shadow:0 22px 45px rgba(214,184,90,.40);
+}
+.primary-btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
 
 /* =========================================================
-   0) COMPANY VISION (Banner, NOT zoomed, NO gap)
+   0) COMPANY VISION (Banner – NO ZOOM)
    ========================================================= */
-section#company-vision.companyVisionFull{
+.companyVisionFull{
   width:100%;
   margin:0 !important;
   padding:0 !important;
   background:#fbfaf6;
-  line-height:0;             /* ✅ removes any inline-image gap */
+  display:block;
   overflow:hidden;
 }
 
-/* Desktop: auto height (image decides height) */
 .companyVisionImg{
   width:100%;
   height:auto;
   display:block;
-  object-fit:contain;         /* ✅ not zoomed */
+  object-fit:contain; /* ✅ no zoom */
   background:#fbfaf6;
 }
 
-/* Mobile: force banner height, still NOT zoomed (contain) */
-@media (max-width:992px){
-  section#company-vision.companyVisionFull{
-    height:50vh !important;       /* ✅ banner */
-    min-height:240px !important;
-    max-height:420px !important;
-  }
-  section#company-vision.companyVisionFull > img.companyVisionImg{
-    width:100% !important;
-    height:100% !important;       /* ✅ fill the 50vh box */
-    object-fit:contain !important;/* ✅ no crop / no zoom */
-    object-position:center !important;
-    display:block !important;
-    background:#fbfaf6 !important;
-  }
-}
-
 /* =========================================================
-   1) FEATURED PRODUCT (Hero)
-   - Mobile: 100vh image, ONLY "Shop Now" button (hide texts)
+   2) FEATURED PREMIUM (Hero)
    ========================================================= */
-section#featured.featuredPremium{
-  position:relative;
-  width:100%;
+.featuredPremium{
+  position: relative;
+  width: 100%;
   margin:0 !important;
   padding:0 !important;
   overflow:hidden;
   background:#fbfaf6;
-  line-height:0; /* ✅ prevents micro gaps */
+  display:block;
 }
 
-/* Desktop/Laptop: fill width nicely */
 .featuredPremiumImg{
   width:100%;
-  height:92vh;
-  max-height:850px;
   display:block;
-  object-fit:cover;
   object-position:center;
   background:#fbfaf6;
+  /* desktop default */
+  height:92vh;
+  max-height:850px;
+  object-fit:cover;
 }
 
-/* Overlay */
+/* overlay (only button) */
 .featuredPremiumOverlay{
   position:absolute;
   inset:0;
   display:flex;
   align-items:flex-end;
-  padding:0 16px 22px;
-  background:linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.28), rgba(0,0,0,0));
+  padding: 0 16px 22px;
+  background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.15), rgba(0,0,0,0));
 }
+
 .featuredPremiumContent{
   width:min(660px, 92vw);
   color:#fff;
-  line-height:1.2; /* restore readable text inside overlay */
 }
-.featuredLeftCenter{ text-align:left; }
 
-/* Desktop text defaults (you can keep) */
+.featuredLeftCenter{ text-align:left; max-width:540px; }
+
 .featuredName{
-  margin:0 0 10px;
+  margin:0 0 8px;
   font-size:44px;
+  line-height:1.05;
   font-weight:1000;
   text-shadow:0 12px 34px rgba(0,0,0,.45);
-  line-height:1.05;
 }
 
+.featuredCtas{ display:flex; gap:12px; flex-wrap:wrap; }
+
 /* =========================================================
-   2) PRODUCTS / CAROUSEL
-   - NO GAP below hero
+   3) PRODUCTS / CAROUSEL
    ========================================================= */
 .product-preview{
   background:#f8f9fa;
@@ -257,9 +286,9 @@ section#featured.featuredPremium{
   position:relative;
   isolation:isolate;
   z-index:1;
-
-  margin-top:0 !important;     /* ✅ no gap from previous section */
+  margin:0 !important;     /* ✅ no gap below featured */
 }
+
 .carousel-container{ position:relative; overflow:hidden; }
 
 .carousel-track{
@@ -289,7 +318,8 @@ section#featured.featuredPremium{
 
 .available-soon-badge{
   position:absolute;
-  top:12px; right:12px;
+  top:12px;
+  right:12px;
   z-index:6;
   background:rgba(95,126,92,.92);
   color:#fff;
@@ -299,6 +329,7 @@ section#featured.featuredPremium{
   font-weight:900;
 }
 
+/* desktop default image */
 .product-image{
   width:100%;
   height:100%;
@@ -388,11 +419,15 @@ section#featured.featuredPremium{
 @media (min-width:1200px) and (max-width:1600px){
   .carousel-track{ padding:0 !important; gap:16px !important; }
   .product-card{
-    flex:0 0 calc((100% - 64px) / 5);
-    max-width:calc((100% - 64px) / 5);
+    flex: 0 0 calc((100% - 64px) / 5);
+    max-width: calc((100% - 64px) / 5);
     height:500px;
   }
-  .product-image{ height:100%; object-fit:cover; }
+  .product-image{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
 }
 
 /* =========================================================
@@ -417,56 +452,82 @@ section#featured.featuredPremium{
     gap:6px;
     cursor:pointer;
   }
-  .hamburger span{ width:22px;height:2px; background:var(--charcoal); border-radius:999px; }
-
-  /* ✅ HERO = 100vh on mobile */
-  .featuredPremiumImg{
-    height:100vh !important;     /* ✅ requested */
-    max-height:none !important;
-    object-fit:cover !important; /* ✅ fills screen (no empty space) */
-    object-position:center !important;
-    background:#fbfaf6 !important;
+  .hamburger span{
+    width:22px;height:2px;
+    background:var(--charcoal);
+    border-radius:999px;
   }
 
-  /* ✅ Hide all texts on mobile (keep ONLY button) */
-  .featuredName,
-  .featuredManualText,
-  .featuredTagline,
-  .featuredBullets,
-  .featuredKicker{
-    display:none !important;
-  }
+  /* ✅ COMPANY VISION = banner 50vh (NO zoom, NO gap) */
+section#company-vision.companyVisionFull{
+  height: clamp(240px, 50vh, 420px) !important; /* ✅ same feel on all phones */
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden;
+  background:#fbfaf6 !important;
+  line-height:0 !important;
+}
 
-  /* ✅ Button only */
+section#company-vision.companyVisionFull > img.companyVisionImg{
+  width:100% !important;
+  height:100% !important;
+  display:block !important;
+  object-fit:contain !important;  /* ✅ no zoom */
+  object-position:center !important;
+  background:#fbfaf6 !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+  /* ✅ HERO FEATURED = 100vh (NO zoom/crop) */
+ section#featured.featuredPremium{
+  height: 100svh !important;      /* ✅ section becomes full screen */
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden;
+  background:#fbfaf6 !important;
+}
+
+.featuredPremiumImg{
+  width:100% !important;
+  height:100% !important;         /* ✅ fill section */
+  display:block !important;
+  object-fit:contain !important;  /* ✅ no zoom */
+  object-position:center !important;
+  background:#fbfaf6 !important;
+}
+
+  /* ✅ overlay button position */
   .featuredPremiumOverlay{
+    padding:0 14px 22px !important;
     align-items:flex-end !important;
-    padding:0 16px 18px !important;
-    background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.10), rgba(0,0,0,0)) !important;
+    background: linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.10), rgba(0,0,0,0)) !important;
   }
-  .featuredCtas{ width:100%; }
+
+  /* ✅ keep ONLY the button visually (your JSX already removed text) */
+  .featuredName{ display:none !important; }
+  .featuredManualText{ display:none !important; }
+
   .primary-btn--featured{
-    padding:12px 22px !important;   /* smaller */
+    padding:12px 22px !important;
     font-size:14px !important;
     border-radius:999px !important;
     text-transform:none !important;
     letter-spacing:0 !important;
   }
 
-  /* ✅ NO GAP between hero and carousel */
-  section#featured.featuredPremium{ margin-bottom:0 !important; }
-  .product-preview{
-    padding:16px 0 !important;      /* remove side padding */
-    margin-top:0 !important;
-  }
+  /* ✅ remove gap between hero and products */
+ .product-preview{
+  margin:0 !important;
+  padding:16px 0 !important;
+}
 
-  .carousel-container{ padding:0 !important; margin:0 !important; }
   .carousel-track{
-    padding:10px 0 14px !important; /* no side padding */
+    padding:10px 0 14px !important;
     margin:0 !important;
     gap:14px !important;
   }
 
-  /* Full-width card */
   .product-card{
     flex:0 0 100vw !important;
     max-width:100vw !important;
@@ -474,7 +535,6 @@ section#featured.featuredPremium{
     border-radius:18px !important;
   }
 
-  /* show full image (no zoom) inside carousel card */
   .product-image{
     height:320px !important;
     object-fit:contain !important;
@@ -488,9 +548,13 @@ section#featured.featuredPremium{
 /* ✅ Small phones (≤480px) */
 @media (max-width:480px){
   section#company-vision.companyVisionFull{
-    height:45vh !important;
-    min-height:220px !important;
-    max-height:360px !important;
+    height:46vh !important;
+    min-height:200px !important;
+    max-height:320px !important;
+  }
+
+  .featuredPremiumImg{
+    height:100svh !important;
   }
 
   .product-image{ height:280px !important; }
