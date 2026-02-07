@@ -481,6 +481,7 @@ export default function Home() {
 </section>
 
 {/* 2) FEATURED PRODUCT */}
+{/* 2) FEATURED PRODUCT */}
 <section id="featured" className="featuredPremium">
   <img
     className="featuredPremiumImg"
@@ -491,13 +492,21 @@ export default function Home() {
 
   <div className="featuredPremiumOverlay">
     <div className="featuredPremiumContent">
+      {/* Brand/Product Name like reference image */}
+      <div className="featuredProductBrand">
+        <div className="brandName">Elvora</div>
+        <div className="productName">{priorityOneProduct?.name || "Ripe Nendran"}</div>
+        <div className="productType">BANANA POWDER</div>
+      </div>
+      
+      {/* Shop Now Button */}
       <button
         className="primary-btn primary-btn--featured"
         type="button"
         onClick={goToPriorityOneProduct}
         disabled={!priorityOneProduct?.id}
       >
-        Shop Now
+        SHOP NOW
       </button>
     </div>
   </div>

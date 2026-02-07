@@ -81,19 +81,19 @@ const Footer = () => {
               <div className="contact-info">
                 <div className="contact-item">
                   <i className="fas fa-map-marker-alt"></i>
-                  <span>123 Hair Care Street, Beauty City, BC 12345</span>
+                  
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-phone"></i>
-                  <span>+1 (234) 567-8900</span>
+                  <span>+1 (91) 8089329474</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-envelope"></i>
-                  <span>info@ekabhumih.com</span>
+                  <span>contact.elvorafoods@gmail.com</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-clock"></i>
-                  <span>Mon - Fri: 9:00 AM - 6:00 PM</span>
+                  
                 </div>
               </div>
 
