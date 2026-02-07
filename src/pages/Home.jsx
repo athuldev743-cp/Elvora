@@ -494,12 +494,7 @@ export default function Home() {
       <h2 className="featuredName">{priorityOneProduct?.name || "Top Product"}</h2>
 
       {/* ✅ manual 2 lines */}
-      <p className="featuredManualText">
-        Clean ingredients • gentle everyday use
-        <br />
-        Fast absorption • non-greasy finish
-      </p>
-
+     
       <div className="featuredCtas">
         <button
           className="primary-btn primary-btn--featured"
