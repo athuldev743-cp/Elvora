@@ -47,15 +47,28 @@ function extractHighlights(description, max = 5) {
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
-  const [products, setProducts] = useState([]);
-  // Start true so initial load shows spinner, but never set back to true
-  const [loading, setLoading] = useState(true);
+  
+  // ✅ FIX 1: Initialize 'products' from LocalStorage if available
+  // This solves the Cold Start blank screen issue.
+  const [products, setProducts] = useState(() => {
+    try {
+      const cached = localStorage.getItem("cachedProducts");
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // ✅ FIX 2: Only show loading spinner if we have NO cached data
+  const [loading, setLoading] = useState(products.length === 0);
+  
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
 
+  // Google Sign-In guards
   const gsiReadyRef = useRef(false);
   const gsiInitRef = useRef(false);
   const gsiPromptingRef = useRef(false);
@@ -66,6 +79,7 @@ export default function Home() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  // resize close menu (desktop)
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth > 992) setMenuOpen(false);
@@ -74,6 +88,7 @@ export default function Home() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // lock body scroll when menu open
   useEffect(() => {
     if (!menuOpen) return;
     const prev = document.body.style.overflow;
@@ -83,6 +98,7 @@ export default function Home() {
     };
   }, [menuOpen]);
 
+  // load existing user
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (!userData) return;
@@ -95,55 +111,72 @@ export default function Home() {
     }
   }, []);
 
+  // mobile breakpoint
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 992);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ✅ UPDATED: Prevents UI flicker by not setting loading=true on refetch
+  // ✅ FIX 3: Fetch fresh data in background & Update Cache
   const loadProducts = useCallback(async () => {
     try {
-      // REMOVED: setLoading(true); <--- This was causing the images to disappear
+      // Note: We do NOT set loading(true) here. 
+      // We let the old data show while we fetch new data.
       const data = await fetchProducts();
-      setProducts(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      
+      setProducts(list);
+      // Save to cache for NEXT time
+      localStorage.setItem("cachedProducts", JSON.stringify(list));
       setError("");
     } catch (err) {
       console.error("Failed to load products", err);
-      // Only show error if we truly have no data to show
+      // Only show error if we have ZERO data to show
       if (products.length === 0) {
         setError("Temporary issue loading products.");
       }
-      // If we have data, keep showing it despite the background error
     } finally {
-      // Always turn off loading when done
       setLoading(false);
     }
-  }, [products.length]); // dependency on length is fine, or empty []
+  }, [products.length]);
 
   useEffect(() => {
     loadProducts();
+
     const syncProducts = (e) => {
       if (e.key === "productsUpdated") loadProducts();
     };
     window.addEventListener("storage", syncProducts);
+
     const onFocus = () => loadProducts();
     window.addEventListener("focus", onFocus);
+
     return () => {
       window.removeEventListener("storage", syncProducts);
       window.removeEventListener("focus", onFocus);
     };
   }, [loadProducts]);
 
+  // load Google script once
   useEffect(() => {
     if (document.getElementById("gsi-script")) return;
+
     const script = document.createElement("script");
     script.id = "gsi-script";
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
-    script.onload = () => { gsiReadyRef.current = true; };
-    script.onerror = () => { console.error("Failed to load Google GSI script"); gsiReadyRef.current = false; };
+
+    script.onload = () => {
+      gsiReadyRef.current = true;
+    };
+
+    script.onerror = () => {
+      console.error("Failed to load Google GSI script");
+      gsiReadyRef.current = false;
+    };
+
     document.body.appendChild(script);
   }, []);
 
@@ -151,8 +184,10 @@ export default function Home() {
     try {
       const payload = JSON.parse(atob(response.credential.split(".")[1]));
       const userEmail = payload.email;
+
       const isAdmin = ADMIN_EMAILS.includes(userEmail);
       const role = isAdmin ? "admin" : "user";
+
       const userData = {
         name: payload.name,
         email: userEmail,
@@ -160,9 +195,12 @@ export default function Home() {
         role,
         isAdmin,
       };
+
       localStorage.setItem("userToken", response.credential);
       localStorage.setItem("userData", JSON.stringify(userData));
       setUser(userData);
+
+      // optional server-side JWT for admin tools
       try {
         const jwtResponse = await convertGoogleToJWT(response.credential);
         if (jwtResponse?.access_token) {
@@ -171,6 +209,7 @@ export default function Home() {
       } catch (jwtError) {
         console.error("JWT conversion failed:", jwtError);
       }
+
       closeMenu();
       alert(isAdmin ? `Welcome Admin ${userData.name}!` : `Welcome ${userData.name}!`);
     } catch (err) {
@@ -185,37 +224,45 @@ export default function Home() {
   const ensureGsiInitialized = useCallback(() => {
     if (!gsiReadyRef.current || !window.google) return false;
     if (gsiInitRef.current) return true;
+
     if (!GOOGLE_CLIENT_ID) {
       console.error("Missing REACT_APP_GOOGLE_CLIENT_ID");
       return false;
     }
+
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: (resp) => handleGoogleResponse(resp),
     });
+
     gsiInitRef.current = true;
     return true;
   }, [handleGoogleResponse]);
 
   const handleGoogleLogin = useCallback(() => {
     if (loginBusy || gsiPromptingRef.current) return;
+
     if (!gsiReadyRef.current || !window.google) {
       alert("Google login loading... Please try again.");
       return;
     }
+
     const ok = ensureGsiInitialized();
     if (!ok) {
       alert("Google login not ready. Please check client ID / script load.");
       return;
     }
+
     gsiPromptingRef.current = true;
     setLoginBusy(true);
+
     window.google.accounts.id.prompt((notification) => {
       if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
         gsiPromptingRef.current = false;
         setLoginBusy(false);
       }
     });
+
     setTimeout(() => {
       gsiPromptingRef.current = false;
       setLoginBusy(false);
@@ -243,49 +290,64 @@ export default function Home() {
     e.currentTarget.src = "/images/logo-placeholder.png";
   };
 
+  // Priority-1 product (featured)
   const priorityOneProduct = useMemo(() => {
     const list = Array.isArray(products) ? products : [];
     const p1 = list.find((p) => Number(p.priority) === 1);
     if (p1) return p1;
+    // Fallback: If no Priority 1, take the first one (from cache or live)
     return [...list].sort((a, b) => Number(a.priority ?? 9999) - Number(b.priority ?? 9999))[0] || null;
   }, [products]);
 
+  const goToPriorityOneProduct = useCallback(() => {
+    const top = priorityOneProduct;
+
+    if (!top?.id) {
+      document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (!user) {
+      handleGoogleLogin();
+      return;
+    }
+
+    navigate(`/products/${top.id}`);
+  }, [priorityOneProduct, user, handleGoogleLogin, navigate]);
+
+  // Priority-1 highlights from description
   const featuredHighlights = useMemo(() => {
     return extractHighlights(priorityOneProduct?.description, 5);
   }, [priorityOneProduct]);
 
+  // Only priority=2 for carousel (NO fallback)
+  // Sorts so available products appear before "Available Soon"
   const priority2Products = useMemo(() => {
     const list = (Array.isArray(products) ? products : []).filter((p) => Number(p.priority) === 2);
+    
     return list.sort((a, b) => {
       const qtyA = Number(a.quantity ?? 0);
       const qtyB = Number(b.quantity ?? 0);
       const isAvailableA = qtyA > 0;
       const isAvailableB = qtyB > 0;
+
+      // If A is available and B is not, A comes first (-1)
       if (isAvailableA && !isAvailableB) return -1;
+      // If B is available and A is not, B comes first (1)
       if (!isAvailableA && isAvailableB) return 1;
+      // Otherwise keep original order
       return 0;
     });
   }, [products]);
 
-  const goToPriorityOneProduct = useCallback(() => {
-    const top = priorityOneProduct;
-    if (!top?.id) {
-      document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-    if (!user) {
-      handleGoogleLogin();
-      return;
-    }
-    navigate(`/products/${top.id}`);
-  }, [priorityOneProduct, user, handleGoogleLogin, navigate]);
-
   const scrollCarousel = (dir) => {
     const el = trackRef.current;
     if (!el) return;
+
     const card = el.querySelector(".product-card");
     const gap = 16;
     const step = card ? card.getBoundingClientRect().width + gap : el.clientWidth * 0.85;
+
     el.scrollBy({ left: dir === "next" ? step : -step, behavior: "smooth" });
   };
 
@@ -297,6 +359,7 @@ export default function Home() {
         </button>
       );
     }
+
     return (
       <button
         className="hamburger mobile-only"
@@ -305,13 +368,16 @@ export default function Home() {
         aria-label="Menu"
         aria-expanded={menuOpen}
       >
-        <span /><span /><span />
+        <span />
+        <span />
+        <span />
       </button>
     );
   };
 
   return (
     <>
+      {/* NAV */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           {!scrolled ? (
@@ -320,12 +386,14 @@ export default function Home() {
             <span className="text-logo"></span>
           )}
         </div>
+
         <div className="nav-links desktop-only">
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
           <a href="#testimonials">Testimonials</a>
         </div>
+
         <div className="auth-section desktop-only">
           {user ? (
             <div className="user-nav">
@@ -336,7 +404,9 @@ export default function Home() {
                   <User size={20} />
                 )}
               </button>
+
               <span className="user-greeting">Hi, {user.name}</span>
+
               {user.isAdmin === true && (
                 <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>
                   Admin Dashboard
@@ -349,19 +419,31 @@ export default function Home() {
             </button>
           )}
         </div>
+
         {isMobile && <MobileRightButton />}
       </nav>
 
+      {/* MOBILE MENU */}
       {menuOpen && user && (
         <div className="mobileMenuOverlay" onMouseDown={closeMenu}>
           <div className="mobileMenuPanel" onMouseDown={(e) => e.stopPropagation()}>
             <div className="mobileMenuHeader">
-              <button type="button" className="mobileMenuBack" onClick={closeMenu} aria-label="Back">←</button>
+              <button type="button" className="mobileMenuBack" onClick={closeMenu} aria-label="Back">
+                ←
+              </button>
               <div className="mobileMenuTitle">Menu</div>
               <div className="mobileMenuSpacer" />
             </div>
+
             <div className="mobileMenuSection">
-              <button className="mobileMenuItem" type="button" onClick={() => { closeMenu(); navigate("/account"); }}>
+              <button
+                className="mobileMenuItem"
+                type="button"
+                onClick={() => {
+                  closeMenu();
+                  navigate("/account");
+                }}
+              >
                 <span className="mmIcon">
                   {user.profile_pic ? (
                     <img src={user.profile_pic} alt="Account" className="mmAvatar" referrerPolicy="no-referrer" />
@@ -372,12 +454,22 @@ export default function Home() {
                 Account
               </button>
             </div>
+
             <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
-              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
-              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
-              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
+              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
+                Products
+              </a>
+              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>
+                About
+              </a>
+              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>
+                Blog
+              </a>
+              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>
+                Testimonials
+              </a>
             </div>
+
             {user?.isAdmin === true && (
               <div className="mobileMenuSection">
                 <button className="mobileMenuItem" type="button" onClick={goToAdminDashboard}>
@@ -389,6 +481,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* 0) COMPANY VISION (FULL PAGE) */}
       <section id="company-vision" className="companyVisionFull">
         <img
           className="companyVisionImg"
@@ -397,11 +490,13 @@ export default function Home() {
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
+            e.currentTarget.src =
+              "https://placehold.co/1600x900/EEE/31343C?text=Company+Vision";
           }}
         />
       </section>
 
+      {/* 2) FEATURED PRODUCT */}
       <section id="featured" className="featuredPremium">
         <img
           className="featuredPremiumImg"
@@ -421,23 +516,29 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 3) PRODUCTS CAROUSEL (ONLY PRIORITY=2) */}
       <section id="products" className="product-preview">
         {error && <div className="error-message">⚠️ {error}</div>}
-        {/* Only show loading text if we have 0 products */}
+        
+        {/* Only show "Loading..." if the cache is truly empty */}
         {loading && products.length === 0 && <p className="loading-text">Loading products...</p>}
 
-        {products.length === 0 && !loading && !error && (
+        {!loading && priority2Products.length === 0 && !error && (
           <p style={{ textAlign: "center", color: "#666" }}>No priority-2 products available</p>
         )}
 
+        {/* Render Carousel as soon as data exists (even if it's old cache) */}
         {priority2Products.length > 0 && (
           <div className="carousel-container">
-            <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">‹</button>
-            
+            <button className="carousel-arrow prev" onClick={() => scrollCarousel("prev")} type="button" aria-label="Previous">
+              ‹
+            </button>
+
             <div className="carousel-track" ref={trackRef}>
               {priority2Products.map((p) => {
                 const qty = Number(p.quantity ?? 0);
                 const availableSoon = qty <= 0;
+
                 const onView = () => {
                   if (availableSoon) return;
                   if (!user) return handleGoogleLogin();
@@ -461,6 +562,7 @@ export default function Home() {
 
                     <div className="product-info">
                       <span className="product-name">{p.name}</span>
+
                       <button
                         className={`view-details-btn ${availableSoon ? "isDisabled" : ""}`}
                         onClick={onView}
@@ -475,7 +577,9 @@ export default function Home() {
               })}
             </div>
 
-            <button className="carousel-arrow next" onClick={() => scrollCarousel("next")} type="button" aria-label="Next">›</button>
+            <button className="carousel-arrow next" onClick={() => scrollCarousel("next")} type="button" aria-label="Next">
+              ›
+            </button>
           </div>
         )}
       </section>
@@ -483,12 +587,15 @@ export default function Home() {
       <section id="about" className="pageSection aboutFull">
         <About />
       </section>
+
       <section id="blog" className="pageSection">
         <Blog />
       </section>
+
       <section id="testimonials" className="pageSection">
         <Testimonial />
       </section>
+
       <Footer />
     </>
   );
