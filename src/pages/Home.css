@@ -21,10 +21,9 @@ html, body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background: #fff; /* Changed from yellow to white for cleaner gaps */
+  background: #fff;
 }
 
-/* FIX 1: Body padding matches Desktop Nav Height (80px) */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-top: 80px !important;
@@ -55,11 +54,10 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  height: 100%; /* Fill the navbar height */
+  height: 100%;
   flex-shrink: 0;
 }
 
-/* Desktop Logo settings */
 .logo-img {
   height: 60px; 
   width: auto;
@@ -67,7 +65,6 @@ body {
   display: block;
 }
 
-/* Desktop Nav Links */
 .nav-links {
   display: flex;
   gap: 32px;
@@ -87,7 +84,6 @@ body {
 }
 .nav-links a:hover { color: var(--dim-yellow); }
 
-/* Auth Section */
 .auth-section {
   display: flex;
   align-items: center;
@@ -106,44 +102,51 @@ body {
   cursor: pointer;
 }
 
-/* Desktop Only / Mobile Only Utilities */
 .desktop-only { display: flex; }
 .mobile-only { display: none; }
 
-/* ===================== SECTIONS (DESKTOP) ===================== */
-
-/* Full Width Banner Images (No Gaps) */
-.companyVisionFull, .featuredPremium {
+/* ===================== HERO & SECTIONS (DESKTOP) ===================== */
+.companyVisionFull {
   width: 100%;
   display: block;
-  line-height: 0; /* Removes tiny 4px gap under images */
+  line-height: 0;
   position: relative;
 }
 
-/* Desktop Images */
-.companyVisionImg, .featuredPremiumImg {
+.companyVisionImg {
   width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
 }
 
-/* Specific Featured Section Styling */
+.featuredPremium {
+  position: relative;
+  width: 100%;
+  background: #fbfaf6; /* Matches image background to hide gaps */
+  overflow: hidden;
+}
+
 .featuredPremiumImg {
-  height: 90vh; /* Fixed height for Hero on Desktop only */
-  max-height: 800px;
+  width: 100%;
+  height: 90vh;
+  max-height: 850px;
+  display: block;
+  object-fit: cover; /* Desktop usually looks better with cover */
+  object-position: center;
 }
 
 .featuredPremiumOverlay {
   position: absolute;
   bottom: 40px;
   left: 40px;
-  width: 100%;
+  z-index: 10;
 }
 
+/* Updated Button Color (Yellow) */
 .primary-btn--featured {
-  background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
-  color: #fff;
+  background: var(--dim-yellow) !important; /* Force Yellow */
+  color: #000 !important; /* Black text for contrast */
   border: none;
   padding: 16px 40px;
   border-radius: 50px;
@@ -151,10 +154,15 @@ body {
   font-size: 18px;
   cursor: pointer;
   text-transform: uppercase;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4);
+  transition: transform 0.2s ease;
+}
+.primary-btn--featured:hover {
+  transform: scale(1.05);
+  background: #e3c460 !important;
 }
 
-/* ===================== CAROUSEL / PRODUCTS ===================== */
+/* ===================== PRODUCTS CAROUSEL ===================== */
 .product-preview {
   background: #f8f9fa;
   padding: 60px 0;
@@ -162,7 +170,7 @@ body {
 
 .carousel-container {
   position: relative;
-  padding: 0 40px; /* Space for arrows */
+  padding: 0 40px;
 }
 
 .carousel-track {
@@ -176,12 +184,14 @@ body {
 .carousel-track::-webkit-scrollbar { display: none; }
 
 .product-card {
-  flex: 0 0 280px; /* Fixed width cards */
+  flex: 0 0 280px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
   overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-image {
@@ -223,12 +233,13 @@ body {
   cursor: pointer;
   z-index: 10;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .carousel-arrow.prev { left: 0; }
 .carousel-arrow.next { right: 0; }
 
-
-/* ===================== MOBILE MENU OVERLAY ===================== */
 .mobileMenuOverlay {
   position: fixed;
   inset: 0;
@@ -264,38 +275,26 @@ body {
 }
 
 /* =========================================================
-   ✅ MOBILE FIXES (Max-width: 992px)
+   ✅ MOBILE / TABLET FIXES (Max-width: 992px)
    ========================================================= */
 @media (max-width: 992px) {
   
-  /* FIX 2: Update Body padding for smaller mobile nav */
-  body {
-    padding-top: 60px !important;
-  }
+  body { padding-top: 60px !important; }
 
   .desktop-only { display: none !important; }
   .mobile-only { display: flex !important; }
 
-  /* Navbar Mobile Height */
   .navbar {
     height: 60px !important;
     padding: 0 15px !important;
   }
 
-  /* FIX 3: LOGO SIZING & RESET */
-  .logo {
-    height: 100%;
-    width: auto;
-  }
-  
   .logo-img {
-    height: 40px !important; /* Force smaller height */
-    min-height: 0 !important; /* REMOVE DESKTOP CONSTRAINT */
+    height: 40px !important;
+    min-height: 0 !important;
     width: auto !important;
-    object-fit: contain;
   }
 
-  /* Hamburger Menu */
   .hamburger {
     background: none;
     border: none;
@@ -305,74 +304,115 @@ body {
     cursor: pointer;
   }
   .hamburger span {
-    width: 25px;
-    height: 3px;
+    width: 25px; height: 3px;
     background: var(--charcoal);
     border-radius: 2px;
   }
 
-  /* FIX 4: NO GAPS IN SECTIONS (Natural Height) */
-  
-  /* Reset fixed heights and positions */
-  .companyVisionFull, 
-  .featuredPremium {
-    height: auto !important; /* Let image dictate height */
-    min-height: 0 !important;
-    display: block !important;
-    position: relative !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Make images flow naturally */
-  .companyVisionImg, 
-  .featuredPremiumImg {
-    position: static !important; /* Remove absolute positioning */
+  /* 1. COMPANY VISION - 50vh Banner, No Gaps */
+  #company-vision.companyVisionFull {
+    height: 50vh !important;
     width: 100% !important;
-    height: auto !important; /* Scale naturally */
-    max-height: none !important;
-    object-fit: cover !important; /* Ensure no gaps within image box */
-    display: block !important; /* Removes inline gap */
+    display: block !important;
+  }
+  .companyVisionImg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Fills the 50vh space completely */
+    object-position: center !important;
   }
 
-  /* Reposition Overlay for Mobile "Natural" Flow */
+  /* 2. HERO PRODUCT - More Height, NO ZOOM (Contain) */
+  #featured.featuredPremium {
+    height: 75vh !important; /* Taller container */
+    background: #fbfaf6 !important; /* Matches image bg color */
+    display: block !important;
+  }
+  .featuredPremiumImg {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important; /* Shows full image, no cropping */
+    object-position: center bottom !important; /* Anchors image */
+    background: #fbfaf6 !important;
+  }
+
+  /* 3. BUTTON - Yellow, overlay adjustment */
   .featuredPremiumOverlay {
-    position: absolute;
+    position: absolute !important;
     bottom: 20px !important;
-    left: 15px !important;
-    padding: 0 !important;
-    background: transparent !important;
-    width: auto !important;
-    inset: auto !important; /* Reset desktop inset */
-    bottom: 15px !important;
     left: 50% !important;
-    transform: translateX(-50%); /* Center button */
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    background: transparent !important;
+    display: flex !important;
+    justify-content: center !important;
   }
-
-  /* Make button smaller for mobile */
   .primary-btn--featured {
-    padding: 10px 25px !important;
-    font-size: 14px !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
-    white-space: nowrap;
+    padding: 12px 30px !important;
+    font-size: 15px !important;
+    white-space: nowrap !important;
+    background: var(--dim-yellow) !important; /* Yellow */
+    color: #000 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
   }
 
-  /* Carousel Adjustments */
+  /* 4. PRODUCT CAROUSEL - 2 Products, Overlay Button */
   .product-preview {
     padding: 30px 0 !important;
   }
   .carousel-container {
-    padding: 0 !important; /* Remove arrow space */
+    padding: 0 !important;
   }
-  .carousel-arrow {
-    display: none !important; /* Hide arrows on mobile, use swipe */
-  }
+  .carousel-arrow { display: none !important; }
+  
   .carousel-track {
-    padding: 0 15px 20px !important; /* Add side padding for cards */
-    gap: 15px !important;
+    padding: 0 12px 20px !important;
+    gap: 12px !important; /* Small gap between cards */
   }
+
   .product-card {
-    flex: 0 0 80vw !important; /* Cards take 80% of screen width */
-    max-width: 300px;
+    /* Calculated to show 2 cards: (100vw - padding - gap) / 2 */
+    flex: 0 0 44vw !important; 
+    max-width: 44vw !important;
+    height: 280px !important; /* Fixed height for uniformity */
+    margin: 0 !important;
+    position: relative !important;
+  }
+
+  .product-image {
+    width: 100% !important;
+    height: 100% !important; /* Takes full card height */
+    padding: 0 !important; /* NO PADDING requested */
+    object-fit: contain !important; /* 100% Fit NO CROP requested */
+    background: #fff !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Hide standard info text on mobile to make room for overlay button */
+  .product-info {
+    position: absolute !important;
+    inset: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    pointer-events: none !important; /* Let clicks pass through if needed */
+  }
+
+  .product-name {
+    display: none !important; /* Hide name to focus on image/button */
+  }
+
+  .view-details-btn {
+    pointer-events: auto !important;
+    width: auto !important;
+    margin-bottom: 15px !important;
+    padding: 6px 16px !important;
+    font-size: 12px !important;
+    background: rgba(95, 126, 92, 0.9) !important; /* Semi-transparent green */
+    backdrop-filter: blur(4px);
+    border-radius: 20px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
   }
 }
