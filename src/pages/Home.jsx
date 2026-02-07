@@ -360,9 +360,7 @@ export default function Home() {
         </div>
 
         <div className="nav-links desktop-only">
-          <a href="#company-vision">Company</a>
-          <a href="#hero">Hero</a>
-          <a href="#featured">Featured</a>
+          
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
@@ -431,15 +429,7 @@ export default function Home() {
             </div>
 
             <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#company-vision" onClick={closeMenu}>
-                Company
-              </a>
-              <a className="mobileMenuItem" href="#hero" onClick={closeMenu}>
-                Hero
-              </a>
-              <a className="mobileMenuItem" href="#featured" onClick={closeMenu}>
-                Featured
-              </a>
+              
               <a className="mobileMenuItem" href="#products" onClick={closeMenu}>
                 Products
               </a>

@@ -31,6 +31,7 @@ body {
 }
 
 /* ===================== NAVBAR ===================== */
+/* ===================== NAVBAR ===================== */
 .navbar {
   /* Changed from fixed to absolute so it scrolls away */
   position: absolute; 
@@ -89,7 +90,37 @@ body {
   gap: 15px;
 }
 
-.user-nav { display: flex; align-items: center; gap: 15px; }
+/* ===================== USER ACCOUNT CIRCLE FIX (DESKTOP) ===================== */
+.user-nav { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+}
+
+.accountBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  /* 1. FORCE CIRCLE DIMENSIONS */
+  width: 40px;
+  height: 40px;
+  /* 2. MAKE IT ROUND */
+  border-radius: 50%;
+  /* 3. CLIP CORNERS */
+  overflow: hidden; 
+  /* 4. CENTER IMAGE */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.accountAvatar {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
 
 .login-nav-btn {
   background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
@@ -99,6 +130,32 @@ body {
   border-radius: 30px;
   font-weight: 700;
   cursor: pointer;
+}
+
+/* ===================== MOBILE HAMBURGER MENU AVATAR FIX ===================== */
+/* This fixes the big blue square inside the mobile menu */
+
+.mmIcon {
+  /* 1. Fixed small size */
+  width: 32px !important;
+  height: 32px !important;
+  /* 2. Force Circle */
+  border-radius: 50% !important;
+  /* 3. Clip the square image */
+  overflow: hidden !important;
+  
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; 
+  background: #f0f0f0; 
+}
+
+.mmAvatar {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
 }
 
 /* ===================== SECTIONS (DESKTOP) ===================== */
