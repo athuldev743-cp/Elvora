@@ -473,19 +473,51 @@ body {
   
   .logo-img { height: 40px !important; width: auto !important; }
 
-  .hamburger {
-    background: none;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-  }
-  .hamburger span {
-    width: 25px; height: 3px;
-    background: var(--charcoal);
-    border-radius: 2px;
-  }
+  /* ===================== MODERN HAMBURGER ===================== */
+.hamburger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  
+  /* 1. Modern Touch Target (easier to tap) */
+  width: 44px; 
+  height: 44px;
+  border-radius: 12px; /* Soft rounded square shape */
+  
+  /* 2. Centering the lines */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; 
+  
+  /* 3. Smooth Interaction */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover Effect: Subtle background & tiny "pop" */
+.hamburger:hover {
+  background: rgba(0,0,0,0.04); 
+  transform: scale(1.05);
+}
+
+/* Click Effect: Slight press down */
+.hamburger:active {
+  transform: scale(0.92);
+  background: rgba(0,0,0,0.08);
+}
+
+.hamburger span {
+  /* Refined line width/height */
+  width: 24px; 
+  height: 2.5px; 
+  
+  background: var(--charcoal);
+  border-radius: 4px; /* Pill shape ends */
+  
+  /* Ensure smooth color changes if needed */
+  transition: background 0.2s ease;
+}
 
   /* 1. COMPANY VISION */
   #company-vision.companyVisionFull {
