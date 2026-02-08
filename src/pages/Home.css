@@ -172,6 +172,8 @@ body {
   height: 100%;
   object-fit: cover;  /* Ensures video covers area without stretching */
   display: block;
+  image-rendering:auto;
+  transform: translateZ(0);
 }
 
 .intro-overlay {

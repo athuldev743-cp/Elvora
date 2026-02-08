@@ -94,7 +94,7 @@ export default function Home() {
       {/* --- VIDEO SECTION --- */}
       <section className="intro-video-section">
         <video 
-          src="/videos/banana-strength-enhanced-1080.mp4" 
+          src="/videos/banana-strength-enhanced-1920x1080.mp4" 
           autoPlay 
           muted 
           playsInline 
