@@ -55,7 +55,7 @@ export default function Home() {
     }).catch(() => setLoading(false));
   }, []);
 
-  // --- Google Login Logic (Simplified for brevity) ---
+  // --- Google Login Logic ---
   const handleGoogleLogin = () => {
     alert("Please ensure Google Client ID is set in .env");
   };
@@ -80,6 +80,8 @@ export default function Home() {
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
+          {/* Added Testimonials Link */}
+          <a href="#testimonials">Testimonials</a>
         </div>
 
         <div className="auth-section desktop-only">
@@ -89,7 +91,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* --- VIDEO SECTION (FIXED) --- */}
+      {/* --- VIDEO SECTION --- */}
       <section className="intro-video-section">
         <video 
           src="/videos/banana-strength.mp4" 
@@ -127,6 +129,12 @@ export default function Home() {
 
       <section id="about" className="pageSection"><About /></section>
       <section id="blog" className="pageSection"><Blog /></section>
+      
+      {/* --- TESTIMONIALS (Restored) --- */}
+      <section id="testimonials" className="pageSection">
+        <Testimonial />
+      </section>
+
       <Footer />
     </>
   );
