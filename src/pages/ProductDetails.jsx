@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProductById } from "../api/publicAPI";
-import BuyModal from "../components/Buy"; 
+import BuyModal from "../components/Buy";
 import "./ProductDetails.css";
 
 const ProductDetails = () => {
@@ -130,8 +130,24 @@ const ProductDetails = () => {
     );
   }
 
-  // ✅ CHECK: Is this a "Hero" product (Priority 1 + Has 2nd Image)?
-  const isHeroProduct = Number(product.priority) === 1 && product.image2_url;
+  // ✅ URL cleaner (handles null / "null" / "" etc.)
+  const cleanUrl = (v) => {
+    if (!v) return "";
+    const s = String(v).trim();
+    if (!s || s === "null" || s === "undefined") return "";
+    return s;
+  };
+
+  // ✅ Hero Banner URL (supports multiple possible backend keys)
+  const heroUrl = cleanUrl(
+    product?.image2_url || product?.image2Url || product?.image2 || product?.banner_url
+  );
+
+  // ✅ Priority 1 product = allowed to have hero banner
+  const isHeroProduct = Number(product.priority) === 1 && !!heroUrl;
+
+  // ✅ IMPORTANT: Priority 1 should show ONLY one image (banner image)
+  const displayImageUrl = isHeroProduct ? heroUrl : product.image_url;
 
   return (
     <div className="pd-page">
@@ -145,24 +161,11 @@ const ProductDetails = () => {
 
       {/* Premium Card */}
       <div className={`pd-card ${isHeroProduct ? "pd-card-hero" : ""}`}>
-        
-        {/* ✅ NEW: Priority 1 Hero Banner (Second Image) */}
-        {isHeroProduct && (
-          <div className="pd-hero-banner">
-            <img 
-              src={product.image2_url} 
-              alt={`${product.name} Lifestyle`} 
-              className="pd-hero-img"
-              loading="lazy"
-            />
-          </div>
-        )}
-
         <div className="pd-grid">
-          {/* Main Product Image (Bottle) */}
+          {/* Main Product Image (Bottle OR Banner for priority 1) */}
           <div className="pd-imageWrap">
             <img
-              src={product.image_url}
+              src={displayImageUrl}
               alt={product.name}
               className="pd-image"
               onError={handleImageError}
@@ -178,11 +181,7 @@ const ProductDetails = () => {
               Buy Now
             </button>
 
-            {!user && (
-              <div className="pd-image-loginHint">
-                Login required to purchase
-              </div>
-            )}
+            {!user && <div className="pd-image-loginHint">Login required to purchase</div>}
           </div>
 
           {/* Content */}
