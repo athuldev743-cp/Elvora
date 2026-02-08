@@ -75,6 +75,9 @@ export default function Home() {
   const trackRef = useRef(null);
   const navigate = useNavigate();
 
+  // Video State
+  const [videoEnded, setVideoEnded] = useState(false);
+
   const closeMenu = () => setMenuOpen(false);
 
   // resize close menu (desktop)
@@ -483,9 +486,64 @@ export default function Home() {
         </div>
       )}
 
-     
+      {/* --- VIDEO INTRO SECTION --- */}
+      <section 
+        className="intro-video-section" 
+        style={{ 
+          position: "relative", 
+          width: "100%", 
+          backgroundColor: "#000",
+          overflow: "hidden"
+        }}
+      >
+        <video
+          src="/videos/banana-strength.mp4" 
+          autoPlay
+          muted
+          playsInline
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", maxHeight: "80vh" }}
+          onEnded={() => setVideoEnded(true)}
+        />
+        
+        {videoEnded && (
+          <div 
+            style={{
+              position: "absolute",
+              top: 0, 
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.3)", // Slightly darker overlay for better text contrast
+              display: "flex",
+              flexDirection: "column",
+              // --- CHANGES FOR POSITIONING ---
+              justifyContent: "flex-end", // Align vertically to bottom
+              alignItems: "flex-start",   // Align horizontally to left
+              padding: "5%",              // Push away from edge
+              // -----------------------------
+              color: "#fff",
+              animation: "fadeIn 1.2s ease-out"
+            }}
+          >
+            <h2 
+              style={{
+                fontSize: "clamp(1.8rem, 5vw, 3.5rem)", // Slightly larger font for quality feel
+                fontWeight: "700",
+                textAlign: "left",
+                maxWidth: "800px",
+                textShadow: "2px 2px 8px rgba(0,0,0,0.7)", // Text shadow helps readabilty against video
+                lineHeight: "1.2",
+                margin: 0
+              }}
+            >
+              Ripen banana powder<br />
+              100 bananas strength
+            </h2>
+          </div>
+        )}
+      </section>
 
-      {/* 2) FEATURED PRODUCT */}
+      {/* 2) FEATURED PRODUCT (HERO) */}
       <section id="featured" className="featuredPremium">
         <img
           className="featuredPremiumImg"
@@ -504,7 +562,6 @@ export default function Home() {
           </button>
         </div>
       </section>
-
 
       <section id="about" className="pageSection aboutFull">
         <About />
