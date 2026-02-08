@@ -8,6 +8,8 @@
   --surface: #ffffff;
   --ink: #333;
   --border: rgba(46, 46, 47, 0.14);
+  --font-heading: 'Playfair Display', serif; /* Optional premium font */
+  --font-body: 'Segoe UI', system-ui, sans-serif;
 }
 
 /* ===================== GLOBAL RESET ===================== */
@@ -25,29 +27,40 @@ html, body {
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-body);
   /* REMOVED padding-top so navbar overlays/sits at top */
   padding-top: 0 !important; 
 }
 
-/* ===================== NAVBAR ===================== */
+/* ===================== ANIMATIONS ===================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ===================== NAVBAR ===================== */
 .navbar {
-  /* Changed from fixed to absolute so it scrolls away */
+  /* Absolute so it overlays the video/hero initially */
   position: absolute; 
   top: 0; left: 0; right: 0;
   height: 80px;
   width: 100%;
-  background: #fff;
+  background: transparent; /* Starts transparent for premium feel */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 40px;
   z-index: 1000;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar.scrolled {
+  position: fixed; /* Becomes fixed on scroll */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Hide standard links on mobile to prevent "CompanyHeroFeatured" mess */
 .desktop-only { display: flex; }
 .mobile-only { display: none; }
 
@@ -63,6 +76,9 @@ body {
   width: auto;
   object-fit: contain;
   display: block;
+  
+  /* ADD THIS LINE: Makes white background disappear */
+  mix-blend-mode: multiply; 
 }
 
 .nav-links {
@@ -73,7 +89,7 @@ body {
 }
 
 .nav-links a {
-  color: #333;
+  color: #fff; /* White text on video */
   text-decoration: none;
   font-weight: 600;
   font-size: 16px;
@@ -81,7 +97,14 @@ body {
   display: flex;
   align-items: center;
   height: 100%;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
+
+.navbar.scrolled .nav-links a {
+  color: #333; /* Dark text on white background */
+  text-shadow: none;
+}
+
 .nav-links a:hover { color: var(--dim-yellow); }
 
 .auth-section {
@@ -90,7 +113,7 @@ body {
   gap: 15px;
 }
 
-/* ===================== USER ACCOUNT CIRCLE FIX (DESKTOP) ===================== */
+/* User Account Circle */
 .user-nav { 
   display: flex; 
   align-items: center; 
@@ -101,19 +124,15 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
-  /* 1. FORCE CIRCLE DIMENSIONS */
-  width: 40px;
-  height: 40px;
-  /* 2. MAKE IT ROUND */
+  width: 40px; height: 40px;
   border-radius: 50%;
-  /* 3. CLIP CORNERS */
   overflow: hidden; 
-  /* 4. CENTER IMAGE */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.2); /* Semi-transparent bg */
 }
 
 .accountAvatar {
@@ -132,58 +151,73 @@ body {
   cursor: pointer;
 }
 
-/* ===================== MOBILE HAMBURGER MENU AVATAR FIX ===================== */
-/* This fixes the big blue square inside the mobile menu */
+/* ===================== SECTIONS ===================== */
 
-.mmIcon {
-  /* 1. Fixed small size */
-  width: 32px !important;
-  height: 32px !important;
-  /* 2. Force Circle */
-  border-radius: 50% !important;
-  /* 3. Clip the square image */
-  overflow: hidden !important;
-  
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0; 
-  background: #f0f0f0; 
+.pageSection {
+  padding: 80px 0;
 }
 
-.mmAvatar {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-}
+/* ===================== VIDEO SECTION FIX ===================== */
 
-/* ===================== SECTIONS (DESKTOP) ===================== */
-
-/* 1. COMPANY VISION */
-/* Width 100%, Height Auto -> Fits width, adjusts height, NO CROP */
-.companyVisionFull {
+.intro-video-section {
+  position: relative; /* Essential for overlay to work */
   width: 100%;
-  height: 600px; /* Fixed height you requested */
+  height: 100vh;      /* Full screen height */
+  background-color: #000;
+  overflow: hidden;
+}
+
+.intro-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* Ensures video covers area without stretching */
   display: block;
-  position: relative;
-  background: #fbfaf6;
-  margin-bottom: 20px;
-  line-height: 0;
 }
 
-.companyVisionImg {
-  width: 100%;
-  height: 100%;      /* Fill the 600px container */
-  object-fit: cover; /* FORCE 100% Width (Trims top/bottom to fit) */
-  object-position: center; /* Keeps the center of the image visible */
+.intro-overlay {
+  position: absolute;  /* This forces it ON TOP of the video */
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  z-index: 10;         /* Higher number = sits on top */
+  
+  /* Layout: Bottom Left */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 60px;       /* Push text away from edge */
+  
+  background: transparent !important; /* Forces transparency */
 }
 
-/* 2. HERO FEATURED SECTION */
+.intro-title {
+  color: #fff;
+  font-family: var(--font-heading, serif);
+  font-size: clamp(2rem, 5vw, 4rem); /* Responsive text size */
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5); /* Shadow makes it readable */
+  margin: 0;
+  max-width: 800px;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 992px) {
+  .intro-overlay {
+    padding: 30px;
+  }
+  .intro-title {
+    font-size: 2rem;
+  }
+}
+
+/* 2. FEATURED PRODUCT (HERO) */
 .featuredPremium {
   position: relative;
   width: 100%;
-  height: auto; /* Let image define height */
+  height: auto; 
   background: #fbfaf6; 
   display: block;
   line-height: 0;
@@ -191,12 +225,11 @@ body {
 
 .featuredPremiumImg {
   width: 100%;
-  height: auto; /* Natural height */
+  height: auto; 
   display: block;
-  object-fit: contain; /* Full width, no crop */
+  object-fit: contain; 
 }
 
-/* Desktop Button Position */
 .featuredPremiumOverlay {
   position: absolute;
   bottom: 50px;
@@ -207,18 +240,14 @@ body {
   height: auto;
 }
 
-/* Desktop Button Style */
 .primary-btn--featured {
   background: var(--dim-yellow) !important;
   color: #000 !important;
   border: none;
-  
-  /* INCREASED SIZES HERE: */
-  padding: 24px 65px;  /* Was 18px 45px */
-  font-size: 24px;     /* Was 18px */
-  
+  padding: 24px 65px;
+  font-size: 24px; 
   border-radius: 50px;
-  font-weight: 900;    /* Made slightly bolder */
+  font-weight: 900; 
   cursor: pointer;
   text-transform: uppercase;
   box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4);
@@ -230,6 +259,7 @@ body {
   transform: scale(1.05);
   background: #e3c460 !important;
 }
+
 /* ===================== PRODUCTS CAROUSEL ===================== */
 .product-preview {
   background: #f8f9fa;
@@ -251,14 +281,11 @@ body {
 }
 .carousel-track::-webkit-scrollbar { display: none; }
 
-/* --- CARD BASE STYLES (Desktop) --- */
+/* Card Styles */
 .product-card {
   flex: 0 0 calc((100% - 60px) / 4); 
   max-width: calc((100% - 60px) / 4);
-  
-  /* 1. INCREASED HEIGHT for Laptop */
   height: 550px; 
-  
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.06);
@@ -274,48 +301,21 @@ body {
   box-shadow: 0 12px 30px rgba(0,0,0,0.1);
 }
 
-/* ===================== AVAILABLE SOON OVERLAY ===================== */
-.available-soon-badge {
-  position: absolute;
-  top: 15px;         /* Distance from top */
-  right: 15px;       /* Distance from right */
-  z-index: 20;       /* Sit ON TOP of the image */
-  
-  background: rgba(95, 126, 92, 0.95); /* Green background */
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  pointer-events: none; /* Let clicks pass through if needed */
-}
-
-/* ===================== PRODUCT IMAGE (NO PADDING) ===================== */
 .product-image {
   width: 100%;
   height: 100%;
-  
-  /* FORCE FULL FILL & NO PADDING */
   padding: 0 !important; 
   object-fit: cover !important; 
   object-position: center;
-  
   display: block;
   background: #fff;
 }
 
-/* 3. OVERLAY BUTTON & TEXT */
 .product-info {
   position: absolute;
   bottom: 0;
   left: 0; right: 0;
-  
-  /* Darker gradient at bottom so text pops */
   background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-  
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -350,77 +350,237 @@ body {
   font-weight: 800;
   font-size: 14px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  margin-bottom: 15px; /* Lift button slightly */
+  margin-bottom: 15px; 
 }
 
-/* Arrows */
-.carousel-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px; height: 48px;
+/* ===================== BLOG SECTION (PREMIUM & WIDE) ===================== */
+.blog-section-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.blog-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 Wide Columns */
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.blog-card {
   background: #fff;
-  border: 1px solid rgba(0,0,0,0.05);
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 10;
-  font-size: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.blog-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 350px;
+  overflow: hidden;
+}
+
+.blog-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.blog-card:hover .blog-image { transform: scale(1.05); }
+
+.blog-category {
+  position: absolute;
+  top: 20px; left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 2px;
+}
+
+.blog-content {
+  padding: 35px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.blog-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.meta-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  gap: 6px;
 }
-.carousel-arrow.prev { left: 10px; }
-.carousel-arrow.next { right: 10px; }
 
+.blog-title {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  line-height: 1.3;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+  transition: color 0.2s;
+}
 
-/* ===================== MOBILE OVERRIDES ===================== */
+.blog-card:hover .blog-title { color: var(--dim-yellow); }
+
+.blog-excerpt {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  flex-grow: 1;
+}
+
+.blog-read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1a1a1a;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 4px;
+  width: fit-content;
+  transition: all 0.2s;
+}
+
+.blog-read-more:hover {
+  border-color: var(--dim-yellow);
+  color: var(--dim-yellow);
+}
+
+.blog-footer { text-align: center; }
+
+.view-all-btn {
+  display: inline-block;
+  padding: 16px 40px;
+  border: 1px solid #1a1a1a;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+
+.view-all-btn:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* ===================== MOBILE OVERRIDES (Consolidated) ===================== */
 @media (max-width: 992px) {
-  .product-preview { padding: 30px 0; }
-  .carousel-container { padding: 0; }
   
-  .carousel-track {
-    padding: 0 12px 20px;
-    gap: 12px;
+  /* Layout Changes */
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+
+  /* Navbar Mobile */
+  .navbar {
+    height: 60px !important;
+    padding: 0 15px !important;
+    position: absolute !important;
   }
   
+  .logo-img { height: 40px !important; width: auto !important; }
+
+  /* Video Mobile */
+  .intro-video-section {
+    height: 70vh !important;
+  }
+
+  /* Hero Product Mobile */
+  .featuredPremiumOverlay {
+    position: absolute !important;
+    bottom: 20px !important;
+    left: 15px !important;
+    width: auto !important;
+    justify-content: flex-start !important;
+  }
+  .primary-btn--featured {
+    padding: 10px 24px !important;
+    font-size: 14px !important;
+  }
+
+  /* Product Carousel Mobile */
+  .product-preview { padding: 30px 0 !important; }
+  .carousel-container { padding: 0 !important; }
+  .carousel-track { padding: 0 12px 20px !important; gap: 12px !important; }
   .product-card {
-    flex: 0 0 55vw; /* Slightly wider card on mobile */
-    max-width: 55vw;
-    /* Mobile Height */
-    height: 350px; 
+    flex: 0 0 55vw !important;
+    max-width: 55vw !important;
+    height: 350px !important;
   }
-
-  .product-image {
-    /* 4. ABSOLUTELY NO PADDING ON MOBILE */
-    padding: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
+  .product-image { padding: 0 !important; }
   .product-info {
-    padding: 10px;
+    padding: 10px !important;
     background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%);
   }
-
-  .product-name {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-
+  .product-name { font-size: 14px; margin-bottom: 5px; }
   .view-details-btn {
-    min-width: auto;
-    width: 90%;
-    padding: 8px 0;
-    font-size: 12px;
+    width: 90% !important;
+    min-width: 0 !important;
+    padding: 8px 0 !important;
+    font-size: 12px !important;
     margin-bottom: 10px;
   }
+  .carousel-arrow { display: none !important; }
 
-  .carousel-arrow { display: none; }
+  /* Blog Mobile */
+  .blog-grid {
+    grid-template-columns: 1fr; /* Stack Blogs */
+    gap: 30px;
+  }
+  .blog-image-wrapper { height: 250px; }
+  .blog-content { padding: 25px; }
+  .blog-title { font-size: 1.5rem; }
 }
 
-/* ===================== MOBILE MENU OVERLAY ===================== */
+/* ===================== MOBILE MENU (SIDEBAR) ===================== */
 .mobileMenuOverlay {
   position: fixed;
   inset: 0;
@@ -447,37 +607,6 @@ body {
   padding-bottom: 10px;
 }
 .mobileMenuItem {
-  display: block;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  text-decoration: none;
-  padding: 10px 0;
-}
-
-/* =========================================================
-   ✅ MOBILE / TABLET OVERRIDES (Max-width: 992px)
-   ========================================================= */
-@media (max-width: 992px) {
-  
-  /* Ensure Links are hidden so they don't break layout */
-  .desktop-only { display: none !important; }
-  .mobile-only { display: flex !important; }
-
-  .navbar {
-    height: 60px !important;
-    padding: 0 15px !important;
-    /* ensure absolute positioning stays for mobile too */
-    position: absolute !important; 
-  }
-  
-  .logo-img { height: 40px !important; width: auto !important; }
-
-  /* ===================== MODERN HAMBURGER ===================== */
-/* ===================== MOBILE MENU ACCOUNT FIX ===================== */
-
-/* 1. Reset the main button container */
-button.mobileMenuItem {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -487,173 +616,50 @@ button.mobileMenuItem {
   padding: 12px 0;
   text-align: left;
   cursor: pointer;
-  -webkit-appearance: none; /* iOS fix */
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
 }
 
-/* 2. Force the Icon Wrapper to be a Perfect Circle */
-.mmIcon {
-  /* Strict Dimensions */
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important; /* Prevents squishing */
-  
-  /* Circle Shape */
-  border-radius: 50% !important;
-  
-  /* Hiding the square corners of the image */
-  overflow: hidden !important;
-  
-  /* Centering the content */
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  
-  /* Spacing from text */
-  margin-right: 12px !important;
-  
-  /* Background (only if image fails) */
-  background: #eee;
-  border: 1px solid rgba(0,0,0,0.1);
-}
-
-/* 3. Force the Image inside to fill the circle */
-.mmAvatar {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block !important;
-  border-radius: 50% !important; /* Double insurance */
-}
-
-/* 4. Fix for the "User" fallback icon if no image */
-.mmIcon svg {
-  width: 20px !important;
-  height: 20px !important;
-  color: #555;
-}
-
+/* Hamburger Icon Styles */
 .hamburger {
   background: transparent;
   border: none;
   cursor: pointer;
-  
-  /* 1. Modern Touch Target (easier to tap) */
-  width: 44px; 
-  height: 44px;
-  border-radius: 12px; /* Soft rounded square shape */
-  
-  /* 2. Centering the lines */
+  width: 44px; height: 44px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 5px; 
-  
-  /* 3. Smooth Interaction */
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-/* Hover Effect: Subtle background & tiny "pop" */
-.hamburger:hover {
-  background: rgba(0,0,0,0.04); 
-  transform: scale(1.05);
-}
-
-/* Click Effect: Slight press down */
-.hamburger:active {
-  transform: scale(0.92);
-  background: rgba(0,0,0,0.08);
-}
-
 .hamburger span {
-  /* Refined line width/height */
-  width: 24px; 
-  height: 2.5px; 
-  
+  width: 24px; height: 2.5px;
   background: var(--charcoal);
-  border-radius: 4px; /* Pill shape ends */
-  
-  /* Ensure smooth color changes if needed */
+  border-radius: 4px; 
   transition: background 0.2s ease;
 }
 
-  /* 1. COMPANY VISION */
-  #company-vision.companyVisionFull {
-    /* Height Auto + Width 100% = Full width, no crop */
-    height: auto !important; 
-    width: 100% !important;
-    display: block !important;
-    margin-bottom: 15px !important;
-  }
-  
-  .companyVisionImg {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important; /* Forces 100% width fit */
-    display: block !important;
-  }
-
-  /* 2. HERO PRODUCT */
-  #featured.featuredPremium {
-    height: auto !important; /* Let image size determine height */
-    background: #fbfaf6 !important;
-    display: block !important;
-  }
-  .featuredPremiumImg {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important; /* Full width, no crop */
-    display: block !important;
-  }
-
-  /* 3. HERO BUTTON - Bottom Left Overlay */
-  .featuredPremiumOverlay {
-    position: absolute !important;
-    bottom: 20px !important;
-    left: 15px !important;
-    right: auto !important;
-    top: auto !important;
-    transform: none !important;
-    width: auto !important;
-    background: transparent !important;
-    display: flex !important;
-    justify-content: flex-start !important;
-  }
-  .primary-btn--featured {
-    padding: 10px 24px !important;
-    font-size: 14px !important;
-    white-space: nowrap !important;
-  }
-
-  /* 4. PRODUCT CAROUSEL MOBILE */
-  .product-preview { padding: 30px 0 !important; }
-  .carousel-container { padding: 0 !important; }
-  .carousel-arrow { display: none !important; }
-  
-  .carousel-track {
-    padding: 0 12px 20px !important;
-    gap: 12px !important;
-  }
-  .product-card {
-    flex: 0 0 44vw !important;
-    max-width: 44vw !important;
-    height: 280px !important;
-  }
-  .product-image { padding: 0 !important; }
-  .product-info {
-    padding: 10px !important;
-    background: transparent !important;
-    justify-content: flex-end !important;
-  }
-  .product-name { display: none !important; }
-  .view-details-btn {
-    width: 100% !important;
-    min-width: 0 !important;
-    margin-bottom: 5px !important;
-    padding: 8px 0 !important;
-    font-size: 12px !important;
-    background: rgba(214, 184, 90, 0.95) !important;
-    backdrop-filter: blur(4px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
-  }
+/* Mobile Menu Icons */
+.mmIcon {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 12px !important;
+  background: #eee;
 }
+.mmAvatar {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 50% !important; 
+}
+.mmIcon svg { width: 20px !important; height: 20px !important; color: #555; }
