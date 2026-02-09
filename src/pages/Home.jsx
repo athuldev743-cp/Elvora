@@ -215,7 +215,7 @@ export default function Home() {
       {/* --- VIDEO SECTION --- */}
       <section className="intro-video-section">
         <video 
-          src="/videos/banana-strength.mp4" 
+          src="/videos/bananastrength.mp4" 
           autoPlay 
           muted 
           playsInline 
