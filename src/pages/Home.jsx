@@ -68,6 +68,27 @@ export default function Home() {
     if (priorityOneProduct) navigate(`/products/${priorityOneProduct.id}`);
   };
 
+  const closeMenu = () => setMenuOpen(false);
+  const goToAdminDashboard = () => {
+    if (user?.isAdmin) navigate("/admin/dashboard");
+  };
+
+  // --- RESTORED: Mobile Hamburger Button ---
+  const MobileRightButton = () => {
+    return (
+      <button
+        className="hamburger mobile-only"
+        type="button"
+        onClick={() => setMenuOpen((v) => !v)}
+        aria-label="Menu"
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+    );
+  };
+
   return (
     <>
       {/* --- NAVBAR --- */}
@@ -80,7 +101,6 @@ export default function Home() {
           <a href="#products">Products</a>
           <a href="#about">About</a>
           <a href="#blog">Blog</a>
-          {/* Added Testimonials Link */}
           <a href="#testimonials">Testimonials</a>
         </div>
 
@@ -89,12 +109,51 @@ export default function Home() {
             {user ? `Hi, ${user.name}` : "Login"}
           </button>
         </div>
+
+        {/* ✅ ADDED: Mobile Button renders here */}
+        {isMobile && <MobileRightButton />}
       </nav>
+
+      {/* --- MOBILE MENU OVERLAY --- */}
+      {menuOpen && (
+        <div className="mobileMenuOverlay" onMouseDown={closeMenu}>
+          <div className="mobileMenuPanel" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="mobileMenuHeader">
+              <button className="mobileMenuBack" onClick={closeMenu}>←</button>
+              <div className="mobileMenuTitle">Menu</div>
+            </div>
+
+            <div className="mobileMenuSection">
+              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
+              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
+              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
+              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
+            </div>
+
+            <div className="mobileMenuSection">
+              {user ? (
+                 <>
+                   <button className="mobileMenuItem" onClick={() => { closeMenu(); navigate("/account"); }}>
+                     Account
+                   </button>
+                   {user.isAdmin && (
+                     <button className="mobileMenuItem" onClick={() => { closeMenu(); navigate("/admin/dashboard"); }}>
+                        Admin Dashboard
+                     </button>
+                   )}
+                 </>
+              ) : (
+                <button className="mobileMenuItem" onClick={handleGoogleLogin}>Login</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- VIDEO SECTION --- */}
       <section className="intro-video-section">
         <video 
-          src="/videos/banana-strength-enhanced-1920x1080.mp4" 
+          src="/videos/banana-strength.mp4" 
           autoPlay 
           muted 
           playsInline 
@@ -102,7 +161,6 @@ export default function Home() {
           onEnded={() => setVideoEnded(true)} 
         />
         
-        {/* TEXT OVERLAY */}
         {videoEnded && (
           <div className="intro-overlay">
             <h2 className="intro-title">
@@ -129,11 +187,7 @@ export default function Home() {
 
       <section id="about" className="pageSection"><About /></section>
       <section id="blog" className="pageSection"><Blog /></section>
-      
-      {/* --- TESTIMONIALS (Restored) --- */}
-      <section id="testimonials" className="pageSection">
-        <Testimonial />
-      </section>
+      <section id="testimonials" className="pageSection"><Testimonial /></section>
 
       <Footer />
     </>

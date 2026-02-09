@@ -150,6 +150,34 @@ body {
   font-weight: 700;
   cursor: pointer;
 }
+/* Hamburger Icon Styles */
+.hamburger {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px; 
+}
+
+.hamburger span {
+  width: 24px; height: 2.5px;
+  /* CHANGE 1: Make it WHITE by default so it shows on the video */
+  background: #fff; 
+  border-radius: 4px; 
+  transition: background 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Slight shadow for visibility */
+}
+
+/* CHANGE 2: Make it DARK when the navbar is white (scrolled) */
+.navbar.scrolled .hamburger span {
+  background: var(--charcoal);
+  box-shadow: none;
+}
 
 /* ===================== SECTIONS ===================== */
 
