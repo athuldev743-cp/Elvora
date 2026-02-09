@@ -14,8 +14,22 @@ const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
+  // ✅ 1. CACHE-FIRST INITIALIZATION
+  // We initialize state directly from localStorage. 
+  // This ensures products appear INSTANTLY, even if the backend is asleep.
+  const [products, setProducts] = useState(() => {
+    try {
+      const cached = localStorage.getItem("cachedProducts");
+      return cached ? JSON.parse(cached) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  // Loading is only true if we have ZERO data (no cache, no fetch yet)
+  const [loading, setLoading] = useState(products.length === 0);
+  
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
@@ -43,23 +57,37 @@ export default function Home() {
     };
   }, []);
 
-  // --- Load User & Products ---
+  // --- Load User & Fetch Products (Background Update) ---
   useEffect(() => {
+    // 1. Load User
     const userData = localStorage.getItem("userData");
     if (userData) setUser(JSON.parse(userData));
     
-    // Quick load products
-    fetchProducts().then(data => {
-      setProducts(Array.isArray(data) ? data : []);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    // 2. Fetch Products Silently
+    // This runs in the background. If the backend is cold, the user 
+    // still sees the cached products from line 22 while this waits.
+    const loadData = async () => {
+      try {
+        const data = await fetchProducts();
+        if (Array.isArray(data)) {
+          setProducts(data);
+          // ✅ Update Cache for next time
+          localStorage.setItem("cachedProducts", JSON.stringify(data));
+        }
+      } catch (err) {
+        console.warn("Backend might be cold or offline. Using cached data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
   }, []);
 
   // --- Google Login Logic ---
   const handleGoogleLogin = () => {
     if (loginBusy) return;
     alert("Please ensure Google Client ID is set in .env and init logic is present.");
-    // (Full GSI logic from previous steps would go here)
   };
 
   const priorityOneProduct = useMemo(() => {
@@ -107,7 +135,7 @@ export default function Home() {
           <a href="#testimonials">Testimonials</a>
         </div>
 
-        {/* --- DESKTOP AUTH SECTION (RESTORED) --- */}
+        {/* --- DESKTOP AUTH SECTION --- */}
         <div className="auth-section desktop-only">
           {user ? (
             <div className="user-nav">
@@ -120,7 +148,6 @@ export default function Home() {
                 {user.profile_pic ? (
                   <img src={user.profile_pic} alt="Account" className="accountAvatar" referrerPolicy="no-referrer" />
                 ) : (
-                  // Icon color changes based on scroll state
                   <User size={20} color={scrolled ? "#333" : "#fff"} />
                 )}
               </button>
