@@ -57,7 +57,9 @@ export default function Home() {
 
   // --- Google Login Logic ---
   const handleGoogleLogin = () => {
-    alert("Please ensure Google Client ID is set in .env");
+    if (loginBusy) return;
+    alert("Please ensure Google Client ID is set in .env and init logic is present.");
+    // (Full GSI logic from previous steps would go here)
   };
 
   const priorityOneProduct = useMemo(() => {
@@ -69,11 +71,12 @@ export default function Home() {
   };
 
   const closeMenu = () => setMenuOpen(false);
+  
   const goToAdminDashboard = () => {
     if (user?.isAdmin) navigate("/admin/dashboard");
   };
 
-  // --- RESTORED: Mobile Hamburger Button ---
+  // --- Mobile Hamburger Button ---
   const MobileRightButton = () => {
     return (
       <button
@@ -104,13 +107,42 @@ export default function Home() {
           <a href="#testimonials">Testimonials</a>
         </div>
 
+        {/* --- DESKTOP AUTH SECTION (RESTORED) --- */}
         <div className="auth-section desktop-only">
-          <button className="login-nav-btn" onClick={handleGoogleLogin}>
-            {user ? `Hi, ${user.name}` : "Login"}
-          </button>
+          {user ? (
+            <div className="user-nav">
+              <button 
+                className="accountBtn" 
+                title="Account" 
+                onClick={() => navigate("/account")}
+                style={{ borderColor: scrolled ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)" }}
+              >
+                {user.profile_pic ? (
+                  <img src={user.profile_pic} alt="Account" className="accountAvatar" referrerPolicy="no-referrer" />
+                ) : (
+                  // Icon color changes based on scroll state
+                  <User size={20} color={scrolled ? "#333" : "#fff"} />
+                )}
+              </button>
+
+              <span className="user-greeting" style={{ color: scrolled ? "#333" : "#fff" }}>
+                Hi, {user.name}
+              </span>
+
+              {user.isAdmin === true && (
+                <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>
+                  Dashboard
+                </button>
+              )}
+            </div>
+          ) : (
+            <button className="login-nav-btn" onClick={handleGoogleLogin}>
+              Login
+            </button>
+          )}
         </div>
 
-        {/* ✅ ADDED: Mobile Button renders here */}
+        {/* Mobile Hamburger */}
         {isMobile && <MobileRightButton />}
       </nav>
 
@@ -134,6 +166,9 @@ export default function Home() {
               {user ? (
                  <>
                    <button className="mobileMenuItem" onClick={() => { closeMenu(); navigate("/account"); }}>
+                     <span className="mmIcon">
+                       {user.profile_pic ? <img src={user.profile_pic} className="mmAvatar" /> : <User size={18} />}
+                     </span>
                      Account
                    </button>
                    {user.isAdmin && (
