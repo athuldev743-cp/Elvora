@@ -2,9 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Home from "./pages/Home";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Account from "./pages/Account";
+import BlogPost from "./pages/BlogPost"; // ✅ 1. Import the new page
 
 import AdminDashboard from "./pages/AdminDashboard";
-import ProtectedRoute from "./components/ProtectedRoute"; // Update import
+import ProtectedRoute from "./components/ProtectedRoute"; 
 
 function App() {
   return (
@@ -13,10 +14,13 @@ function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/products/:id" element={<ProductDetails />} />
+        
+        {/* ✅ 2. Add the dynamic blog route */}
+        <Route path="/blog/:id" element={<BlogPost />} />
+        
         <Route path="/account" element={<Account />} />
 
-        
-        {/* Protected Admin Route - Using ProtectedRoute */}
+        {/* Protected Admin Route */}
         <Route
           path="/admin/dashboard"
           element={
