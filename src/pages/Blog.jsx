@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
+import './Blog.css';
 
 // ====================================================================
 // 28 ARTICLES (7 Weeks of Unique Content)

@@ -1,259 +1,217 @@
-/* ===================== BLOG SECTION ===================== */
-/* ✅ Updated to match DIM YELLOW + MUTED GREEN palette
-   ✅ Responsiveness / breakpoints kept EXACTLY the same
-   ✅ Same structure, only colors + a few safe visual tweaks
-*/
+/* ===================== PALETTE ===================== */
+:root {
+  --dim-yellow: #D6B85A;
+  --dim-yellow-2: #E3C460;
 
-/* ===================== PALETTE (dim, not shiny) ===================== */
-:root{
-  --dim-yellow: #D6B85A;          /* primary accent */
-  --dim-yellow-2: #C9A94E;        /* hover accent */
-  --dim-yellow-soft: rgba(214,184,90,0.16);
-
-  --muted-green: #5F7E5C;         /* secondary accent */
-  --muted-green-2: #6A8B66;       /* hover green */
-  --muted-green-soft: rgba(95,126,92,0.14);
+  --muted-green: #5F7E5C;
+  --muted-green-2: #4E6D4B;
 
   --charcoal: #2E2E2F;
 }
 
-/* ===================== BLOG SECTION ===================== */
-.blog-section {
-  padding: 100px 60px;
-  background: #FBFAF6; /* warm off-white */
-  position: relative;
-}
-
-.container {
+/* ===================== BLOG CONTAINER ===================== */
+.blog-section-container {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 100px 60px;
+  background: #FBFAF6;
 }
 
-/* Section Header */
-.section-header {
+/* ===================== HEADER ===================== */
+.blog-header {
   text-align: center;
   margin-bottom: 60px;
 }
 
 .section-title {
   font-size: 42px;
+  font-weight: 900;
   color: var(--charcoal);
-  margin-bottom: 15px;
   position: relative;
   display: inline-block;
 }
 
 .section-title::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: var(--dim-yellow); /* ✅ dim yellow */
+  background: var(--dim-yellow);
   border-radius: 2px;
 }
 
 .section-subtitle {
   font-size: 18px;
-  color: #6F6B60; /* softer than #666 */
+  color: #6F6B60;
+  margin-top: 18px;
   max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Blog Grid */
+/* ===================== GRID (UPDATED) ===================== */
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* CHANGED: This sets it to exactly 2 columns of equal width */
+  grid-template-columns: repeat(2, 1fr);
   gap: 30px;
   margin-bottom: 60px;
 }
 
-/* Blog Card */
+/* ===================== CARD ===================== */
 .blog-card {
-  background: #ffffff;
-  border-radius: 12px;
+  background: #fff;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border: 1px solid rgba(214,184,90,0.12); /* subtle yellow edge */
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  transition: all .3s ease;
 }
 
 .blog-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 14px 40px rgba(0,0,0,.14);
 }
 
-/* Blog Image */
-.blog-image {
+/* ===================== IMAGE ===================== */
+.blog-image-wrapper {
   position: relative;
   height: 240px;
   overflow: hidden;
 }
 
-.blog-image img {
+.blog-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform .5s ease;
 }
 
-.blog-card:hover .blog-image img {
-  transform: scale(1.05);
+.blog-card:hover .blog-image {
+  transform: scale(1.06);
 }
 
 .blog-category {
   position: absolute;
-  top: 15px;
-  left: 15px;
-  background: rgba(95,126,92,0.92); /* ✅ muted green badge */
-  color: #ffffff;
-  padding: 6px 15px;
-  border-radius: 20px;
+  top: 14px;
+  left: 14px;
+  background: var(--muted-green);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1px solid rgba(255,255,255,0.22);
 }
 
-/* Blog Content */
+/* ===================== CONTENT ===================== */
 .blog-content {
-  padding: 25px;
-  flex-grow: 1;
+  padding: 26px;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .blog-meta {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
   font-size: 13px;
   color: #8A857A;
+  margin-bottom: 12px;
 }
 
-.blog-date, .blog-read-time {
+.meta-item {
   display: flex;
   align-items: center;
-  gap: 5px;
-}
-
-.blog-date::before {
-  content: "📅";
-  font-size: 11px;
-}
-
-.blog-read-time::before {
-  content: "⏱️";
-  font-size: 11px;
+  gap: 6px;
 }
 
 .blog-title {
   font-size: 20px;
-  color: var(--charcoal);
-  margin-bottom: 15px;
-  line-height: 1.4;
   font-weight: 800;
-  flex-grow: 1;
+  color: var(--charcoal);
+  margin-bottom: 14px;
+  line-height: 1.4;
 }
 
 .blog-excerpt {
   font-size: 15px;
   color: #6F6B60;
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   flex-grow: 1;
 }
 
-/* Read More Button (anchor styled as button) */
+/* ===================== READ ARTICLE ===================== */
 .blog-read-more {
-  background: transparent;
-  color: var(--muted-green);
   border: 2px solid var(--muted-green);
-  padding: 10px 25px;
-  border-radius: 25px;
+  color: var(--muted-green);
+  padding: 10px 24px;
+  border-radius: 999px;
   font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
+  font-weight: 800;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  text-decoration: none;
+  transition: all .3s ease;
   align-self: flex-start;
-  margin-top: auto;
-  text-decoration: none; /* ✅ since it's an <a> */
 }
 
 .blog-read-more:hover {
   background: var(--muted-green);
-  color: #ffffff;
-  transform: translateX(5px);
-  box-shadow: 0 10px 22px rgba(95,126,92,0.22);
+  color: #fff;
+  transform: translateX(6px);
+  box-shadow: 0 10px 22px rgba(95,126,92,.25);
 }
 
 .blog-read-more svg {
-  transition: transform 0.3s ease;
+  transition: transform .3s ease;
 }
 
 .blog-read-more:hover svg {
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 
-/* CTA Button */
-.blog-cta {
+/* ===================== FOOTER CTA ===================== */
+.blog-footer {
   text-align: center;
 }
 
-.view-all-btn {
-  background: linear-gradient(135deg, var(--dim-yellow), var(--dim-yellow-2));
+/* This logic matches your React className */
+.blog-footer .view-all-btn {
+  background: var(--dim-yellow);
   color: var(--charcoal);
-  border: 1px solid rgba(214,184,90,0.35);
-  padding: 16px 40px;
-  border-radius: 30px;
+  border: 1px solid rgba(214,184,90,.35);
+  padding: 16px 42px;
+  border-radius: 999px;
   font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
+  font-weight: 900;
   text-transform: uppercase;
-  box-shadow: 0 5px 20px rgba(214,184,90,0.22);
-  text-decoration: none; /* ✅ since it's an <a> */
-  display: inline-block; /* ✅ for anchor button sizing */
+  letter-spacing: .6px;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 6px 22px rgba(214,184,90,.28);
+  transition: all .3s ease;
 }
 
-.view-all-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(95,126,92,0.22);
-  background: linear-gradient(135deg, var(--muted-green), var(--muted-green-2));
-  color: #ffffff;
-  border-color: rgba(95,126,92,0.35);
+.blog-footer .view-all-btn:hover {
+  background: var(--muted-green);
+  color: #fff;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(95,126,92,.35);
 }
 
-/* ===================== RESPONSIVE DESIGN ===================== */
+/* ===================== RESPONSIVE (UPDATED) ===================== */
 
-/* Tablet */
-@media (max-width: 1200px) {
-  .blog-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-  }
-  
-  .blog-section {
-    padding: 80px 40px;
-  }
-}
-
+/* Tablet: Adjust padding, but keep 2 columns */
 @media (max-width: 992px) {
-  .blog-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
+  .blog-section-container {
+    padding: 80px 40px;
   }
   
   .section-title {
@@ -261,53 +219,35 @@
   }
 }
 
-/* Mobile */
+/* Mobile: Switch to 1 column */
 @media (max-width: 768px) {
-  .blog-section {
+  .blog-section-container {
     padding: 60px 20px;
   }
-  
+
+  .blog-grid {
+    /* CHANGED: Forces 1 column on mobile */
+    grid-template-columns: 1fr;
+    max-width: 520px;
+    margin: 0 auto 50px;
+  }
+
   .section-title {
     font-size: 32px;
   }
-  
-  .section-subtitle {
-    font-size: 16px;
-    padding: 0 10px;
-  }
-  
-  .blog-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
-    max-width: 500px;
-    margin: 0 auto 50px;
-  }
-  
-  .blog-image {
-    height: 220px;
-  }
 }
 
-/* Small Mobile */
 @media (max-width: 480px) {
-  .blog-section {
-    padding: 50px 15px;
-  }
-  
   .section-title {
     font-size: 28px;
   }
-  
-  .blog-content {
-    padding: 20px;
-  }
-  
+
   .blog-title {
     font-size: 18px;
   }
-  
-  .view-all-btn {
-    padding: 14px 35px;
+
+  .blog-footer .view-all-btn {
+    padding: 14px 36px;
     font-size: 15px;
   }
 }

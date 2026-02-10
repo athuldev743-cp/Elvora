@@ -44,9 +44,11 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   display: flex; align-items: center; justify-content: center;
 }
 .accountAvatar { width: 100%; height: 100%; object-fit: cover; }
+
 .login-nav-btn {
   background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
-  color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer;
+  color: #fff; border: none; padding: 10px 24px; border-radius: 30px;
+  font-weight: 700; cursor: pointer;
 }
 
 /* ===================== VIDEO SECTION ===================== */
@@ -54,9 +56,8 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   position: relative; width: 100%; height: 100vh;
   overflow: hidden; background: #000;
 }
-.intro-video {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-}
+.intro-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
 .intro-overlay {
   position: absolute; inset: 0; z-index: 10;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -75,94 +76,80 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 .featuredPremiumImg { width: 100%; height: auto; display: block; object-fit: contain; }
 
 .featuredPremiumOverlay {
-  position: absolute; bottom: 50px; left: 60px; z-index: 20;
-}
-
-/* 🔴 FORCE SHOP BUTTON STYLE */
-/* ... previous css ... */
-
-.featuredPremiumOverlay {
-  position: absolute; bottom: 50px; left: 60px; z-index: 20;
-}
-
-/* ✅ NUCLEAR FIX FOR SHOP BUTTON */
-.featuredPremium .featuredPremiumOverlay button.primary-btn--featured{
-  background: #D6B85A !important;
-  background-image: none !important;
-  color: #000 !important;
-  border: 2px solid #D6B85A !important;
-  border-radius: 50px !important;
-  padding: 18px 50px !important;
-  font-weight: 900 !important;
-  text-transform: uppercase !important;
-  box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4) !important;
-}
-.featuredPremiumOverlay {
   position: absolute;
   bottom: 50px;
   left: 60px;
   z-index: 20;
 }
 
-.primary-btn--featured:hover {
-  transform: translateY(-3px) !important; 
-  background: #e3c460 !important; /* Lighter Yellow on hover */
-  background-color: #e3c460 !important;
-  box-shadow: 0 15px 35px rgba(214, 184, 90, 0.6) !important;
+/* ✅ SHOP BUTTON (works with your JSX: className="primary-btn--featured") */
+.featuredPremium .featuredPremiumOverlay button.primary-btn--featured{
+  display: inline-block !important;
+  background: #D6B85A !important;
+  background-image: none !important;
+  background-color: #D6B85A !important;
+  color: #000 !important;
+
+  border: 2px solid #D6B85A !important;
+  border-radius: 50px !important;
+
+  padding: 18px 50px !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+
+  box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4) !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
 }
 
-/* Mobile Tweak (Keep this at the bottom of your CSS file) */
-@media (max-width: 992px) {
-  .primary-btn--featured {
-    padding: 14px 40px !important;
-    font-size: 16px !important;
-    width: auto !important;
-    white-space: nowrap !important;
-  }
+.primary-btn--featured:hover {
+  transform: translateY(-3px) !important;
+  background: #e3c460 !important;
+  background-color: #e3c460 !important;
+  box-shadow: 0 15px 35px rgba(214, 184, 90, 0.6) !important;
 }
 
 /* ===================== BLOG SECTION (FIXED UNIFORMITY) ===================== */
 .pageSection { padding: 60px 0; }
 .blog-section-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-/* Grid Layout: 2 Columns */
+/* ✅ Desktop/Laptop default: 2 columns */
 .blog-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 40px;
   width: 100%;
-  align-items: stretch; /* Ensures cards are equal height */
+  align-items: stretch;
 }
 
-/* Card Structure */
 .blog-card {
   background: #fff; border-radius: 12px; overflow: hidden;
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-  display: flex; 
-  flex-direction: column; /* Stacks contents vertically */
-  height: 100%; /* Fills the grid cell height */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .blog-image-wrapper { width: 100%; height: 260px; overflow: hidden; flex-shrink: 0; }
 .blog-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
 .blog-card:hover .blog-image { transform: scale(1.05); }
 
-/* Content Area */
-.blog-content { 
-  padding: 30px; 
-  flex-grow: 1; /* This takes up all remaining space */
-  display: flex; 
-  flex-direction: column; 
-  align-items: flex-start; 
+.blog-content {
+  padding: 30px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .blog-title { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700; line-height: 1.3; }
 .blog-excerpt { font-size: 1rem; color: #666; margin-bottom: 25px; line-height: 1.6; }
 
-/* 🔴 FORCE VIEW ARTICLE BUTTON TO BOTTOM */
 .blog-read-more {
-  margin-top: auto; /* Pushes button to the very bottom */
-  background-color: var(--muted-green); 
+  margin-top: auto;
+  background-color: var(--muted-green);
   color: #fff !important;
   padding: 12px 28px;
   border-radius: 30px;
@@ -173,7 +160,7 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   letter-spacing: 0.5px;
   transition: background 0.3s;
   display: inline-block;
-  align-self: flex-start; /* Aligns left */
+  align-self: flex-start;
 }
 .blog-read-more:hover { background-color: var(--charcoal); }
 
@@ -181,19 +168,36 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 .product-preview { background: #f8f9fa; padding: 60px 0; }
 .carousel-container { position: relative; padding: 0 60px; }
 .carousel-track { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
+
 .product-card {
-  flex: 0 0 calc((100% - 60px) / 4); max-width: calc((100% - 60px) / 4);
-  height: 550px; background: #fff; border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.06); overflow: hidden; position: relative;
-  display: flex; flex-direction: column;
+  flex: 0 0 calc((100% - 60px) / 4);
+  max-width: calc((100% - 60px) / 4);
+  height: 550px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
+
 .product-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 .product-info {
   position: absolute; bottom: 0; width: 100%; padding: 20px;
   background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
   color: #fff; text-align: center; pointer-events: none;
 }
-.view-details-btn { pointer-events: auto; padding: 10px 20px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; background: var(--dim-yellow); }
+.view-details-btn {
+  pointer-events: auto;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  background: var(--dim-yellow);
+}
 
 /* ===================== HAMBURGER BUTTON ===================== */
 .hamburger.mobile-fixed-btn {
@@ -222,7 +226,7 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   padding: 80px 20px 20px;
   display: flex; flex-direction: column; gap: 20px;
 }
-.mobileMenuHeader { display: none; } 
+.mobileMenuHeader { display: none; }
 
 .mobileMenuItem {
   background: transparent !important; border: none !important;
@@ -232,21 +236,17 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   border-bottom: 1px solid #eee;
 }
 
-/* Account Icon Fix */
-.mmIcon {
-  width: 40px !important; height: 40px !important;
-  min-width: 40px !important; flex-shrink: 0 !important;
-  border-radius: 50% !important; overflow: hidden !important;
-  display: flex !important; align-items: center !important; justify-content: center !important;
-  margin-right: 15px !important; background: #eee; border: 1px solid #ddd;
-}
-.mmAvatar { width: 100%; height: 100%; object-fit: cover; }
-.mmIcon svg { width: 20px; height: 20px; color: #555; }
-
 /* ===================== MOBILE RESPONSIVE ===================== */
 @media (max-width: 992px) {
   .desktop-only { display: none !important; }
   .mobile-only { display: flex !important; }
+
+  /* ✅ No account icon near hamburger (extra safety) */
+  .user-nav,
+  .accountBtn,
+  .accountAvatar {
+    display: none !important;
+  }
 
   /* Navbar */
   .navbar { position: absolute; background: transparent !important; box-shadow: none; }
@@ -257,33 +257,30 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   .intro-title { font-size: 2rem; }
   .intro-overlay { padding: 30px; }
 
-  /* Shop Now Button Mobile */
+  /* ✅ Shop Now: bottom-left + small */
   .featuredPremiumOverlay{
     position: absolute !important;
-    left: 16px !important;
-    bottom: 16px !important;
+    left: 14px !important;
+    bottom: 14px !important;
     transform: none !important;
     width: auto !important;
     display: block !important;
     z-index: 999 !important;
   }
-
-  .primary-btn--featured{
-    padding: 12px 22px !important;
-    font-size: 14px !important;
+  .featuredPremium .featuredPremiumOverlay button.primary-btn--featured{
+    padding: 10px 18px !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    letter-spacing: .4px !important;
     border-radius: 999px !important;
-    width: auto !important;
-    white-space: nowrap !important;
+    box-shadow: 0 6px 14px rgba(214,184,90,.35) !important;
   }
 
-
-  /* Grid Stack */
+  /* ✅ Mobile: 1 column blog */
   .blog-grid { grid-template-columns: 1fr; gap: 30px; }
-  
+
   /* Carousel */
   .product-preview { padding: 30px 0 !important; }
   .carousel-track { padding: 0 12px 20px !important; gap: 12px !important; }
-  .product-card {
-    flex: 0 0 70vw !important; max-width: 70vw !important; height: 400px !important;
-  }
+  .product-card { flex: 0 0 70vw !important; max-width: 70vw !important; height: 400px !important; }
 }
