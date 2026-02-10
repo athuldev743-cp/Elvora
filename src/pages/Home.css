@@ -651,33 +651,51 @@ body {
 }
 
 /* Hamburger Icon Styles */
+/* Wrapper for the button (positions it) */
 .hamburger.mobile-fixed-btn {
-    position: fixed; /* STAYS FOREVER */
-    top: 25px;       /* Adjust to match your logo alignment */
-    right: 20px;
-    z-index: 9999; 
-    color: black;  /* Above everything */
-    
-    /* Visual styling for the button */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 35px;
-    height: 24px;
-    background: transparent; /* Or rgba(0,0,0,0.5) if you need contrast */
-    border: none;
-    cursor: pointer;
-  }
+  position: fixed;
+  top: 25px;
+  right: 20px;
+  z-index: 9999;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  width: 30px;  /* Slightly tighter width for modern look */
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
 
-  /* Hamburger Bars */
-  .hamburger .bar {
-    width: 100%;
-    height: 3px;
-    background-color: #fff; /* Ensure visible against video */
-    border-radius: 2px;
-    transition: 0.3s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Shadow for visibility on light backgrounds */
-  }
+/* The actual lines (bars) */
+.hamburger .bar {
+  display: block;
+  width: 100%;
+  height: 3px;     /* Thickness of the line */
+  border-radius: 4px;
+  
+  /* ✅ CHANGE THIS TO BLACK */
+  background-color: #000000; 
+  
+  /* Optional: Add a small white shadow so it's visible on dark videos too */
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.8); 
+  
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animation state (optional): Turns into an X when open */
+.hamburger.open .bar:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+.hamburger.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open .bar:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
+}
 
   /* Optional: Change color when scrolled down for visibility */
   /* If you want the bars to turn dark when scrolling over white sections: */
