@@ -650,8 +650,7 @@ body {
   text-decoration: none;
 }
 
-/* Hamburger Icon Styles */
-/* Wrapper for the button (positions it) */
+/* ================= HAMBURGER BUTTON ================= */
 .hamburger.mobile-fixed-btn {
   position: fixed;
   top: 25px;
@@ -662,7 +661,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   
-  width: 30px;  /* Slightly tighter width for modern look */
+  width: 30px;
   height: 20px;
   background: transparent;
   border: none;
@@ -670,49 +669,45 @@ body {
   padding: 0;
 }
 
-/* The actual lines (bars) */
+/* The lines (bars) */
 .hamburger .bar {
   display: block;
   width: 100%;
-  height: 3px;     /* Thickness of the line */
+  height: 3px;
   border-radius: 4px;
-  
-  /* ✅ CHANGE THIS TO BLACK */
-  background-color: #000000; 
-  
-  /* Optional: Add a small white shadow so it's visible on dark videos too */
-  box-shadow: 0 0 2px rgba(255, 255, 255, 0.8); 
-  
+  background-color: #000000; /* Black */
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.8); /* Visibility on dark video */
   transition: all 0.3s ease-in-out;
 }
 
-/* Animation state (optional): Turns into an X when open */
-.hamburger.open .bar:nth-child(1) {
-  transform: translateY(8.5px) rotate(45deg);
-}
-.hamburger.open .bar:nth-child(2) {
-  opacity: 0;
-}
-.hamburger.open .bar:nth-child(3) {
-  transform: translateY(-8.5px) rotate(-45deg);
+/* Animation: Turn into X */
+.hamburger.open .bar:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+.hamburger.open .bar:nth-child(2) { opacity: 0; }
+.hamburger.open .bar:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+
+/* ❌ DELETE the rule ".hamburger span" if you have it. It conflicts with the bars! */
+
+
+/* ================= MOBILE MENU PANEL ================= */
+.mobileMenuPanel {
+  /* ... existing styles ... */
+  
+  /* ✅ NEW BACKGROUND COLOR */
+  background: rgba(95, 126, 92, 0.18); 
+  backdrop-filter: blur(15px); /* Optional: Makes the transparency look premium */
+  -webkit-backdrop-filter: blur(15px);
 }
 
-  /* Optional: Change color when scrolled down for visibility */
-  /* If you want the bars to turn dark when scrolling over white sections: */
-  /* You can pass the 'scrolled' prop to the button class if needed. */
 
-.hamburger span {
-  width: 24px; height: 2.5px;
-  background: var(--charcoal);
-  border-radius: 4px; 
-  transition: background 0.2s ease;
-}
-
-/* Mobile Menu Icons */
+/* ================= ACCOUNT ICON FIX ================= */
 .mmIcon {
   width: 36px !important;
   height: 36px !important;
-  min-width: 36px !important;
+  min-width: 36px !important; /* Prevents shrinking */
+  
+  /* ✅ CRITICAL FIX: Stops flexbox from squashing the icon */
+  flex-shrink: 0 !important; 
+  
   border-radius: 50% !important;
   overflow: hidden !important;
   display: flex !important;
@@ -720,12 +715,20 @@ body {
   justify-content: center !important;
   margin-right: 12px !important;
   background: #eee;
+  border: 1px solid rgba(0,0,0,0.1);
 }
+
 .mmAvatar {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
   display: block !important;
-  border-radius: 50% !important; 
 }
-.mmIcon svg { width: 20px !important; height: 20px !important; color: #555; }
+
+/* Fixes the SVG icon size inside the circle */
+.mmIcon svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: #555;
+  display: block;
+}
