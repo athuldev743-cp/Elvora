@@ -127,24 +127,46 @@ export default function Home() {
       {/* This allows it to stay fixed while nav scrolls away */}
       {isMobile && <MobileRightButton />}
 
-      {/* --- MOBILE MENU OVERLAY --- */}
-      {menuOpen && (
-        <div className="mobileMenuOverlay" onMouseDown={closeMenu}>
-          <div className="mobileMenuPanel" onMouseDown={(e) => e.stopPropagation()}>
-            <div className="mobileMenuHeader">
-              <button className="mobileMenuBack" onClick={closeMenu}>←</button>
-              <div className="mobileMenuTitle">Menu</div>
-            </div>
-            {/* ... Menu Links ... */}
-            <div className="mobileMenuSection">
-              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
-              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
-              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
-            </div>
+     {menuOpen && (
+  <div className="mobileMenuOverlay" onClick={closeMenu}>
+    <div className="mobileMenuPanel" onClick={(e) => e.stopPropagation()}>
+      
+      {/* --- NEW: MOBILE ACCOUNT SECTION --- */}
+      <div className="mobileMenuUserSection">
+        {user ? (
+          // IF LOGGED IN: Show Avatar + Name
+          <div className="mobileUserCard" onClick={() => { navigate("/account"); closeMenu(); }}>
+             {user.profile_pic ? (
+               <img src={user.profile_pic} alt="Profile" className="mobileUserAvatar" />
+             ) : (
+               <div className="mobileUserAvatarPlaceholder">
+                 <User size={24} color="#555" />
+               </div>
+             )}
+             <div className="mobileUserInfo">
+               <span className="mobileUserName">{user.name || "My Account"}</span>
+               <span className="mobileUserLink">View Profile</span>
+             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          // IF LOGGED OUT: Show Login Button
+          <button className="mobileLoginBtn" onClick={() => { handleGoogleLogin(); closeMenu(); }}>
+            Login / Sign Up
+          </button>
+        )}
+      </div>
 
+      {/* --- EXISTING LINKS --- */}
+      <div className="mobileMenuLinks">
+        <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
+        <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
+        <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
+        <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
+      </div>
+
+    </div>
+  </div>
+)}
       {/* --- REST OF PAGE --- */}
       <section className="intro-video-section">
         <video src="/videos/bananastrength.mp4" autoPlay muted playsInline className="intro-video" />

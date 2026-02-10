@@ -284,3 +284,74 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   .carousel-track { padding: 0 12px 20px !important; gap: 12px !important; }
   .product-card { flex: 0 0 70vw !important; max-width: 70vw !important; height: 400px !important; }
 }
+/* ===================== MOBILE MENU USER SECTION ===================== */
+.mobileMenuPanel {
+  /* Ensure the panel has padding */
+  padding: 40px 25px; 
+}
+
+.mobileMenuUserSection {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+/* --- Logged In State --- */
+.mobileUserCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+.mobileUserAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--dim-yellow);
+}
+
+.mobileUserAvatarPlaceholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileUserInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileUserName {
+  font-weight: 700;
+  color: var(--charcoal);
+  font-size: 16px;
+}
+
+.mobileUserLink {
+  font-size: 13px;
+  color: var(--muted-green);
+}
+
+/* --- Logged Out State --- */
+.mobileLoginBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--dim-yellow);
+  color: #000;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
