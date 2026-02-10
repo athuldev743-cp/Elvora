@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
@@ -6,43 +6,29 @@ import Blog from "./Blog";
 import Testimonial from "./Testimonial";
 import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
-import { ADMIN_EMAILS } from "../config/auth";
-import { convertGoogleToJWT } from "../api/adminAPI";
 import { User } from "lucide-react";
-
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   
-  // ✅ 1. CACHE-FIRST INITIALIZATION
-  // We initialize state directly from localStorage. 
-  // This ensures products appear INSTANTLY, even if the backend is asleep.
+  // Cache-First Initialization
   const [products, setProducts] = useState(() => {
     try {
       const cached = localStorage.getItem("cachedProducts");
       return cached ? JSON.parse(cached) : [];
-    } catch (e) {
-      return [];
-    }
+    } catch { return []; }
   });
 
-  // Loading is only true if we have ZERO data (no cache, no fetch yet)
   const [loading, setLoading] = useState(products.length === 0);
-  
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
   const [videoEnded, setVideoEnded] = useState(false);
   
-  // Login & formatting refs
-  const gsiReadyRef = useRef(false);
-  const gsiInitRef = useRef(false);
-  const gsiPromptingRef = useRef(false);
   const [loginBusy, setLoginBusy] = useState(false);
   const navigate = useNavigate();
 
-  // --- Scroll & Resize Handlers ---
+  // Scroll & Resize
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     const onResize = () => {
@@ -57,37 +43,30 @@ export default function Home() {
     };
   }, []);
 
-  // --- Load User & Fetch Products (Background Update) ---
+  // Data Fetching
   useEffect(() => {
-    // 1. Load User
     const userData = localStorage.getItem("userData");
     if (userData) setUser(JSON.parse(userData));
     
-    // 2. Fetch Products Silently
-    // This runs in the background. If the backend is cold, the user 
-    // still sees the cached products from line 22 while this waits.
     const loadData = async () => {
       try {
         const data = await fetchProducts();
         if (Array.isArray(data)) {
           setProducts(data);
-          // ✅ Update Cache for next time
           localStorage.setItem("cachedProducts", JSON.stringify(data));
         }
       } catch (err) {
-        console.warn("Backend might be cold or offline. Using cached data.");
+        console.warn("Using cached data.");
       } finally {
         setLoading(false);
       }
     };
-
     loadData();
   }, []);
 
-  // --- Google Login Logic ---
   const handleGoogleLogin = () => {
     if (loginBusy) return;
-    alert("Please ensure Google Client ID is set in .env and init logic is present.");
+    alert("Login logic here.");
   };
 
   const priorityOneProduct = useMemo(() => {
@@ -99,30 +78,25 @@ export default function Home() {
   };
 
   const closeMenu = () => setMenuOpen(false);
-  
-  const goToAdminDashboard = () => {
-    if (user?.isAdmin) navigate("/admin/dashboard");
-  };
+  const goToAdminDashboard = () => user?.isAdmin && navigate("/admin/dashboard");
 
-  // --- Mobile Hamburger Button ---
-  const MobileRightButton = () => {
-    return (
-      <button
-        className="hamburger mobile-only"
-        type="button"
-        onClick={() => setMenuOpen((v) => !v)}
-        aria-label="Menu"
-      >
-        <span />
-        <span />
-        <span />
-      </button>
-    );
-  };
+  // --- Mobile Hamburger (Styled in CSS to float) ---
+  const MobileRightButton = () => (
+    <button
+      className={`hamburger mobile-fixed-btn ${menuOpen ? "open" : ""}`}
+      type="button"
+      onClick={() => setMenuOpen((v) => !v)}
+      aria-label="Menu"
+    >
+      <span className="bar" />
+      <span className="bar" />
+      <span className="bar" />
+    </button>
+  );
 
   return (
     <>
-      {/* --- NAVBAR --- */}
+      {/* --- NAVBAR (Scrolls away on mobile) --- */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           <img src="/images/logo.png" alt="ELVORA" className="logo-img" onError={(e)=>e.target.style.display='none'} />
@@ -135,43 +109,23 @@ export default function Home() {
           <a href="#testimonials">Testimonials</a>
         </div>
 
-        {/* --- DESKTOP AUTH SECTION --- */}
         <div className="auth-section desktop-only">
           {user ? (
             <div className="user-nav">
-              <button 
-                className="accountBtn" 
-                title="Account" 
-                onClick={() => navigate("/account")}
-                style={{ borderColor: scrolled ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)" }}
-              >
-                {user.profile_pic ? (
-                  <img src={user.profile_pic} alt="Account" className="accountAvatar" referrerPolicy="no-referrer" />
-                ) : (
-                  <User size={20} color={scrolled ? "#333" : "#fff"} />
-                )}
+              <button className="accountBtn" onClick={() => navigate("/account")}>
+                 {user.profile_pic ? <img src={user.profile_pic} className="accountAvatar" /> : <User size={20} />}
               </button>
-
-              <span className="user-greeting" style={{ color: scrolled ? "#333" : "#fff" }}>
-                Hi, {user.name}
-              </span>
-
-              {user.isAdmin === true && (
-                <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>
-                  Dashboard
-                </button>
-              )}
+              {user.isAdmin && <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>Dashboard</button>}
             </div>
           ) : (
-            <button className="login-nav-btn" onClick={handleGoogleLogin}>
-              Login
-            </button>
+            <button className="login-nav-btn" onClick={handleGoogleLogin}>Login</button>
           )}
         </div>
-
-        {/* Mobile Hamburger */}
-        {isMobile && <MobileRightButton />}
       </nav>
+
+      {/* --- HAMBURGER: MOVED OUTSIDE NAV --- */}
+      {/* This allows it to stay fixed while nav scrolls away */}
+      {isMobile && <MobileRightButton />}
 
       {/* --- MOBILE MENU OVERLAY --- */}
       {menuOpen && (
@@ -181,69 +135,30 @@ export default function Home() {
               <button className="mobileMenuBack" onClick={closeMenu}>←</button>
               <div className="mobileMenuTitle">Menu</div>
             </div>
-
+            {/* ... Menu Links ... */}
             <div className="mobileMenuSection">
               <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
               <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
               <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
-              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
-            </div>
-
-            <div className="mobileMenuSection">
-              {user ? (
-                 <>
-                   <button className="mobileMenuItem" onClick={() => { closeMenu(); navigate("/account"); }}>
-                     <span className="mmIcon">
-                       {user.profile_pic ? <img src={user.profile_pic} className="mmAvatar" /> : <User size={18} />}
-                     </span>
-                     Account
-                   </button>
-                   {user.isAdmin && (
-                     <button className="mobileMenuItem" onClick={() => { closeMenu(); navigate("/admin/dashboard"); }}>
-                        Admin Dashboard
-                     </button>
-                   )}
-                 </>
-              ) : (
-                <button className="mobileMenuItem" onClick={handleGoogleLogin}>Login</button>
-              )}
             </div>
           </div>
         </div>
       )}
 
-      {/* --- VIDEO SECTION --- */}
+      {/* --- REST OF PAGE --- */}
       <section className="intro-video-section">
-        <video 
-          src="/videos/bananastrength.mp4" 
-          autoPlay 
-          muted 
-          playsInline 
-          className="intro-video"
-          onEnded={() => setVideoEnded(true)} 
-        />
-        
+        <video src="/videos/bananastrength.mp4" autoPlay muted playsInline className="intro-video" />
         {videoEnded && (
           <div className="intro-overlay">
-            <h2 className="intro-title">
-              Ripen banana powder<br />
-              100 bananas strength
-            </h2>
+            <h2 className="intro-title">Ripen banana powder<br />100 bananas strength</h2>
           </div>
         )}
       </section>
 
-      {/* --- FEATURED PRODUCT --- */}
       <section id="products" className="featuredPremium">
-        <img 
-          className="featuredPremiumImg" 
-          src={priorityOneProduct?.image_url || "https://via.placeholder.com/1200x600"} 
-          alt="Hero Product" 
-        />
+        <img className="featuredPremiumImg" src={priorityOneProduct?.image_url} alt="Hero" />
         <div className="featuredPremiumOverlay">
-          <button className="primary-btn primary-btn--featured" onClick={goToPriorityOneProduct}>
-            SHOP NOW
-          </button>
+          <button className="primary-btn" onClick={goToPriorityOneProduct}>SHOP NOW</button>
         </div>
       </section>
 

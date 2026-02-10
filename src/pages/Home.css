@@ -40,25 +40,17 @@ body {
 
 /* ===================== NAVBAR ===================== */
 .navbar {
-  /* Absolute so it overlays the video/hero initially */
-  position: absolute; 
-  top: 0; left: 0; right: 0;
-  height: 80px;
+  position: fixed;
+  top: 0;
   width: 100%;
-  background: transparent; /* Starts transparent for premium feel */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 40px;
-  z-index: 1000;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  z-index: 100;
+  transition: all 0.3s ease;
+  padding: 20px;
 }
 
 .navbar.scrolled {
-  position: fixed; /* Becomes fixed on scroll */
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+  background: rgba(95,126,92,.18);
+  padding: 15px 20px;
 }
 
 .desktop-only { display: flex; }
@@ -188,38 +180,40 @@ body {
 /* ===================== VIDEO SECTION FIX ===================== */
 
 .intro-video-section {
-  position: relative; /* Essential for overlay to work */
+  position: relative;
   width: 100%;
-  height: 100vh;      /* Full screen height */
-  background-color: #000;
+  height: 100vh;
   overflow: hidden;
+  background: #000;
 }
 
 .intro-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;  /* Ensures video covers area without stretching */
+  object-fit: cover;
   display: block;
-  image-rendering:auto;
-  transform: translateZ(0);
+
+  /* avoid “fade” / softness */
+  transform: none;
+  filter: none;
+  opacity: 1;
 }
 
 .intro-overlay {
-  position: absolute;  /* This forces it ON TOP of the video */
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%;
-  z-index: 10;         /* Higher number = sits on top */
-  
-  /* Layout: Bottom Left */
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-start;
-  padding: 60px;       /* Push text away from edge */
-  
-  background: transparent !important; /* Forces transparency */
+  padding: 60px;
+
+  background: transparent;
+  pointer-events: none; /* key */
 }
 
 .intro-title {
@@ -551,9 +545,13 @@ body {
 
   /* Navbar Mobile */
   .navbar {
-    height: 60px !important;
-    padding: 0 15px !important;
-    position: absolute !important;
+    position: absolute; /* or relative */
+    background: transparent !important; /* Force transparent so it doesn't block view */
+    box-shadow: none;
+  }
+  .navbar.scrolled {
+    background: transparent !important;
+    position: absolute; /* Ensures it moves up with scroll */
   }
   
   .logo-img { height: 40px !important; width: auto !important; }
@@ -653,18 +651,37 @@ body {
 }
 
 /* Hamburger Icon Styles */
-.hamburger {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px; 
-}
+.hamburger.mobile-fixed-btn {
+    position: fixed; /* STAYS FOREVER */
+    top: 25px;       /* Adjust to match your logo alignment */
+    right: 20px;
+    z-index: 9999;   /* Above everything */
+    
+    /* Visual styling for the button */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 35px;
+    height: 24px;
+    background: transparent; /* Or rgba(0,0,0,0.5) if you need contrast */
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Hamburger Bars */
+  .hamburger .bar {
+    width: 100%;
+    height: 3px;
+    background-color: #fff; /* Ensure visible against video */
+    border-radius: 2px;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Shadow for visibility on light backgrounds */
+  }
+
+  /* Optional: Change color when scrolled down for visibility */
+  /* If you want the bars to turn dark when scrolling over white sections: */
+  /* You can pass the 'scrolled' prop to the button class if needed. */
+
 .hamburger span {
   width: 24px; height: 2.5px;
   background: var(--charcoal);
