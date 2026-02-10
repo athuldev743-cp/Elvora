@@ -258,15 +258,24 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   .intro-overlay { padding: 30px; }
 
   /* Shop Now Button Mobile */
-  .featuredPremiumOverlay {
-    position: absolute !important; bottom: 30px !important; left: 50% !important;
-    transform: translateX(-50%) !important; width: 100%;
-    display: flex; justify-content: center; z-index: 20;
+  .featuredPremiumOverlay{
+    position: absolute !important;
+    left: 16px !important;
+    bottom: 16px !important;
+    transform: none !important;
+    width: auto !important;
+    display: block !important;
+    z-index: 999 !important;
   }
-  .primary-btn--featured {
-    padding: 14px 40px !important; font-size: 16px !important;
-    width: auto !important; white-space: nowrap;
+
+  .primary-btn--featured{
+    padding: 12px 22px !important;
+    font-size: 14px !important;
+    border-radius: 999px !important;
+    width: auto !important;
+    white-space: nowrap !important;
   }
+
 
   /* Grid Stack */
   .blog-grid { grid-template-columns: 1fr; gap: 30px; }
