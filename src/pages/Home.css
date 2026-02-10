@@ -663,7 +663,7 @@ body {
     justify-content: space-between;
     width: 35px;
     height: 24px;
-    background: transparent; /* Or rgba(0,0,0,0.5) if you need contrast */
+    background: black;
     border: none;
     cursor: pointer;
   }
