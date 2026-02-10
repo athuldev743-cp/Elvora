@@ -6,729 +6,275 @@
   --muted-green: #5F7E5C;
   --charcoal: #2E2E2F;
   --surface: #ffffff;
-  --ink: #333;
-  --border: rgba(46, 46, 47, 0.14);
-  --font-heading: 'Playfair Display', serif; /* Optional premium font */
+  --font-heading: 'Playfair Display', serif;
   --font-body: 'Segoe UI', system-ui, sans-serif;
 }
 
 /* ===================== GLOBAL RESET ===================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-  background: #fff;
-}
-
-body {
-  font-family: var(--font-body);
-  /* REMOVED padding-top so navbar overlays/sits at top */
-  padding-top: 0 !important; 
-}
-
-/* ===================== ANIMATIONS ===================== */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; background: #fff; }
+body { font-family: var(--font-body); padding-top: 0 !important; }
 
 /* ===================== NAVBAR ===================== */
 .navbar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  transition: all 0.3s ease;
-  padding: 20px;
+  position: fixed; top: 0; width: 100%; z-index: 100;
+  transition: all 0.3s ease; padding: 20px;
 }
+.navbar.scrolled { background: rgba(95,126,92,.18); padding: 15px 20px; backdrop-filter: blur(10px); }
 
-.navbar.scrolled {
-  background: rgba(95,126,92,.18);
-  padding: 15px 20px;
+.logo { display: flex; align-items: center; height: 100%; }
+.logo-img { height: 60px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
+
+.nav-links { display: flex; gap: 32px; align-items: center; height: 100%; }
+.nav-links a {
+  color: #fff; text-decoration: none; font-weight: 600; font-size: 16px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
+.navbar.scrolled .nav-links a { color: #333; text-shadow: none; }
+.nav-links a:hover { color: var(--dim-yellow); }
 
+.auth-section { display: flex; align-items: center; gap: 15px; }
 .desktop-only { display: flex; }
 .mobile-only { display: none; }
 
-.logo {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  flex-shrink: 0;
-}
-
-.logo-img {
-  height: 60px; 
-  width: auto;
-  object-fit: contain;
-  display: block;
-  
-  /* ADD THIS LINE: Makes white background disappear */
-  mix-blend-mode: multiply; 
-}
-
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-  height: 100%;
-}
-
-.nav-links a {
-  color: #fff; /* White text on video */
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 16px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-.navbar.scrolled .nav-links a {
-  color: #333; /* Dark text on white background */
-  text-shadow: none;
-}
-
-.nav-links a:hover { color: var(--dim-yellow); }
-
-.auth-section {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-/* User Account Circle */
-.user-nav { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-
+.user-nav { display: flex; align-items: center; gap: 12px; }
 .accountBtn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  overflow: hidden; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  background: rgba(255,255,255,0.2); /* Semi-transparent bg */
+  background: rgba(255,255,255,0.2); border: none; cursor: pointer;
+  width: 40px; height: 40px; border-radius: 50%; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
 }
-
-.accountAvatar {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-}
-
+.accountAvatar { width: 100%; height: 100%; object-fit: cover; }
 .login-nav-btn {
   background: linear-gradient(135deg, var(--muted-green), var(--dim-yellow));
-  color: #fff;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 30px;
-  font-weight: 700;
-  cursor: pointer;
-}
-/* Hamburger Icon Styles */
-.hamburger {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px; 
+  color: #fff; border: none; padding: 10px 24px; border-radius: 30px; font-weight: 700; cursor: pointer;
 }
 
-.hamburger span {
-  width: 24px; height: 2.5px;
-  /* CHANGE 1: Make it WHITE by default so it shows on the video */
-  background: #fff; 
-  border-radius: 4px; 
-  transition: background 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Slight shadow for visibility */
-}
-
-/* CHANGE 2: Make it DARK when the navbar is white (scrolled) */
-.navbar.scrolled .hamburger span {
-  background: var(--charcoal);
-  box-shadow: none;
-}
-
-/* ===================== SECTIONS ===================== */
-
-.pageSection {
-  padding: 80px 0;
-}
-
-/* ===================== VIDEO SECTION FIX ===================== */
-
+/* ===================== VIDEO SECTION ===================== */
 .intro-video-section {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: #000;
+  position: relative; width: 100%; height: 100vh;
+  overflow: hidden; background: #000;
 }
-
 .intro-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-
-  /* avoid “fade” / softness */
-  transform: none;
-  filter: none;
-  opacity: 1;
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
 }
-
 .intro-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding: 60px;
-
-  background: transparent;
-  pointer-events: none; /* key */
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 60px; pointer-events: none;
 }
-
 .intro-title {
-  color: #fff;
-  font-family: var(--font-heading, serif);
-  font-size: clamp(2rem, 5vw, 4rem); /* Responsive text size */
-  font-weight: 700;
-  line-height: 1.1;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.5); /* Shadow makes it readable */
-  margin: 0;
-  max-width: 800px;
+  color: #fff; font-family: var(--font-heading); font-size: 4rem;
+  font-weight: 700; text-shadow: 0 2px 20px rgba(0,0,0,0.5); margin: 0;
 }
 
-/* Mobile Adjustments */
-@media (max-width: 992px) {
-  .intro-overlay {
-    padding: 30px;
-  }
-  .intro-title {
-    font-size: 2rem;
-  }
-}
-
-/* 2. FEATURED PRODUCT (HERO) */
+/* ===================== HERO PRODUCT (SHOP BUTTON) ===================== */
 .featuredPremium {
-  position: relative;
-  width: 100%;
-  height: auto; 
-  background: #fbfaf6; 
-  display: block;
-  line-height: 0;
+  position: relative; width: 100%; height: auto;
+  background: #fbfaf6; display: block;
+}
+.featuredPremiumImg { width: 100%; height: auto; display: block; object-fit: contain; }
+
+.featuredPremiumOverlay {
+  position: absolute; bottom: 50px; left: 60px; z-index: 20;
 }
 
-.featuredPremiumImg {
-  width: 100%;
-  height: auto; 
-  display: block;
-  object-fit: contain; 
+/* 🔴 FORCE SHOP BUTTON STYLE */
+/* ... previous css ... */
+
+.featuredPremiumOverlay {
+  position: absolute; bottom: 50px; left: 60px; z-index: 20;
 }
 
+/* ✅ NUCLEAR FIX FOR SHOP BUTTON */
+.featuredPremium .featuredPremiumOverlay button.primary-btn--featured{
+  background: #D6B85A !important;
+  background-image: none !important;
+  color: #000 !important;
+  border: 2px solid #D6B85A !important;
+  border-radius: 50px !important;
+  padding: 18px 50px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4) !important;
+}
 .featuredPremiumOverlay {
   position: absolute;
   bottom: 50px;
   left: 60px;
-  z-index: 10;
-  background: transparent;
-  width: auto;
-  height: auto;
-}
-
-.primary-btn--featured {
-  background: var(--dim-yellow) !important;
-  color: #000 !important;
-  border: none;
-  padding: 24px 65px;
-  font-size: 24px; 
-  border-radius: 50px;
-  font-weight: 900; 
-  cursor: pointer;
-  text-transform: uppercase;
-  box-shadow: 0 10px 25px rgba(214, 184, 90, 0.4);
-  transition: transform 0.2s ease;
-  letter-spacing: 1px;
+  z-index: 20;
 }
 
 .primary-btn--featured:hover {
-  transform: scale(1.05);
-  background: #e3c460 !important;
+  transform: translateY(-3px) !important; 
+  background: #e3c460 !important; /* Lighter Yellow on hover */
+  background-color: #e3c460 !important;
+  box-shadow: 0 15px 35px rgba(214, 184, 90, 0.6) !important;
 }
 
-/* ===================== PRODUCTS CAROUSEL ===================== */
-.product-preview {
-  background: #f8f9fa;
-  padding: 60px 0;
+/* Mobile Tweak (Keep this at the bottom of your CSS file) */
+@media (max-width: 992px) {
+  .primary-btn--featured {
+    padding: 14px 40px !important;
+    font-size: 16px !important;
+    width: auto !important;
+    white-space: nowrap !important;
+  }
 }
 
-.carousel-container {
-  position: relative;
-  padding: 0 60px;
-}
+/* ===================== BLOG SECTION (FIXED UNIFORMITY) ===================== */
+.pageSection { padding: 60px 0; }
+.blog-section-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-.carousel-track {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  padding-bottom: 20px;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-}
-.carousel-track::-webkit-scrollbar { display: none; }
-
-/* Card Styles */
-.product-card {
-  flex: 0 0 calc((100% - 60px) / 4); 
-  max-width: calc((100% - 60px) / 4);
-  height: 550px; 
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease;
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-}
-
-.product-image {
-  width: 100%;
-  height: 100%;
-  padding: 0 !important; 
-  object-fit: cover !important; 
-  object-position: center;
-  display: block;
-  background: #fff;
-}
-
-.product-info {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  z-index: 5;
-  height: 100%; 
-  pointer-events: none; 
-}
-
-.product-name {
-  font-weight: 800;
-  font-size: 18px;
-  color: #fff; 
-  text-align: center;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.8);
-  margin-top: auto; 
-  pointer-events: auto;
-}
-
-.view-details-btn {
-  pointer-events: auto;
-  width: auto;
-  min-width: 150px;
-  padding: 12px 30px;
-  background: linear-gradient(135deg, var(--dim-yellow), #e3c460);
-  color: #000;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 14px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  margin-bottom: 15px; 
-}
-
-/* ===================== BLOG SECTION (PREMIUM & WIDE) ===================== */
-.blog-section-container {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.blog-header {
-  text-align: center;
-  margin-bottom: 60px;
-}
-
-.section-title {
-  font-family: var(--font-heading);
-  font-size: 3rem;
-  color: #1a1a1a;
-  margin-bottom: 15px;
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: #666;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
+/* Grid Layout: 2 Columns */
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 Wide Columns */
+  grid-template-columns: repeat(2, 1fr);
   gap: 40px;
-  margin-bottom: 60px;
+  width: 100%;
+  align-items: stretch; /* Ensures cards are equal height */
 }
 
+/* Card Structure */
 .blog-card {
-  background: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
+  background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  display: flex; 
+  flex-direction: column; /* Stacks contents vertically */
+  height: 100%; /* Fills the grid cell height */
 }
 
-.blog-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-}
-
-.blog-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 350px;
-  overflow: hidden;
-}
-
-.blog-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease;
-}
-
+.blog-image-wrapper { width: 100%; height: 260px; overflow: hidden; flex-shrink: 0; }
+.blog-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
 .blog-card:hover .blog-image { transform: scale(1.05); }
 
-.blog-category {
-  position: absolute;
-  top: 20px; left: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #1a1a1a;
-  padding: 6px 14px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 2px;
+/* Content Area */
+.blog-content { 
+  padding: 30px; 
+  flex-grow: 1; /* This takes up all remaining space */
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start; 
 }
 
-.blog-content {
-  padding: 35px;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
+.blog-title { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 15px; font-weight: 700; line-height: 1.3; }
+.blog-excerpt { font-size: 1rem; color: #666; margin-bottom: 25px; line-height: 1.6; }
 
-.blog-meta {
-  display: flex;
-  gap: 20px;
-  font-size: 0.85rem;
-  color: #888;
-  margin-bottom: 15px;
-  font-weight: 500;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.blog-title {
-  font-family: var(--font-heading);
-  font-size: 1.8rem;
-  line-height: 1.3;
-  color: #1a1a1a;
-  margin-bottom: 15px;
-  transition: color 0.2s;
-}
-
-.blog-card:hover .blog-title { color: var(--dim-yellow); }
-
-.blog-excerpt {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.7;
-  margin-bottom: 25px;
-  flex-grow: 1;
-}
-
+/* 🔴 FORCE VIEW ARTICLE BUTTON TO BOTTOM */
 .blog-read-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  margin-top: auto; /* Pushes button to the very bottom */
+  background-color: var(--muted-green); 
+  color: #fff !important;
+  padding: 12px 28px;
+  border-radius: 30px;
+  text-decoration: none;
   font-weight: 700;
-  font-size: 14px;
-  color: #1a1a1a;
-  text-decoration: none;
   text-transform: uppercase;
+  font-size: 0.85rem;
   letter-spacing: 0.5px;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 4px;
-  width: fit-content;
-  transition: all 0.2s;
-}
-
-.blog-read-more:hover {
-  border-color: var(--dim-yellow);
-  color: var(--dim-yellow);
-}
-
-.blog-footer { text-align: center; }
-
-.view-all-btn {
+  transition: background 0.3s;
   display: inline-block;
-  padding: 16px 40px;
-  border: 1px solid #1a1a1a;
-  color: #1a1a1a;
-  text-transform: uppercase;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 1px;
-  transition: all 0.3s;
+  align-self: flex-start; /* Aligns left */
+}
+.blog-read-more:hover { background-color: var(--charcoal); }
+
+/* ===================== CAROUSEL (Products) ===================== */
+.product-preview { background: #f8f9fa; padding: 60px 0; }
+.carousel-container { position: relative; padding: 0 60px; }
+.carousel-track { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
+.product-card {
+  flex: 0 0 calc((100% - 60px) / 4); max-width: calc((100% - 60px) / 4);
+  height: 550px; background: #fff; border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.06); overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+}
+.product-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-info {
+  position: absolute; bottom: 0; width: 100%; padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: #fff; text-align: center; pointer-events: none;
+}
+.view-details-btn { pointer-events: auto; padding: 10px 20px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; background: var(--dim-yellow); }
+
+/* ===================== HAMBURGER BUTTON ===================== */
+.hamburger.mobile-fixed-btn {
+  position: fixed; top: 25px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; justify-content: space-between;
+  width: 30px; height: 22px; background: transparent; border: none; cursor: pointer;
+}
+.hamburger .bar {
+  display: block; width: 100%; height: 3px; border-radius: 4px;
+  background-color: #000;
+  box-shadow: 0 0 2px rgba(255,255,255,0.8);
+  transition: all 0.3s ease-in-out;
+}
+.hamburger.open .bar:nth-child(1) { transform: translateY(9.5px) rotate(45deg); }
+.hamburger.open .bar:nth-child(2) { opacity: 0; }
+.hamburger.open .bar:nth-child(3) { transform: translateY(-9.5px) rotate(-45deg); }
+
+/* ===================== MOBILE MENU PANEL ===================== */
+.mobileMenuOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
+  display: flex; justify-content: flex-end;
+}
+.mobileMenuPanel {
+  width: 80%; max-width: 300px; height: 100%;
+  background: #fff;
+  padding: 80px 20px 20px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.mobileMenuHeader { display: none; } 
+
+.mobileMenuItem {
+  background: transparent !important; border: none !important;
+  display: flex !important; align-items: center !important;
+  width: 100%; padding: 15px 0; text-align: left; cursor: pointer;
+  color: #333 !important; font-size: 18px; font-weight: 600; text-decoration: none;
+  border-bottom: 1px solid #eee;
 }
 
-.view-all-btn:hover {
-  background: #1a1a1a;
-  color: #fff;
+/* Account Icon Fix */
+.mmIcon {
+  width: 40px !important; height: 40px !important;
+  min-width: 40px !important; flex-shrink: 0 !important;
+  border-radius: 50% !important; overflow: hidden !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  margin-right: 15px !important; background: #eee; border: 1px solid #ddd;
 }
+.mmAvatar { width: 100%; height: 100%; object-fit: cover; }
+.mmIcon svg { width: 20px; height: 20px; color: #555; }
 
-/* ===================== MOBILE OVERRIDES (Consolidated) ===================== */
+/* ===================== MOBILE RESPONSIVE ===================== */
 @media (max-width: 992px) {
-  
-  /* Layout Changes */
   .desktop-only { display: none !important; }
   .mobile-only { display: flex !important; }
 
-  /* Navbar Mobile */
-  .navbar {
-    position: absolute; /* or relative */
-    background: transparent !important; /* Force transparent so it doesn't block view */
-    box-shadow: none;
-  }
-  .navbar.scrolled {
-    background: transparent !important;
-    position: absolute; /* Ensures it moves up with scroll */
-  }
-  
-  .logo-img { height: 40px !important; width: auto !important; }
+  /* Navbar */
+  .navbar { position: absolute; background: transparent !important; box-shadow: none; }
+  .logo-img { height: 40px !important; }
 
-  /* Video Mobile */
-  .intro-video-section {
-    height: 70vh !important;
-  }
+  /* Video */
+  .intro-video-section { height: 60vh !important; }
+  .intro-title { font-size: 2rem; }
+  .intro-overlay { padding: 30px; }
 
-  /* Hero Product Mobile */
+  /* Shop Now Button Mobile */
   .featuredPremiumOverlay {
-    position: absolute !important;
-    bottom: 20px !important;
-    left: 15px !important;
-    width: auto !important;
-    justify-content: flex-start !important;
+    position: absolute !important; bottom: 30px !important; left: 50% !important;
+    transform: translateX(-50%) !important; width: 100%;
+    display: flex; justify-content: center; z-index: 20;
   }
   .primary-btn--featured {
-    padding: 10px 24px !important;
-    font-size: 14px !important;
+    padding: 14px 40px !important; font-size: 16px !important;
+    width: auto !important; white-space: nowrap;
   }
 
-  /* Product Carousel Mobile */
+  /* Grid Stack */
+  .blog-grid { grid-template-columns: 1fr; gap: 30px; }
+  
+  /* Carousel */
   .product-preview { padding: 30px 0 !important; }
-  .carousel-container { padding: 0 !important; }
   .carousel-track { padding: 0 12px 20px !important; gap: 12px !important; }
   .product-card {
-    flex: 0 0 55vw !important;
-    max-width: 55vw !important;
-    height: 350px !important;
+    flex: 0 0 70vw !important; max-width: 70vw !important; height: 400px !important;
   }
-  .product-image { padding: 0 !important; }
-  .product-info {
-    padding: 10px !important;
-    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 80%);
-  }
-  .product-name { font-size: 14px; margin-bottom: 5px; }
-  .view-details-btn {
-    width: 90% !important;
-    min-width: 0 !important;
-    padding: 8px 0 !important;
-    font-size: 12px !important;
-    margin-bottom: 10px;
-  }
-  .carousel-arrow { display: none !important; }
-
-  /* Blog Mobile */
-  .blog-grid {
-    grid-template-columns: 1fr; /* Stack Blogs */
-    gap: 30px;
-  }
-  .blog-image-wrapper { height: 250px; }
-  .blog-content { padding: 25px; }
-  .blog-title { font-size: 1.5rem; }
-}
-
-/* ===================== MOBILE MENU (SIDEBAR) ===================== */
-.mobileMenuOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 2000;
-  display: flex;
-  justify-content: flex-end;
-}
-.mobileMenuPanel {
-  width: 80%;
-  max-width: 300px;
-  height: 100%;
-  background: #fff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.mobileMenuHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-.mobileMenuItem {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  display: flex !important;
-  align-items: center !important;
-  width: 100%;
-  padding: 12px 0;
-  text-align: left;
-  cursor: pointer;
-  color: #333;
-  font-size: 18px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-/* ================= HAMBURGER BUTTON ================= */
-.hamburger.mobile-fixed-btn {
-  position: fixed;
-  top: 25px;
-  right: 20px;
-  z-index: 9999;
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  
-  width: 30px;
-  height: 20px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* The lines (bars) */
-.hamburger .bar {
-  display: block;
-  width: 100%;
-  height: 3px;
-  border-radius: 4px;
-  background-color: #000000; /* Black */
-  box-shadow: 0 0 2px rgba(255, 255, 255, 0.8); /* Visibility on dark video */
-  transition: all 0.3s ease-in-out;
-}
-
-/* Animation: Turn into X */
-.hamburger.open .bar:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
-.hamburger.open .bar:nth-child(2) { opacity: 0; }
-.hamburger.open .bar:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
-
-/* ❌ DELETE the rule ".hamburger span" if you have it. It conflicts with the bars! */
-
-
-/* ================= MOBILE MENU PANEL ================= */
-.mobileMenuPanel {
-  /* ... existing styles ... */
-  
-  /* ✅ NEW BACKGROUND COLOR */
-  background: rgba(95, 126, 92, 0.18); 
-  backdrop-filter: blur(15px); /* Optional: Makes the transparency look premium */
-  -webkit-backdrop-filter: blur(15px);
-}
-
-
-/* ================= ACCOUNT ICON FIX ================= */
-.mmIcon {
-  width: 36px !important;
-  height: 36px !important;
-  min-width: 36px !important; /* Prevents shrinking */
-  
-  /* ✅ CRITICAL FIX: Stops flexbox from squashing the icon */
-  flex-shrink: 0 !important; 
-  
-  border-radius: 50% !important;
-  overflow: hidden !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin-right: 12px !important;
-  background: #eee;
-  border: 1px solid rgba(0,0,0,0.1);
-}
-
-.mmAvatar {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block !important;
-}
-
-/* Fixes the SVG icon size inside the circle */
-.mmIcon svg {
-  width: 20px !important;
-  height: 20px !important;
-  color: #555;
-  display: block;
 }

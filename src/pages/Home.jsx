@@ -156,11 +156,20 @@ export default function Home() {
       </section>
 
       <section id="products" className="featuredPremium">
-        <img className="featuredPremiumImg" src={priorityOneProduct?.image_url} alt="Hero" />
-        <div className="featuredPremiumOverlay">
-          <button className="primary-btn" onClick={goToPriorityOneProduct}>SHOP NOW</button>
-        </div>
-      </section>
+  <img
+    className="featuredPremiumImg"
+    src={priorityOneProduct?.image_url}
+    alt="Hero"
+  />
+  <div className="featuredPremiumOverlay">
+    <button
+      className="primary-btn--featured"
+      onClick={goToPriorityOneProduct}
+    >
+      SHOP NOW
+    </button>
+  </div>
+</section>
 
       <section id="about" className="pageSection"><About /></section>
       <section id="blog" className="pageSection"><Blog /></section>
