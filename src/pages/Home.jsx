@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react"; // Removed unused imports
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
@@ -64,9 +64,26 @@ export default function Home() {
     loadData();
   }, []);
 
-  const handleGoogleLogin = () => {
+  // --- UPDATED LOGIN LOGIC ---
+  const handleGoogleLogin = async () => {
     if (loginBusy) return;
-    alert("Login logic here.");
+    setLoginBusy(true);
+    
+    try {
+        // Option A: Redirect to a dedicated login page
+        navigate("/login"); 
+
+        // OR Option B: If using direct API (as discussed previously):
+        /*
+        const response = await fetch('YOUR_API_URL/login/google');
+        const data = await response.json();
+        // Handle token storage here...
+        */
+    } catch (error) {
+        console.error("Login failed", error);
+    } finally {
+        setLoginBusy(false);
+    }
   };
 
   const priorityOneProduct = useMemo(() => {
@@ -80,23 +97,8 @@ export default function Home() {
   const closeMenu = () => setMenuOpen(false);
   const goToAdminDashboard = () => user?.isAdmin && navigate("/admin/dashboard");
 
-  // --- Mobile Hamburger (Styled in CSS to float) ---
-  const MobileRightButton = () => (
-    <button
-      className={`hamburger mobile-fixed-btn ${menuOpen ? "open" : ""}`}
-      type="button"
-      onClick={() => setMenuOpen((v) => !v)}
-      aria-label="Menu"
-    >
-      <span className="bar" />
-      <span className="bar" />
-      <span className="bar" />
-    </button>
-  );
-
   return (
     <>
-      {/* --- NAVBAR (Scrolls away on mobile) --- */}
       <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           <img src="/images/logo.png" alt="ELVORA" className="logo-img" onError={(e)=>e.target.style.display='none'} />
@@ -113,63 +115,77 @@ export default function Home() {
           {user ? (
             <div className="user-nav">
               <button className="accountBtn" onClick={() => navigate("/account")}>
-                 {user.profile_pic ? <img src={user.profile_pic} className="accountAvatar" /> : <User size={20} />}
+                 {user.profile_pic ? <img src={user.profile_pic} className="accountAvatar" alt="Profile" /> : <User size={20} />}
               </button>
               {user.isAdmin && <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>Dashboard</button>}
             </div>
           ) : (
-            <button className="login-nav-btn" onClick={handleGoogleLogin}>Login</button>
+            <button className="login-nav-btn" onClick={handleGoogleLogin} disabled={loginBusy}>
+                {loginBusy ? "..." : "Login"}
+            </button>
           )}
         </div>
       </nav>
 
-      {/* --- HAMBURGER: MOVED OUTSIDE NAV --- */}
-      {/* This allows it to stay fixed while nav scrolls away */}
-      {isMobile && <MobileRightButton />}
+      {/* --- FIXED HAMBURGER BUTTON (Directly in JSX) --- */}
+      {isMobile && (
+        <button
+          className={`hamburger mobile-fixed-btn ${menuOpen ? "open" : ""}`}
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Menu"
+        >
+          <span className="bar" />
+          <span className="bar" />
+          <span className="bar" />
+        </button>
+      )}
 
-     {menuOpen && (
-  <div className="mobileMenuOverlay" onClick={closeMenu}>
-    <div className="mobileMenuPanel" onClick={(e) => e.stopPropagation()}>
-      
-      {/* --- NEW: MOBILE ACCOUNT SECTION --- */}
-      <div className="mobileMenuUserSection">
-        {user ? (
-          // IF LOGGED IN: Show Avatar + Name
-          <div className="mobileUserCard" onClick={() => { navigate("/account"); closeMenu(); }}>
-             {user.profile_pic ? (
-               <img src={user.profile_pic} alt="Profile" className="mobileUserAvatar" />
-             ) : (
-               <div className="mobileUserAvatarPlaceholder">
-                 <User size={24} color="#555" />
-               </div>
-             )}
-             <div className="mobileUserInfo">
-               <span className="mobileUserName">{user.name || "My Account"}</span>
-               <span className="mobileUserLink">View Profile</span>
-             </div>
+      {menuOpen && (
+        <div className="mobileMenuOverlay" onClick={closeMenu}>
+          <div className="mobileMenuPanel" onClick={(e) => e.stopPropagation()}>
+            <div className="mobileMenuUserSection">
+              {user ? (
+                <div className="mobileUserCard" onClick={() => { navigate("/account"); closeMenu(); }}>
+                   {user.profile_pic ? (
+                     <img src={user.profile_pic} alt="Profile" className="mobileUserAvatar" />
+                   ) : (
+                     <div className="mobileUserAvatarPlaceholder">
+                       <User size={24} color="#555" />
+                     </div>
+                   )}
+                   <div className="mobileUserInfo">
+                     <span className="mobileUserName">{user.name || "My Account"}</span>
+                     <span className="mobileUserLink">View Profile</span>
+                   </div>
+                </div>
+              ) : (
+                <button className="mobileLoginBtn" onClick={() => { handleGoogleLogin(); closeMenu(); }}>
+                  Login / Sign Up
+                </button>
+              )}
+            </div>
+
+            <div className="mobileMenuLinks">
+              <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
+              <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
+              <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
+              <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
+            </div>
           </div>
-        ) : (
-          // IF LOGGED OUT: Show Login Button
-          <button className="mobileLoginBtn" onClick={() => { handleGoogleLogin(); closeMenu(); }}>
-            Login / Sign Up
-          </button>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* --- EXISTING LINKS --- */}
-      <div className="mobileMenuLinks">
-        <a className="mobileMenuItem" href="#products" onClick={closeMenu}>Products</a>
-        <a className="mobileMenuItem" href="#about" onClick={closeMenu}>About</a>
-        <a className="mobileMenuItem" href="#blog" onClick={closeMenu}>Blog</a>
-        <a className="mobileMenuItem" href="#testimonials" onClick={closeMenu}>Testimonials</a>
-      </div>
-
-    </div>
-  </div>
-)}
-      {/* --- REST OF PAGE --- */}
+      {/* --- FIXED VIDEO SECTION (Added onEnded) --- */}
       <section className="intro-video-section">
-        <video src="/videos/bananastrength.mp4" autoPlay muted playsInline className="intro-video" />
+        <video 
+            src="/videos/bananastrength.mp4" 
+            autoPlay 
+            muted 
+            playsInline 
+            className="intro-video" 
+            onEnded={() => setVideoEnded(true)}  // <--- KEY FIX HERE
+        />
         {videoEnded && (
           <div className="intro-overlay">
             <h2 className="intro-title">Ripen banana powder<br />100 bananas strength</h2>
@@ -178,20 +194,20 @@ export default function Home() {
       </section>
 
       <section id="products" className="featuredPremium">
-  <img
-    className="featuredPremiumImg"
-    src={priorityOneProduct?.image_url}
-    alt="Hero"
-  />
-  <div className="featuredPremiumOverlay">
-    <button
-      className="primary-btn--featured"
-      onClick={goToPriorityOneProduct}
-    >
-      SHOP NOW
-    </button>
-  </div>
-</section>
+        <img
+          className="featuredPremiumImg"
+          src={priorityOneProduct?.image_url}
+          alt="Hero"
+        />
+        <div className="featuredPremiumOverlay">
+          <button
+            className="primary-btn--featured"
+            onClick={goToPriorityOneProduct}
+          >
+            SHOP NOW
+          </button>
+        </div>
+      </section>
 
       <section id="about" className="pageSection"><About /></section>
       <section id="blog" className="pageSection"><Blog /></section>
