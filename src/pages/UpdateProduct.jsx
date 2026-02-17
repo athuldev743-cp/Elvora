@@ -1,6 +1,6 @@
 // src/components/admin/UpdateProduct.jsx
 import { useEffect, useMemo, useState } from "react";
-import styles from "./UpdateProduct.css";
+import "./UpdateProduct.css";
 
 export default function UpdateProduct({ product, onCancel, onSubmit, setError }) {
   const initial = useMemo(() => {
@@ -12,17 +12,17 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
       priority: String(product?.priority ?? "2"),
       quantity: String(product?.quantity ?? "0"),
       image_url: product?.image_url || "",
-      image2_url: product?.image2_url || "", // ✅ NEW: Load existing second image
+      image2_url: product?.image2_url || "",
     };
   }, [product]);
 
   const [form, setForm] = useState(initial);
-  
+
   // Primary Image
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState(product?.image_url || "");
-  
-  // ✅ NEW: Second Image
+
+  // Second Image
   const [image2File, setImage2File] = useState(null);
   const [preview2, setPreview2] = useState(product?.image2_url || "");
 
@@ -47,7 +47,6 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
     setPreview(URL.createObjectURL(file));
   };
 
-  // ✅ NEW: Pick Second Image
   const onPickImage2 = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -81,7 +80,7 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
         priority: Number(form.priority),
         quantity: Number(form.quantity),
         imageFile: imageFile || null,
-        image2File: image2File || null, // ✅ NEW: Send second image
+        image2File: image2File || null,
       });
     } finally {
       setSaving(false);
@@ -91,82 +90,80 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
   const isPriorityOne = parseInt(form.priority || "2", 10) === 1;
 
   return (
-    <div className={styles.updateWrap}>
-      <div className={styles.updateGrid}>
-        
+    <div className="updateWrap">
+      <div className="updateGrid">
         {/* PREVIEW COLUMN */}
-        <div className={styles.previewColumn}>
-          
+        <div className="previewColumn">
           {/* Main Image Preview */}
-          <div className={styles.updatePreviewCard}>
-            <div className={styles.updatePreviewTitle}>Main Image</div>
-            <div className={styles.updatePreviewImage}>
-              {preview ? (
-                <img src={preview} alt="Preview" />
-              ) : (
-                <div className={styles.noImage}>No Image</div>
-              )}
+          <div className="updatePreviewCard">
+            <div className="updatePreviewTitle">Main Image</div>
+
+            <div className="updatePreviewImage">
+              {preview ? <img src={preview} alt="Preview" /> : <div className="noImage">No Image</div>}
             </div>
-            <label className={styles.fileBtn}>
+
+            <label className="fileBtn">
               Change Main Image
               <input type="file" accept="image/*" onChange={onPickImage} />
             </label>
-            <div className={styles.previewMeta}>
-              <div className={styles.previewName}>{form.name || "Product name"}</div>
+
+            <div className="previewMeta">
+              <div className="previewName">{form.name || "Product name"}</div>
             </div>
           </div>
 
-          {/* ✅ NEW: Hero Image Preview (Only if Priority 1) */}
+          {/* Hero Banner Preview (Only if Priority 1) */}
           {isPriorityOne && (
-            <div className={styles.updatePreviewCard} style={{ marginTop: 20 }}>
-              <div className={styles.updatePreviewTitle}>Hero Banner (Priority 1)</div>
-              <div className={styles.updatePreviewImage}>
+            <div className="updatePreviewCard" style={{ marginTop: 20 }}>
+              <div className="updatePreviewTitle">Hero Banner (Priority 1)</div>
+
+              <div className="updatePreviewImage">
                 {preview2 ? (
-                  <img src={preview2} alt="Hero Preview" style={{ objectFit: 'cover' }} />
+                  <img src={preview2} alt="Hero Preview" style={{ objectFit: "cover" }} />
                 ) : (
-                  <div className={styles.noImage}>No Banner</div>
+                  <div className="noImage">No Banner</div>
                 )}
               </div>
-              <label className={styles.fileBtn}>
+
+              <label className="fileBtn">
                 Change Banner
                 <input type="file" accept="image/*" onChange={onPickImage2} />
               </label>
             </div>
           )}
-
         </div>
 
         {/* FORM COLUMN */}
-        <form className={styles.updateFormCard} onSubmit={submit}>
-          <div className={styles.formTitle}>Update Product</div>
+        <form className="updateFormCard" onSubmit={submit}>
+          <div className="formTitle">Update Product</div>
 
-          <div className={styles.formRow}>
-            <div className={styles.field}>
+          <div className="formRow">
+            <div className="field">
               <label>Name</label>
               <input value={form.name} onChange={onChange("name")} placeholder="Product name" />
             </div>
 
-            <div className={styles.field}>
+            <div className="field">
               <label>Price</label>
               <input value={form.price} onChange={onChange("price")} placeholder="e.g. 199" />
             </div>
           </div>
 
-          <div className={styles.formRow}>
-            <div className={styles.field}>
+          <div className="formRow">
+            <div className="field">
               <label>Quantity</label>
               <input value={form.quantity} onChange={onChange("quantity")} placeholder="e.g. 0" />
               <small>Quantity ≤ 0 will show “Available Soon” on Home.</small>
             </div>
 
-            <div className={styles.field}>
+            <div className="field">
               <label>Priority</label>
               <input value={form.priority} onChange={onChange("priority")} placeholder="e.g. 1" />
               <small>Set to 1 to enable Hero Banner image.</small>
             </div>
           </div>
 
-          <div className={styles.field}>
+          <div className="field">
             <label>Description</label>
             <textarea
               value={form.description}
@@ -176,12 +173,12 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
             />
           </div>
 
-          <div className={styles.formActions}>
-            <button type="button" className={styles.secondaryBtn} onClick={onCancel} disabled={saving}>
+          <div className="formActions">
+            <button type="button" className="secondaryBtn" onClick={onCancel} disabled={saving}>
               Cancel
             </button>
 
-            <button type="submit" className={styles.primaryBtn} disabled={saving}>
+            <button type="submit" className="primaryBtn" disabled={saving}>
               {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
