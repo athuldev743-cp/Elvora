@@ -1,6 +1,6 @@
 // src/components/admin/UpdateProduct.jsx
 import { useEffect, useMemo, useState } from "react";
-import styles from "./Dashboard.module.css";
+import styles from "./UpdateProduct.css";
 
 export default function UpdateProduct({ product, onCancel, onSubmit, setError }) {
   const initial = useMemo(() => {

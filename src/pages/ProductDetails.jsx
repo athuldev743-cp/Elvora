@@ -12,21 +12,16 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [quantity, setQuantity] = useState(1);
-
   const [user, setUser] = useState(null);
   const [showBuy, setShowBuy] = useState(false);
 
-  // Check if user is logged in
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (userData) {
       try {
         setUser(JSON.parse(userData));
-      } catch (e) {
-        console.error("Error parsing user data:", e);
-      }
+      } catch {}
     }
   }, []);
 
@@ -37,8 +32,7 @@ const ProductDetails = () => {
         const data = await fetchProductById(id);
         setProduct(data);
       } catch (err) {
-        console.error("Failed to load product:", err);
-        setError("Failed to load product details. Please try again.");
+        setError("Failed to load product details.");
       } finally {
         setLoading(false);
       }
@@ -55,7 +49,6 @@ const ProductDetails = () => {
     setShowBuy(true);
   };
 
-  // --- Cart helpers (localStorage) ---
   const getCart = () => {
     try {
       return JSON.parse(localStorage.getItem("cart") || "[]");
@@ -74,12 +67,12 @@ const ProductDetails = () => {
 
     const cart = getCart();
     const existing = cart.find((x) => String(x.id) === String(product.id));
-    let next;
 
+    let next;
     if (existing) {
       next = cart.map((x) =>
         String(x.id) === String(product.id)
-          ? { ...x, qty: Number(x.qty || 1) + Number(quantity || 1) }
+          ? { ...x, qty: Number(x.qty || 1) + quantity }
           : x
       );
     } else {
@@ -89,7 +82,7 @@ const ProductDetails = () => {
           id: product.id,
           name: product.name,
           price: product.price,
-          qty: Number(quantity || 1),
+          qty: quantity,
         },
       ];
     }
@@ -100,16 +93,13 @@ const ProductDetails = () => {
 
   const handleImageError = (e) => {
     e.target.onerror = null;
-    e.target.src = "https://placehold.co/1200x900/EEE/31343C?text=Product+Image";
+    e.target.src = "https://placehold.co/1600x900/EEE/31343C?text=Product+Image";
   };
 
   const totalPrice = useMemo(() => {
     if (!product) return 0;
-    return Number(product.price || 0) * Number(quantity || 1);
+    return Number(product.price || 0) * quantity;
   }, [product, quantity]);
-
-  const decQty = () => setQuantity((prev) => Math.max(1, prev - 1));
-  const incQty = () => setQuantity((prev) => prev + 1);
 
   if (loading) {
     return (
@@ -127,182 +117,101 @@ const ProductDetails = () => {
       <div className="pd-page">
         <div className="pd-state">
           <h2>⚠️ Product Not Found</h2>
-          <p>{error || "The product you're looking for doesn't exist."}</p>
-          <button className="pd-btn pd-btn-outline" onClick={() => navigate("/")}>
-            ← Back to Home
+          <button onClick={() => navigate("/")} className="pd-btn">
+            Back
           </button>
         </div>
       </div>
     );
   }
 
+  // ✅ HERO LOGIC (FINAL)
+  const isHeroProduct =
+    Number(product.priority) === 1 && product.image2_url;
+
   return (
     <div className="pd-page">
-      {/* Header */}
-      <div className="pd-header">
-        <button className="pd-btn pd-btn-outline" onClick={() => navigate("/")}>
-          ← Back to Products
-        </button>
-        <h1 className="pd-title">Product Details</h1>
-      </div>
+      {/* FULL WIDTH HERO BANNER */}
+      {isHeroProduct && (
+        <div className="pd-fullHero">
+          <img
+            src={product.image2_url}
+            alt={product.name}
+            className="pd-fullHeroImg"
+            onError={handleImageError}
+          />
+          <div className="pd-heroOverlay">
+            <h1>{product.name}</h1>
+            <p>Premium quality • Authentic • Trusted</p>
+          </div>
+        </div>
+      )}
 
-      {/* Premium Card */}
+      {/* MAIN CONTENT CARD */}
       <div className="pd-card">
         <div className="pd-grid">
-          {/* LEFT: Image */}
-          <div className="pd-imageWrap">
-            <div className="pd-imageFrame">
+          {/* Normal Image only for non-priority products */}
+          {!isHeroProduct && (
+            <div className="pd-imageWrap">
               <img
                 src={product.image_url}
                 alt={product.name}
                 className="pd-image"
                 onError={handleImageError}
-                loading="lazy"
               />
             </div>
+          )}
 
-            {/* Trust chips */}
-            <div className="pd-trustRow">
-              <span className="pd-chip">Authentic</span>
-              <span className="pd-chip">Fast delivery</span>
-              <span className="pd-chip">Secure checkout</span>
-            </div>
-          </div>
-
-          {/* RIGHT: Content */}
           <div className="pd-content">
-            <div className="pd-top">
-              <div>
-                <h2 className="pd-name">{product.name}</h2>
-                <p className="pd-sub">Premium quality • Authentic feel • Fast delivery</p>
+            {!isHeroProduct && (
+              <div className="pd-titleRow">
+                <h2>{product.name}</h2>
+                <div className="pd-price">₹{product.price}</div>
               </div>
-              <div className="pd-price">₹{product.price}</div>
+            )}
+
+            <p className="pd-desc">{product.description}</p>
+
+            <div className="pd-qtyRow">
+              <button
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+              >
+                −
+              </button>
+              <span>{quantity}</span>
+              <button onClick={() => setQuantity((q) => q + 1)}>+</button>
             </div>
 
-            {/* Description */}
-            <div className="pd-section">
-              <h3 className="pd-h3">Description</h3>
-              <p className="pd-desc">{product.description || "No description available."}</p>
-            </div>
-
-            {/* Quantity */}
-            <div className="pd-section">
-              <h3 className="pd-h3">Quantity</h3>
-              <div className="pd-qtyRow">
-                <button
-                  className="pd-qtyBtn"
-                  onClick={decQty}
-                  disabled={quantity <= 1}
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-                <span className="pd-qty">{quantity}</span>
-                <button className="pd-qtyBtn" onClick={incQty} aria-label="Increase quantity">
-                  +
-                </button>
-              </div>
-              <p className="pd-note">Choose how many units you want.</p>
-            </div>
-
-            {/* Summary */}
             <div className="pd-summary">
-              <div className="pd-srow">
-                <span>Price (each)</span>
-                <span>₹{product.price}</span>
-              </div>
-              <div className="pd-srow">
-                <span>Quantity</span>
-                <span>{quantity}</span>
-              </div>
-              <div className="pd-srow pd-total">
+              <div>
                 <span>Total</span>
-                <span>₹{totalPrice.toFixed(2)}</span>
+                <b>₹{totalPrice.toFixed(2)}</b>
               </div>
             </div>
 
-            {/* ✅ Desktop Sticky Actions (always visible on scroll) */}
-            <div className="pd-stickyActions">
-              <div className="pd-ctaRow">
-                <button className="pd-btn pd-btn-soft pd-cta" onClick={addToCart}>
-                  Add to Cart
-                </button>
-
-                <button
-                  className="pd-btn pd-btn-primary pd-cta"
-                  onClick={handleBuyNow}
-                  disabled={!user}
-                  title={!user ? "Login required" : "Buy now"}
-                >
-                  Buy Now
-                </button>
-              </div>
-
-              {!user ? (
-                <div className="pd-loginHint">
-                  Login required to checkout.
-                  <button className="pd-linkBtn" onClick={() => navigate("/")}>
-                    Login
-                  </button>
-                </div>
-              ) : (
-                <button className="pd-btn pd-btn-outline pd-viewCart" onClick={() => navigate("/account")}>
-                  View Cart
-                </button>
-              )}
+            <div className="pd-actions">
+              <button className="pd-btn-secondary" onClick={addToCart}>
+                Add to Cart
+              </button>
+              <button
+                className="pd-btn-primary"
+                onClick={handleBuyNow}
+                disabled={!user}
+              >
+                Buy Now
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ✅ Mobile Bottom Sticky Bar (always visible) */}
-      <div className="pd-bottomBar">
-        <div className="pd-bottomInfo">
-          <div className="pd-bottomTotal">
-            <span className="pd-bottomLabel">Total</span>
-            <b>₹{totalPrice.toFixed(2)}</b>
-          </div>
-
-          <div className="pd-bottomQty">
-            <button className="pd-miniQtyBtn" onClick={decQty} disabled={quantity <= 1} aria-label="Decrease quantity">
-              −
-            </button>
-            <span className="pd-miniQty">{quantity}</span>
-            <button className="pd-miniQtyBtn" onClick={incQty} aria-label="Increase quantity">
-              +
-            </button>
-          </div>
-        </div>
-
-        <div className="pd-bottomBtns">
-          <button className="pd-btn pd-btn-soft pd-bottomBtn" onClick={addToCart}>
-            Add to Cart
-          </button>
-
-          <button
-            className="pd-btn pd-btn-primary pd-bottomBtn"
-            onClick={handleBuyNow}
-            disabled={!user}
-            title={!user ? "Login required" : "Buy now"}
-          >
-            Buy Now
-          </button>
-        </div>
-
-        {!user && <div className="pd-bottomHint">Login required to purchase</div>}
-      </div>
-
-      {/* Buy Modal */}
       <BuyModal
         open={showBuy}
         onClose={() => setShowBuy(false)}
         product={product}
         quantity={quantity}
         user={user}
-        onSuccess={() => {
-          setShowBuy(false);
-          navigate("/");
-        }}
       />
     </div>
   );
