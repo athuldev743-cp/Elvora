@@ -1,5 +1,8 @@
+// src/pages/Login.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ADMIN_EMAILS } from "../config/auth";
+import { convertGoogleToJWT } from "../api/adminAPI";
 
 export default function Login() {
   const btnRef = useRef(null);
@@ -15,60 +18,97 @@ export default function Login() {
       return;
     }
 
-    if (!window.google?.accounts?.id) {
-      setErr("Google script not loaded. Add gsi script in public/index.html");
-      return;
-    }
+    // Ensure script is loaded (no need to edit index.html)
+    const ensureScript = () =>
+      new Promise((resolve, reject) => {
+        if (window.google?.accounts?.id) return resolve(true);
 
-    window.google.accounts.id.initialize({
-      client_id: clientId,
-      callback: async (resp) => {
-        try {
-          // ✅ You will move this to backend verification
-          // For now: send to backend if endpoint exists, else do a lightweight local decode fallback.
-
-          const API = process.env.REACT_APP_API_URL; // optional
-          if (API) {
-            // Recommended: backend verifies credential and returns your user object
-            const r = await fetch(`${API}/auth/google/verify`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ credential: resp.credential }),
-            });
-
-            if (!r.ok) throw new Error("Backend verification failed");
-            const userObj = await r.json();
-
-            localStorage.setItem("userData", JSON.stringify(userObj));
-            navigate("/", { replace: true });
-            return;
-          }
-
-          // Fallback (frontend-only): decode basic profile from JWT (NOT secure; temporary)
-          const payload = JSON.parse(atob(resp.credential.split(".")[1]));
-          const userObj = {
-            name: payload.name,
-            email: payload.email,
-            profile_pic: payload.picture,
-            isAdmin: false,
-          };
-
-          localStorage.setItem("userData", JSON.stringify(userObj));
-          navigate("/", { replace: true });
-        } catch (e) {
-          console.error(e);
-          setErr("Login failed. Check console.");
+        if (document.getElementById("gsi-script")) {
+          // wait a bit for existing script to load
+          const t = setInterval(() => {
+            if (window.google?.accounts?.id) {
+              clearInterval(t);
+              resolve(true);
+            }
+          }, 50);
+          setTimeout(() => {
+            clearInterval(t);
+            if (!window.google?.accounts?.id) reject(new Error("Google script not loaded"));
+          }, 4000);
+          return;
         }
-      },
-    });
 
-    // render button
-    if (btnRef.current) btnRef.current.innerHTML = "";
-    window.google.accounts.id.renderButton(btnRef.current, {
-      theme: "outline",
-      size: "large",
-      width: 320,
-    });
+        const script = document.createElement("script");
+        script.id = "gsi-script";
+        script.src = "https://accounts.google.com/gsi/client";
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => reject(new Error("Failed to load Google script"));
+        document.body.appendChild(script);
+      });
+
+    const init = async () => {
+      try {
+        await ensureScript();
+
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (resp) => {
+            try {
+              // decode basic profile (same as your working Home logic)
+              const payload = JSON.parse(atob(resp.credential.split(".")[1]));
+              const userEmail = payload.email;
+
+              const isAdmin = ADMIN_EMAILS.includes(userEmail);
+              const role = isAdmin ? "admin" : "user";
+
+              const userData = {
+                name: payload.name,
+                email: userEmail,
+                profile_pic: payload.picture,
+                role,
+                isAdmin,
+              };
+
+              // store same keys as your working code
+              localStorage.setItem("userToken", resp.credential);
+              localStorage.setItem("userData", JSON.stringify(userData));
+
+              // optional: convert google credential to backend JWT (admin token)
+              try {
+                const jwtResponse = await convertGoogleToJWT(resp.credential);
+                if (jwtResponse?.access_token) {
+                  localStorage.setItem("adminToken", jwtResponse.access_token);
+                }
+              } catch (jwtError) {
+                console.error("JWT conversion failed:", jwtError);
+              }
+
+              navigate("/", { replace: true });
+            } catch (e) {
+              console.error(e);
+              setErr("Login failed. Check console.");
+            }
+          },
+        });
+
+        if (btnRef.current) btnRef.current.innerHTML = "";
+        window.google.accounts.id.renderButton(btnRef.current, {
+          theme: "outline",
+          size: "large",
+          width: 320,
+        });
+
+        // optional one-tap prompt
+        window.google.accounts.id.prompt();
+      } catch (e) {
+        console.error(e);
+        setErr("Google script not loaded.");
+      }
+    };
+
+    init();
   }, [navigate]);
 
   return (
