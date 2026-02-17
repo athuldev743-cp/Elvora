@@ -197,11 +197,7 @@ const ProductDetails = () => {
             )}
 
             {/* Trust chips */}
-            <div className="pd-trustRow">
-              <span className="pd-chip">Authentic</span>
-              <span className="pd-chip">Fast Delivery</span>
-              <span className="pd-chip">Secure Checkout</span>
-            </div>
+           
           </div>
 
           {/* Right: Content */}
