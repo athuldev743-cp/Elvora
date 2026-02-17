@@ -108,25 +108,6 @@ const ProductDetails = () => {
     return Number(product.price || 0) * Number(quantity || 1);
   }, [product, quantity]);
 
-  // ✅ URL cleaner (handles null / "null" / "" etc.)
-  const cleanUrl = (v) => {
-    if (!v) return "";
-    const s = String(v).trim();
-    if (!s || s === "null" || s === "undefined") return "";
-    return s;
-  };
-
-  // ✅ Hero Banner URL (supports multiple possible backend keys)
-  const heroUrl = cleanUrl(
-    product?.image2_url || product?.image2Url || product?.image2 || product?.banner_url
-  );
-
-  // ✅ Priority 1 product = allowed to have hero banner
-  const isHeroProduct = Number(product?.priority) === 1 && !!heroUrl;
-
-  // ✅ Priority 1 should show ONLY one image (banner image)
-  const displayImageUrl = isHeroProduct ? heroUrl : product?.image_url;
-
   const decQty = () => setQuantity((prev) => Math.max(1, prev - 1));
   const incQty = () => setQuantity((prev) => prev + 1);
 
@@ -156,7 +137,7 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className={`pd-page ${isHeroProduct ? "pd-page-hero" : ""}`}>
+    <div className="pd-page">
       {/* Header */}
       <div className="pd-header">
         <button className="pd-btn pd-btn-outline" onClick={() => navigate("/")}>
@@ -165,42 +146,30 @@ const ProductDetails = () => {
         <h1 className="pd-title">Product Details</h1>
       </div>
 
-      {/* Hero banner treatment for priority 1 */}
-      {isHeroProduct ? (
-        <div className="pd-hero">
-          <img
-            src={displayImageUrl}
-            alt={product.name}
-            className="pd-heroImg"
-            onError={handleImageError}
-            loading="lazy"
-          />
-          <div className="pd-heroFade" />
-        </div>
-      ) : null}
-
-      {/* Main Card */}
-      <div className={`pd-card ${isHeroProduct ? "pd-card-floating" : ""}`}>
+      {/* Premium Card */}
+      <div className="pd-card">
         <div className="pd-grid">
-          {/* Left: Image (non-hero shows bottle image) */}
+          {/* LEFT: Image */}
           <div className="pd-imageWrap">
-            {!isHeroProduct && (
-              <div className="pd-imageFrame">
-                <img
-                  src={displayImageUrl}
-                  alt={product.name}
-                  className="pd-image"
-                  onError={handleImageError}
-                  loading="lazy"
-                />
-              </div>
-            )}
+            <div className="pd-imageFrame">
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="pd-image"
+                onError={handleImageError}
+                loading="lazy"
+              />
+            </div>
 
             {/* Trust chips */}
-           
+            <div className="pd-trustRow">
+              <span className="pd-chip">Authentic</span>
+              <span className="pd-chip">Fast delivery</span>
+              <span className="pd-chip">Secure checkout</span>
+            </div>
           </div>
 
-          {/* Right: Content */}
+          {/* RIGHT: Content */}
           <div className="pd-content">
             <div className="pd-top">
               <div>
@@ -252,7 +221,7 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* ✅ Desktop sticky CTAs (always visible) */}
+            {/* ✅ Desktop Sticky Actions (always visible on scroll) */}
             <div className="pd-stickyActions">
               <div className="pd-ctaRow">
                 <button className="pd-btn pd-btn-soft pd-cta" onClick={addToCart}>
@@ -286,9 +255,9 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      {/* ✅ Mobile bottom bar (always visible) */}
+      {/* ✅ Mobile Bottom Sticky Bar (always visible) */}
       <div className="pd-bottomBar">
-        <div className="pd-bottomTop">
+        <div className="pd-bottomInfo">
           <div className="pd-bottomTotal">
             <span className="pd-bottomLabel">Total</span>
             <b>₹{totalPrice.toFixed(2)}</b>
@@ -309,6 +278,7 @@ const ProductDetails = () => {
           <button className="pd-btn pd-btn-soft pd-bottomBtn" onClick={addToCart}>
             Add to Cart
           </button>
+
           <button
             className="pd-btn pd-btn-primary pd-bottomBtn"
             onClick={handleBuyNow}
