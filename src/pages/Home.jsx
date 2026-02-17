@@ -168,7 +168,7 @@ export default function Home() {
                         closeMenu(); 
                     }}
                 >
-                  Login / Sign Up
+                  Login 
                 </button>
               )}
             </div>

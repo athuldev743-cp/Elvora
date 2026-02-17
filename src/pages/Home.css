@@ -17,7 +17,7 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 
 /* ===================== NAVBAR ===================== */
 .navbar {
-  position: fixed; top: 0; width: 100%; z-index: 100;
+  position: fixed; top: 0; width: 100%; z-index: 3000;
   transition: all 0.3s ease; padding: 20px;
 }
 .navbar.scrolled { background: rgba(95,126,92,.18); padding: 15px 20px; backdrop-filter: blur(10px); }
@@ -201,7 +201,7 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 
 /* ===================== HAMBURGER BUTTON ===================== */
 .hamburger.mobile-fixed-btn {
-  position: fixed; top: 25px; right: 20px; z-index: 9999;
+  position: fixed; top: 25px; right: 20px; z-index: 3500;
   display: flex; flex-direction: column; justify-content: space-between;
   width: 30px; height: 22px; background: transparent; border: none; cursor: pointer;
 }
@@ -217,7 +217,7 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 
 /* ===================== MOBILE MENU PANEL ===================== */
 .mobileMenuOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 4000;
   display: flex; justify-content: flex-end;
 }
 .mobileMenuPanel {

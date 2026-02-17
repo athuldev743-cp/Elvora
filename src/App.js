@@ -4,7 +4,7 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import Account from "./pages/Account";
 import BlogPost from "./pages/BlogPost"; 
 import AllBlogs from "./pages/AllBlogs"; // ✅ 1. Import new page
-
+import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute"; 
 
@@ -33,6 +33,7 @@ function App() {
         />
         
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );
