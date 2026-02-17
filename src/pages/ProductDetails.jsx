@@ -12,19 +12,25 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [quantity, setQuantity] = useState(1);
+
   const [user, setUser] = useState(null);
   const [showBuy, setShowBuy] = useState(false);
 
+  // user
   useEffect(() => {
     const userData = localStorage.getItem("userData");
     if (userData) {
       try {
         setUser(JSON.parse(userData));
-      } catch {}
+      } catch (e) {
+        console.error("Error parsing user data:", e);
+      }
     }
   }, []);
 
+  // product
   useEffect(() => {
     async function loadProduct() {
       try {
@@ -32,7 +38,8 @@ const ProductDetails = () => {
         const data = await fetchProductById(id);
         setProduct(data);
       } catch (err) {
-        setError("Failed to load product details.");
+        console.error("Failed to load product:", err);
+        setError("Failed to load product details. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -49,6 +56,7 @@ const ProductDetails = () => {
     setShowBuy(true);
   };
 
+  // cart helpers
   const getCart = () => {
     try {
       return JSON.parse(localStorage.getItem("cart") || "[]");
@@ -67,12 +75,12 @@ const ProductDetails = () => {
 
     const cart = getCart();
     const existing = cart.find((x) => String(x.id) === String(product.id));
-
     let next;
+
     if (existing) {
       next = cart.map((x) =>
         String(x.id) === String(product.id)
-          ? { ...x, qty: Number(x.qty || 1) + quantity }
+          ? { ...x, qty: Number(x.qty || 1) + Number(quantity || 1) }
           : x
       );
     } else {
@@ -82,7 +90,7 @@ const ProductDetails = () => {
           id: product.id,
           name: product.name,
           price: product.price,
-          qty: quantity,
+          qty: Number(quantity || 1),
         },
       ];
     }
@@ -93,13 +101,16 @@ const ProductDetails = () => {
 
   const handleImageError = (e) => {
     e.target.onerror = null;
-    e.target.src = "https://placehold.co/1600x900/EEE/31343C?text=Product+Image";
+    e.target.src = "https://placehold.co/1200x900/EEE/31343C?text=Product+Image";
   };
 
   const totalPrice = useMemo(() => {
     if (!product) return 0;
-    return Number(product.price || 0) * quantity;
+    return Number(product.price || 0) * Number(quantity || 1);
   }, [product, quantity]);
+
+  const decQty = () => setQuantity((prev) => Math.max(1, prev - 1));
+  const incQty = () => setQuantity((prev) => prev + 1);
 
   if (loading) {
     return (
@@ -117,101 +128,181 @@ const ProductDetails = () => {
       <div className="pd-page">
         <div className="pd-state">
           <h2>⚠️ Product Not Found</h2>
-          <button onClick={() => navigate("/")} className="pd-btn">
-            Back
+          <p>{error || "The product you're looking for doesn't exist."}</p>
+          <button className="pd-btn pd-btn-outline" onClick={() => navigate("/")}>
+            ← Back to Home
           </button>
         </div>
       </div>
     );
   }
 
-  // ✅ HERO LOGIC (FINAL)
-  const isHeroProduct =
-    Number(product.priority) === 1 && product.image2_url;
+  // ✅ EXACT RULE:
+  // Priority 1 + image2_url exists => show ONLY hero banner
+  const isHeroProduct = Number(product.priority) === 1 && !!product.image2_url;
+  const displayImageUrl = isHeroProduct ? product.image2_url : product.image_url;
 
   return (
     <div className="pd-page">
-      {/* FULL WIDTH HERO BANNER */}
-      {isHeroProduct && (
-        <div className="pd-fullHero">
-          <img
-            src={product.image2_url}
-            alt={product.name}
-            className="pd-fullHeroImg"
-            onError={handleImageError}
-          />
-          <div className="pd-heroOverlay">
-            <h1>{product.name}</h1>
-            <p>Premium quality • Authentic • Trusted</p>
+      {/* Header */}
+      <div className="pd-header">
+        <button className="pd-btn pd-btn-outline" onClick={() => navigate("/")}>
+          ← Back to Products
+        </button>
+        <h1 className="pd-title">Product Details</h1>
+      </div>
+
+      {/* Mamaearth-like main layout */}
+      <div className="pd-shell">
+        {/* LEFT: Image */}
+        <div className="pd-left">
+          <div className={`pd-media ${isHeroProduct ? "pd-media-hero" : ""}`}>
+            <img
+              src={displayImageUrl}
+              alt={product.name}
+              className={`pd-image ${isHeroProduct ? "pd-image-heroOnly" : ""}`}
+              onError={handleImageError}
+              loading="lazy"
+            />
+          </div>
+
+          <div className="pd-badges">
+            <span className="pd-badge">Authentic</span>
+            <span className="pd-badge">Fast Delivery</span>
+            <span className="pd-badge">Secure Checkout</span>
           </div>
         </div>
-      )}
 
-      {/* MAIN CONTENT CARD */}
-      <div className="pd-card">
-        <div className="pd-grid">
-          {/* Normal Image only for non-priority products */}
-          {!isHeroProduct && (
-            <div className="pd-imageWrap">
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="pd-image"
-                onError={handleImageError}
-              />
+        {/* RIGHT: Details */}
+        <div className="pd-right">
+          <div className="pd-top">
+            <div className="pd-nameWrap">
+              <h2 className="pd-name">{product.name}</h2>
+              <p className="pd-sub">Premium quality • Authentic feel • Fast delivery</p>
             </div>
-          )}
 
-          <div className="pd-content">
-            {!isHeroProduct && (
-              <div className="pd-titleRow">
-                <h2>{product.name}</h2>
-                <div className="pd-price">₹{product.price}</div>
-              </div>
-            )}
+            <div className="pd-priceWrap">
+              <div className="pd-price">₹{product.price}</div>
+              <div className="pd-taxNote">Inclusive of all taxes</div>
+            </div>
+          </div>
 
-            <p className="pd-desc">{product.description}</p>
-
+          {/* Quantity */}
+          <div className="pd-rowCard">
+            <div className="pd-rowCardTitle">Quantity</div>
             <div className="pd-qtyRow">
-              <button
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                disabled={quantity <= 1}
-              >
+              <button className="pd-qtyBtn" onClick={decQty} disabled={quantity <= 1} aria-label="Decrease">
                 −
               </button>
+              <span className="pd-qty">{quantity}</span>
+              <button className="pd-qtyBtn" onClick={incQty} aria-label="Increase">
+                +
+              </button>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="pd-rowCard">
+            <div className="pd-rowCardTitle">Description</div>
+            <p className="pd-desc">{product.description || "No description available."}</p>
+          </div>
+
+          {/* Summary */}
+          <div className="pd-summary">
+            <div className="pd-srow">
+              <span>Price (each)</span>
+              <span>₹{Number(product.price || 0).toFixed(2)}</span>
+            </div>
+            <div className="pd-srow">
+              <span>Quantity</span>
               <span>{quantity}</span>
-              <button onClick={() => setQuantity((q) => q + 1)}>+</button>
             </div>
-
-            <div className="pd-summary">
-              <div>
-                <span>Total</span>
-                <b>₹{totalPrice.toFixed(2)}</b>
-              </div>
+            <div className="pd-srow pd-total">
+              <span>Total</span>
+              <span>₹{totalPrice.toFixed(2)}</span>
             </div>
+          </div>
 
-            <div className="pd-actions">
-              <button className="pd-btn-secondary" onClick={addToCart}>
+          {/* Desktop sticky CTA (Mamaearth-like side card) */}
+          <div className="pd-stickyActions">
+            <div className="pd-ctaRow">
+              <button className="pd-btn pd-btn-soft pd-cta" onClick={addToCart}>
                 Add to Cart
               </button>
+
               <button
-                className="pd-btn-primary"
+                className="pd-btn pd-btn-primary pd-cta"
                 onClick={handleBuyNow}
                 disabled={!user}
+                title={!user ? "Login required" : "Buy now"}
               >
                 Buy Now
               </button>
             </div>
+
+            {!user ? (
+              <div className="pd-loginHint">
+                Login required to checkout.
+                <button className="pd-linkBtn" onClick={() => navigate("/")}>
+                  Login
+                </button>
+              </div>
+            ) : (
+              <button className="pd-btn pd-btn-outline pd-viewCart" onClick={() => navigate("/account")}>
+                View Cart
+              </button>
+            )}
           </div>
         </div>
       </div>
 
+      {/* ✅ Mobile sticky bottom bar */}
+      <div className="pd-bottomBar">
+        <div className="pd-bottomInfo">
+          <div className="pd-bottomTotal">
+            <span className="pd-bottomLabel">Total</span>
+            <b>₹{totalPrice.toFixed(2)}</b>
+          </div>
+
+          <div className="pd-bottomQty">
+            <button className="pd-miniQtyBtn" onClick={decQty} disabled={quantity <= 1} aria-label="Decrease quantity">
+              −
+            </button>
+            <span className="pd-miniQty">{quantity}</span>
+            <button className="pd-miniQtyBtn" onClick={incQty} aria-label="Increase quantity">
+              +
+            </button>
+          </div>
+        </div>
+
+        <div className="pd-bottomBtns">
+          <button className="pd-btn pd-btn-soft pd-bottomBtn" onClick={addToCart}>
+            Add to Cart
+          </button>
+          <button
+            className="pd-btn pd-btn-primary pd-bottomBtn"
+            onClick={handleBuyNow}
+            disabled={!user}
+            title={!user ? "Login required" : "Buy now"}
+          >
+            Buy Now
+          </button>
+        </div>
+
+        {!user && <div className="pd-bottomHint">Login required to purchase</div>}
+      </div>
+
+      {/* Buy Modal */}
       <BuyModal
         open={showBuy}
         onClose={() => setShowBuy(false)}
         product={product}
         quantity={quantity}
         user={user}
+        onSuccess={() => {
+          setShowBuy(false);
+          navigate("/");
+        }}
       />
     </div>
   );
