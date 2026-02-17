@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react"; // Removed unused imports
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
@@ -64,21 +64,16 @@ export default function Home() {
     loadData();
   }, []);
 
-  // --- UPDATED LOGIN LOGIC ---
-  const handleGoogleLogin = async () => {
+  // --- FIXED LOGIN LOGIC ---
+  const handleGoogleLogin = async (e) => {
+    // 1. Prevent default browser behavior (Stopping the refresh)
+    if (e) e.preventDefault(); 
+    
     if (loginBusy) return;
     setLoginBusy(true);
     
     try {
-        // Option A: Redirect to a dedicated login page
         navigate("/login"); 
-
-        // OR Option B: If using direct API (as discussed previously):
-        /*
-        const response = await fetch('YOUR_API_URL/login/google');
-        const data = await response.json();
-        // Handle token storage here...
-        */
     } catch (error) {
         console.error("Login failed", error);
     } finally {
@@ -120,14 +115,19 @@ export default function Home() {
               {user.isAdmin && <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>Dashboard</button>}
             </div>
           ) : (
-            <button className="login-nav-btn" onClick={handleGoogleLogin} disabled={loginBusy}>
+            <button 
+                type="button"  // <--- FIXED: Added type="button"
+                className="login-nav-btn" 
+                onClick={(e) => handleGoogleLogin(e)} // <--- FIXED: Passed event 'e'
+                disabled={loginBusy}
+            >
                 {loginBusy ? "..." : "Login"}
             </button>
           )}
         </div>
       </nav>
 
-      {/* --- FIXED HAMBURGER BUTTON (Directly in JSX) --- */}
+      {/* --- HAMBURGER BUTTON --- */}
       {isMobile && (
         <button
           className={`hamburger mobile-fixed-btn ${menuOpen ? "open" : ""}`}
@@ -160,7 +160,14 @@ export default function Home() {
                    </div>
                 </div>
               ) : (
-                <button className="mobileLoginBtn" onClick={() => { handleGoogleLogin(); closeMenu(); }}>
+                <button 
+                    type="button" // <--- FIXED: Added type="button"
+                    className="mobileLoginBtn" 
+                    onClick={(e) => { 
+                        handleGoogleLogin(e); // <--- FIXED: Passed event 'e'
+                        closeMenu(); 
+                    }}
+                >
                   Login / Sign Up
                 </button>
               )}
@@ -176,7 +183,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* --- FIXED VIDEO SECTION (Added onEnded) --- */}
+      {/* --- VIDEO SECTION --- */}
       <section className="intro-video-section">
         <video 
             src="/videos/bananastrength.mp4" 
@@ -184,7 +191,7 @@ export default function Home() {
             muted 
             playsInline 
             className="intro-video" 
-            onEnded={() => setVideoEnded(true)}  // <--- KEY FIX HERE
+            onEnded={() => setVideoEnded(true)} 
         />
         {videoEnded && (
           <div className="intro-overlay">
