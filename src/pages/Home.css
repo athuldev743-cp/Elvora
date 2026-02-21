@@ -199,6 +199,277 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   background: var(--dim-yellow);
 }
 
+
+
+/* ===================== FULLSCREEN HERO GAME (FIX BLANK AREA) ===================== */
+/* ===================== FULLSCREEN HERO GAME (FIX BLANK AREA) ===================== */
+.intro-3d-section{
+  position: relative !important;
+  width: 100% !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+/* Ensure Hero3D absolute layer fills */
+.hero-3d-container{
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+/* Make canvas always full */
+.hero-3d-container canvas{
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+/* ===================== CATCHING CONTAINER OVERLAY (NEW) ===================== */
+.catchContainerOverlay {
+  position: absolute;
+  z-index: 60;
+  bottom: 6vh;
+  /* Smoothly scales between 110px on tiny phones and 200px on desktop */
+  width: clamp(110px, 30vw, 200px) !important; 
+  height: auto !important;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  display: block;
+  transform-origin: bottom center;
+  transition: transform 0.08s ease-out; /* Handles the catch bounce smoothly */
+}
+
+/* Mobile sizing */
+@media (max-width: 992px){
+  .catchContainerOverlay{
+    width: min(340px, 86vw);
+    bottom: 8vh;
+  }
+}
+
+@media (max-width: 420px){
+  .catchContainerOverlay{
+    width: 96vw;
+    bottom: 8vh;
+  }
+}
+
+/* ===================== GAME COVER (FIRST SCREEN) ===================== */
+.gameCoverOverlay{
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: clamp(16px, 4vw, 64px);
+}
+
+/* Container that pushes everything to the left */
+.gameCoverOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8%;
+}
+
+/* A dark gradient shadow strictly on the left side so text pops out! */
+.gameCoverOverlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  z-index: 1;
+}
+
+.gameCoverContent {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.gameCoverBadge {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--muted-green);
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.gameCoverTitle {
+  margin: 0 0 10px 0;
+  font-family: var(--font-heading);
+  font-size: clamp(40px, 5vw, 60px);
+  line-height: 1.1;
+  color: #ffffff !important;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+}
+
+.gameCoverSub {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+}
+
+.gameCoverBtn {
+  width: auto;
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 14px 36px;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--charcoal);
+  background: linear-gradient(135deg, var(--dim-yellow), #e9d086);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.gameCoverBtn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.gameCoverSkip {
+  display: inline-block;
+  margin-top: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 200ms ease;
+}
+
+.gameCoverSkip:hover {
+  color: var(--dim-yellow);
+}
+
+/* Mobile responsive */
+@media (max-width: 992px) {
+  .gameCoverOverlay {
+    justify-content: center;
+    padding-left: 0;
+    padding: 0 20px;
+  }
+
+  .gameCoverContent {
+    align-items: center;
+    text-align: center;
+    background: transparent;
+    backdrop-filter: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  .gameCoverBadge,
+  .gameCoverSub,
+  .gameCoverSkip {
+    display: none !important;
+  }
+
+  .gameCoverTitle {
+    margin-bottom: 24px;
+    font-size: 48px;
+  }
+
+  .hero3d-hud {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    min-width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .hero3d-pill {
+    margin-bottom: 0;
+    padding: 6px 10px;
+    font-size: 11px;
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .hero3d-jar-pill {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}
+.scoreTopRight{
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 80;
+  font-size: 44px;
+  font-weight: 1000;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.55);
+  pointer-events: none;
+}
+
+/* ✅ Time small top-left */
+.timeTopLeft{
+  position: absolute;
+  top: 18px;
+  left: 16px;
+  z-index: 80;
+  font-size: 16px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 8px 22px rgba(0,0,0,0.55);
+  pointer-events: none;
+}
+
+/* ✅ Minimal start button centered */
+.startBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 90;
+  border: 0;
+  padding: 16px 36px;
+  border-radius: 999px; /* Clean pill shape */
+  font-weight: 900;
+  font-size: 24px;
+  cursor: pointer;
+  color: #132a13;
+  background: linear-gradient(135deg, #facc15, #eab308); /* Premium gold gradient */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  white-space: nowrap;
+}
+
+.startBtn:hover {
+  transform: translate(-50%, -52%); /* Slightly lifts up on hover */
+  filter: brightness(1.1);
+}
+@media (max-width: 992px) {
+  .catchContainerOverlay {
+    bottom: 8vh;
+  }
+  
+  .startBtn {
+    font-size: 20px;
+    padding: 14px 28px;
+  }
+}
+
 /* ===================== HAMBURGER BUTTON ===================== */
 .hamburger.mobile-fixed-btn {
   position: fixed; top: 25px; right: 20px; z-index: 3500;
@@ -354,4 +625,15 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+/* Ensure the 3D text and container scale perfectly on mobile */
+@media (max-width: 992px) {
+  .intro-3d-section { height: 80vh !important; }
+  
+  .hero-3d-container h1 {
+    font-size: 2.2rem !important;
+  }
+  .hero-3d-container h2 {
+    font-size: 1.2rem !important;
+  }
 }

@@ -8,6 +8,7 @@ import Testimonial from "./Testimonial";
 import Footer from "./Footer";
 import { fetchProducts } from "../api/publicAPI";
 import { User } from "lucide-react";
+import Hero3D from "../components/Hero3D";
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -26,7 +27,8 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
-  const [videoEnded, setVideoEnded] = useState(false);
+  // inside Home.jsx component (near other useState)
+const [showGame, setShowGame] = useState(false);
 
   // keep state, but no longer used to block navigation
   const [loginBusy, setLoginBusy] = useState(false);
@@ -104,7 +106,7 @@ export default function Home() {
             className="logo-img"
             onError={(e) => {
             e.currentTarget.style.display = "none"; }}
-                 
+                  
           />
         </div>
 
@@ -209,26 +211,49 @@ export default function Home() {
         </div>
       )}
 
-      {/* --- VIDEO SECTION --- */}
-      <section className="intro-video-section">
-        <video
-          src="/videos/bananastrength.mp4"
-          autoPlay
-          muted
-          playsInline
-          className="intro-video"
-          onEnded={() => setVideoEnded(true)}
-        />
-        {videoEnded && (
-          <div className="intro-overlay">
-            <h2 className="intro-title">
-              Ripen banana powder
-              <br />
-              100 bananas strength
-            </h2>
-          </div>
-        )}
-      </section>
+      {/* --- 3D HERO SECTION --- */}
+     {/* --- 3D HERO SECTION --- */}
+     <section
+  className="intro-3d-section"
+  style={{
+    backgroundImage: showGame
+      ? `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gameproduct-mobile.png" : "gameproduct.png"})`
+      : `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gamecover-mobile.png" : "gamecover.png"})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    backgroundColor: "transparent",
+    position: "relative",
+    overflow: "hidden",
+  }}
+>
+  {!showGame ? (
+    <div className="gameCoverOverlay">
+      <div className="gameCoverContent">
+        <div className="gameCoverBadge">Mini Game</div>
+        <h1 className="gameCoverTitle">Catch The Bananas</h1>
+        <p className="gameCoverSub">
+          Bananas fall from the sky. Move the container left/right to catch them. Score goes up, speed increases.
+        </p>
+
+        <button className="gameCoverBtn" type="button" onClick={() => setShowGame(true)}>
+          Try Game
+        </button>
+
+        <a className="gameCoverSkip" href="#products">
+          Skip & view products →
+        </a>
+      </div>
+    </div>
+  ) : (
+    <Hero3D
+      // ✅ pass the correct container images
+      containerDesktop={`${process.env.PUBLIC_URL}/images/container.png`}
+      containerMobile={`${process.env.PUBLIC_URL}/images/container-mobile.png`}
+      isMobile={isMobile}
+    />
+  )}
+</section>
 
       <section id="products" className="featuredPremium">
         <img className="featuredPremiumImg" src={priorityOneProduct?.image_url} alt="Hero" />

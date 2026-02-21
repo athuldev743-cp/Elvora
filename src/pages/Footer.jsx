@@ -22,24 +22,9 @@ const Footer = () => {
       icon: 'fab fa-instagram', 
       url: 'https://www.instagram.com/ekabhumih' 
     },
-    { 
-      id: 4, 
-      name: 'YouTube', 
-      icon: 'fab fa-youtube', 
-      url: 'https://www.youtube.com/c/ekabhumih' 
-    },
-    { 
-      id: 5, 
-      name: 'LinkedIn', 
-      icon: 'fab fa-linkedin-in', 
-      url: 'https://www.linkedin.com/company/ekabhumih' 
-    },
-    { 
-      id: 6, 
-      name: 'Pinterest', 
-      icon: 'fab fa-pinterest-p', 
-      url: 'https://www.pinterest.com/ekabhumih' 
-    }
+   
+   
+    
   ];
 
 
@@ -81,6 +66,7 @@ const Footer = () => {
               <div className="contact-info">
                 <div className="contact-item">
                   <i className="fas fa-map-marker-alt"></i>
+                  <span>Kaloor,kochi</span>
                   
                 </div>
                 <div className="contact-item">
@@ -92,7 +78,7 @@ const Footer = () => {
                   <span>contact.elvorafoods@gmail.com</span>
                 </div>
                 <div className="contact-item">
-                  <i className="fas fa-clock"></i>
+                 
                   
                 </div>
               </div>
