@@ -21,6 +21,12 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   transition: all 0.3s ease; padding: 20px;
 }
 .navbar.scrolled { background: rgba(95,126,92,.18); padding: 15px 20px; backdrop-filter: blur(10px); }
+.navHidden{
+  opacity: 0;
+  transform: translateY(-110%);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
 
 .logo { display: flex; align-items: center; height: 100%; }
 .logo-img { height: 60px; width: auto; object-fit: contain; mix-blend-mode: multiply; }
@@ -206,8 +212,9 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 .intro-3d-section{
   position: relative !important;
   width: 100% !important;
-  height: 100vh !important;
+  height: 100vh !important; /* <--- CHANGED THIS FROM 100vh to 100dvh */
   overflow: hidden !important;
+  touch-action: pan-y; /* Prevents accidental scrolling while playing */
 }
 
 /* Ensure Hero3D absolute layer fills */
@@ -224,6 +231,16 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   display: block !important;
 }
 
+.intro-3d-section.gamePlaying{
+  touch-action: none !important;
+}
+
+/* Dim the game when paused (you already had similar rules; keep only one set) */
+.hero-3d-container.game-paused canvas,
+.hero-3d-container.game-paused .catchContainerOverlay{
+  filter: brightness(0.3) grayscale(0.6);
+  transition: filter 0.35s ease;
+}
 /* ===================== CATCHING CONTAINER OVERLAY (NEW) ===================== */
 .catchContainerOverlay {
   position: absolute;
@@ -434,26 +451,63 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   text-shadow: 0 8px 22px rgba(0,0,0,0.55);
   pointer-events: none;
 }
+/* Dimming effect for the game area when paused */
+.hero-3d-container.game-paused canvas,
+.hero-3d-container.game-paused .catchContainerOverlay {
+  filter: brightness(0.3) grayscale(0.6);
+  transition: filter 0.4s ease;
+}
 
-/* ✅ Minimal start button centered */
+/* The "PAUSED" message overlay */
+.pausedOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  pointer-events: none;
+}
+
+.pausedText {
+  font-size: 52px;
+  font-weight: 1000;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.pausedOverlay p {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+/* Ensure buttons are properly styled without inline clutter */
 .startBtn {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 90;
-  border: 0;
-  padding: 16px 36px;
-  border-radius: 999px; /* Clean pill shape */
-  font-weight: 900;
-  font-size: 24px;
+  z-index: 20;
+  padding: clamp(12px, 3vw, 15px) clamp(24px, 6vw, 40px);
+  font-size: clamp(18px, 6vw, 28px);
+  background-color: #FFD700;
+  border: none;
+  border-radius: 15px;
   cursor: pointer;
-  color: #132a13;
-  background: linear-gradient(135deg, #facc15, #eab308); /* Premium gold gradient */
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  transition: transform 0.2s ease, filter 0.2s ease;
+  font-weight: bold;
+  max-width: 90vw;
   white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
+
+/* ✅ Minimal start button centered */
+
 
 .startBtn:hover {
   transform: translate(-50%, -52%); /* Slightly lifts up on hover */

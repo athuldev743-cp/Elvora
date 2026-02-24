@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
@@ -27,8 +27,9 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
-  // inside Home.jsx component (near other useState)
-const [showGame, setShowGame] = useState(false);
+
+  const [showGame, setShowGame] = useState(false);
+  const [gamePaused, setGamePaused] = useState(false);
 
   // keep state, but no longer used to block navigation
   const [loginBusy, setLoginBusy] = useState(false);
@@ -37,18 +38,30 @@ const [showGame, setShowGame] = useState(false);
 
   // Scroll & Resize
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 50);
+
+      // ✅ pause game when user scrolls away from top
+      if (showGame) setGamePaused(y > 0);
+    };
+
     const onResize = () => {
       setIsMobile(window.innerWidth <= 992);
       if (window.innerWidth > 992) setMenuOpen(false);
     };
-    window.addEventListener("scroll", onScroll);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
+
+    // run once
+    onScroll();
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+  }, [showGame]);
 
   // Data Fetching
   useEffect(() => {
@@ -74,14 +87,20 @@ const [showGame, setShowGame] = useState(false);
         setLoading(false);
       }
     };
+
     loadData();
   }, []);
 
-  // --- LOGIN NAVIGATION (Option A) ---
+  // --- LOGIN NAVIGATION ---
   const handleGoogleLogin = (e) => {
     if (e) e.preventDefault();
     navigate("/login");
   };
+
+  // ✅ CONTINUE: scroll to top to unpause (your onScroll sets gamePaused = y > 0)
+  const handleContinue = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const priorityOneProduct = useMemo(() => {
     return products.find((p) => Number(p.priority) === 1) || products[0];
@@ -96,17 +115,20 @@ const [showGame, setShowGame] = useState(false);
   const closeMenu = () => setMenuOpen(false);
   const goToAdminDashboard = () => user?.isAdmin && navigate("/admin/dashboard");
 
+  // ✅ hide nav/hamburger only while actively playing (not paused)
+  const hideNavDuringGame = showGame && !gamePaused;
+
   return (
     <>
-      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
+      <nav className={`navbar ${scrolled ? "scrolled" : ""} ${hideNavDuringGame ? "navHidden" : ""}`}>
         <div className="logo">
           <img
             src="/images/logo.png"
             alt="ELVORA"
             className="logo-img"
             onError={(e) => {
-            e.currentTarget.style.display = "none"; }}
-                  
+              e.currentTarget.style.display = "none";
+            }}
           />
         </div>
 
@@ -127,6 +149,7 @@ const [showGame, setShowGame] = useState(false);
                   <User size={20} />
                 )}
               </button>
+
               {user.isAdmin && (
                 <button className="admin-dashboard-btn" onClick={goToAdminDashboard}>
                   Dashboard
@@ -142,7 +165,7 @@ const [showGame, setShowGame] = useState(false);
       </nav>
 
       {/* --- HAMBURGER BUTTON --- */}
-      {isMobile && (
+      {isMobile && !hideNavDuringGame && (
         <button
           className={`hamburger mobile-fixed-btn ${menuOpen ? "open" : ""}`}
           type="button"
@@ -212,48 +235,99 @@ const [showGame, setShowGame] = useState(false);
       )}
 
       {/* --- 3D HERO SECTION --- */}
-     {/* --- 3D HERO SECTION --- */}
-     <section
-  className="intro-3d-section"
-  style={{
-    backgroundImage: showGame
-      ? `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gameproduct-mobile.png" : "gameproduct.png"})`
-      : `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gamecover-mobile.png" : "gamecover.png"})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-    backgroundColor: "transparent",
-    position: "relative",
-    overflow: "hidden",
-  }}
->
-  {!showGame ? (
-    <div className="gameCoverOverlay">
-      <div className="gameCoverContent">
-        <div className="gameCoverBadge">Mini Game</div>
-        <h1 className="gameCoverTitle">Catch The Bananas</h1>
-        <p className="gameCoverSub">
-          Bananas fall from the sky. Move the container left/right to catch them. Score goes up, speed increases.
-        </p>
+      <section
+        className={`intro-3d-section ${showGame && !gamePaused ? "gamePlaying" : ""}`}
+        style={{
+          backgroundImage: showGame
+            ? `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gameproduct-mobile.png" : "gameproduct.png"})`
+            : `url(${process.env.PUBLIC_URL}/images/${isMobile ? "gamecover-mobile.png" : "gamecover.png"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "transparent",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {!showGame ? (
+          <div className="gameCoverOverlay">
+            <div className="gameCoverContent">
+              <div className="gameCoverBadge">Mini Game</div>
+              <h1 className="gameCoverTitle">Catch The Bananas</h1>
+              <p className="gameCoverSub">
+                Bananas fall from the sky. Move the container left/right to catch them. Score goes up, speed increases.
+              </p>
 
-        <button className="gameCoverBtn" type="button" onClick={() => setShowGame(true)}>
-          Try Game
-        </button>
+              <button className="gameCoverBtn" type="button" onClick={() => setShowGame(true)}>
+                Try Game
+              </button>
 
-        <a className="gameCoverSkip" href="#products">
-          Skip & view products →
-        </a>
-      </div>
-    </div>
-  ) : (
-    <Hero3D
-      // ✅ pass the correct container images
-      containerDesktop={`${process.env.PUBLIC_URL}/images/container.png`}
-      containerMobile={`${process.env.PUBLIC_URL}/images/container-mobile.png`}
-      isMobile={isMobile}
-    />
-  )}
-</section>
+              <a className="gameCoverSkip" href="#products">
+                Skip & view products →
+              </a>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Hero3D
+              containerDesktop={`${process.env.PUBLIC_URL}/images/container.png`}
+              containerMobile={`${process.env.PUBLIC_URL}/images/container-mobile.png`}
+              isMobile={isMobile}
+              paused={gamePaused}
+            />
+
+            {/* ✅ CONTINUE overlay when paused */}
+            {gamePaused && (
+              <div
+                onClick={handleContinue}
+                role="button"
+                aria-label="Continue game"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 200, // above Hero3D
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  userSelect: "none",
+                  background: "transparent",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "14px 26px",
+                    borderRadius: 999,
+                    fontWeight: 1000,
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
+                    fontSize: isMobile ? 22 : 34,
+                    color: "#fff",
+                    textShadow: "0 10px 30px rgba(0,0,0,0.7)",
+                    background: "rgba(0,0,0,0.15)",
+                    backdropFilter: "blur(6px)",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                  }}
+                >
+                  Continue
+                  <div
+                    style={{
+                      marginTop: 8,
+                      fontSize: isMobile ? 12 : 14,
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      opacity: 0.85,
+                      textAlign: "center",
+                    }}
+                  >
+                    Tap to resume
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
       <section id="products" className="featuredPremium">
         <img className="featuredPremiumImg" src={priorityOneProduct?.image_url} alt="Hero" />
@@ -267,9 +341,11 @@ const [showGame, setShowGame] = useState(false);
       <section id="about" className="pageSection">
         <About />
       </section>
+
       <section id="blog" className="pageSection">
         <Blog />
       </section>
+
       <section id="testimonials" className="pageSection">
         <Testimonial />
       </section>
