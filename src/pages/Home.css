@@ -209,224 +209,75 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
 
 /* ===================== FULLSCREEN HERO GAME (FIX BLANK AREA) ===================== */
 /* ===================== FULLSCREEN HERO GAME (FIX BLANK AREA) ===================== */
-.intro-3d-section{
+/* ===================== SECTION WRAPPER ===================== */
+.intro-3d-section {
   position: relative !important;
   width: 100% !important;
-  height: 100vh !important; /* <--- CHANGED THIS FROM 100vh to 100dvh */
+  height: 100dvh !important;
   overflow: hidden !important;
-  touch-action: pan-y; /* Prevents accidental scrolling while playing */
+  /* Allow normal scrolling until the game starts */
+  touch-action: pan-y;
 }
 
-/* Ensure Hero3D absolute layer fills */
-.hero-3d-container{
+/* Lock scroll while game is playing */
+.intro-3d-section.gamePlaying {
+  touch-action: none !important;
+}
+
+/* ===================== HERO 3D CONTAINER ===================== */
+.hero-3d-container {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
 }
-/* Make canvas always full */
-.hero-3d-container canvas{
+
+/* Canvas always fills the container — critical so its BoundingClientRect
+   matches the wrapper rect exactly, keeping DOM and WebGL coords in sync. */
+.hero-3d-container canvas {
   width: 100% !important;
   height: 100% !important;
   display: block !important;
 }
 
-.intro-3d-section.gamePlaying{
-  touch-action: none !important;
-}
-
-/* Dim the game when paused (you already had similar rules; keep only one set) */
+/* ===================== PAUSE DIMMING ===================== */
 .hero-3d-container.game-paused canvas,
-.hero-3d-container.game-paused .catchContainerOverlay{
+.hero-3d-container.game-paused .catchContainerOverlay {
   filter: brightness(0.3) grayscale(0.6);
   transition: filter 0.35s ease;
 }
-/* ===================== CATCHING CONTAINER OVERLAY (NEW) ===================== */
+
+/* ===================== JAR OVERLAY ===================== */
 .catchContainerOverlay {
-  position: absolute;
-  z-index: 60;
-  bottom: 6vh;
-  /* Smoothly scales between 110px on tiny phones and 200px on desktop */
-  width: clamp(110px, 30vw, 200px) !important; 
+  position: absolute !important;
+  /* bottom is the single source of truth for vertical position.
+     Hero3D.jsx reads iRect.top live so any value here is automatically
+     accounted for — no inline bottom override in JSX. */
+  bottom: 0 !important;
+  width: clamp(120px, 10vw, 180px) !important;
   height: auto !important;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  display: block;
-  transform-origin: bottom center;
-  transition: transform 0.08s ease-out; /* Handles the catch bounce smoothly */
+  z-index: 120 !important;
+  pointer-events: none !important;
+  /* Smooth bump animation driven by JSX scale transform */
+  transition: transform 80ms ease;
 }
 
-/* Mobile sizing */
-@media (max-width: 992px){
-  .catchContainerOverlay{
-    width: min(340px, 86vw);
-    bottom: 8vh;
-  }
-}
-
-@media (max-width: 420px){
-  .catchContainerOverlay{
-    width: 96vw;
-    bottom: 8vh;
-  }
-}
-
-/* ===================== GAME COVER (FIRST SCREEN) ===================== */
-.gameCoverOverlay{
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: clamp(16px, 4vw, 64px);
-}
-
-/* Container that pushes everything to the left */
-.gameCoverOverlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 8%;
-}
-
-/* A dark gradient shadow strictly on the left side so text pops out! */
-.gameCoverOverlay::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
-  z-index: 1;
-}
-
-.gameCoverContent {
-  position: relative;
-  z-index: 2;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.gameCoverBadge {
-  display: inline-flex;
-  align-items: center;
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .6px;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--muted-green);
-  padding: 8px 14px;
-  border-radius: 999px;
-  margin-bottom: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-.gameCoverTitle {
-  margin: 0 0 10px 0;
-  font-family: var(--font-heading);
-  font-size: clamp(40px, 5vw, 60px);
-  line-height: 1.1;
-  color: #ffffff !important;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
-}
-
-.gameCoverSub {
-  margin: 0 0 24px 0;
-  font-size: 16px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-}
-
-.gameCoverBtn {
-  width: auto;
-  border: 0;
-  cursor: pointer;
-  border-radius: 999px;
-  padding: 14px 36px;
-  font-weight: 900;
-  font-size: 16px;
-  color: var(--charcoal);
-  background: linear-gradient(135deg, var(--dim-yellow), #e9d086);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  transition: transform 180ms ease, filter 180ms ease;
-}
-
-.gameCoverBtn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-
-.gameCoverSkip {
-  display: inline-block;
-  margin-top: 16px;
-  font-weight: bold;
-  text-decoration: underline;
-  color: rgba(255, 255, 255, 0.8);
-  transition: color 200ms ease;
-}
-
-.gameCoverSkip:hover {
-  color: var(--dim-yellow);
-}
-
-/* Mobile responsive */
 @media (max-width: 992px) {
-  .gameCoverOverlay {
-    justify-content: center;
-    padding-left: 0;
-    padding: 0 20px;
-  }
-
-  .gameCoverContent {
-    align-items: center;
-    text-align: center;
-    background: transparent;
-    backdrop-filter: none;
-    padding: 0;
-    width: 100%;
-  }
-
-  .gameCoverBadge,
-  .gameCoverSub,
-  .gameCoverSkip {
-    display: none !important;
-  }
-
-  .gameCoverTitle {
-    margin-bottom: 24px;
-    font-size: 48px;
-  }
-
-  .hero3d-hud {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    min-width: auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .hero3d-pill {
-    margin-bottom: 0;
-    padding: 6px 10px;
-    font-size: 11px;
-    flex: 1 1 auto;
-    text-align: center;
-  }
-
-  .hero3d-jar-pill {
-    width: 100%;
-    flex: 1 1 100%;
+  .catchContainerOverlay {
+    width: clamp(90px, 28vw, 150px) !important;
+    /* Lift jar slightly off the bottom edge on mobile */
+    bottom: 8vh !important;
   }
 }
-.scoreTopRight{
+
+@media (max-width: 420px) {
+  .catchContainerOverlay {
+    width: 30vw !important;
+  }
+}
+
+/* ===================== HUD ===================== */
+.scoreTopRight {
   position: absolute;
   top: 14px;
   right: 16px;
@@ -435,34 +286,59 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   font-weight: 1000;
   line-height: 1;
   color: #fff;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.55);
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
   pointer-events: none;
 }
 
-/* ✅ Time small top-left */
-.timeTopLeft{
+.timeTopLeft {
   position: absolute;
   top: 18px;
   left: 16px;
   z-index: 80;
   font-size: 16px;
   font-weight: 900;
-  color: rgba(255,255,255,0.95);
-  text-shadow: 0 8px 22px rgba(0,0,0,0.55);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
   pointer-events: none;
 }
-/* Dimming effect for the game area when paused */
-.hero-3d-container.game-paused canvas,
-.hero-3d-container.game-paused .catchContainerOverlay {
-  filter: brightness(0.3) grayscale(0.6);
-  transition: filter 0.4s ease;
+
+/* ===================== START / GAME OVER BUTTON ===================== */
+.startBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  padding: clamp(12px, 3vw, 15px) clamp(24px, 6vw, 40px);
+  font-size: clamp(18px, 6vw, 28px);
+  background-color: #FFD700;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  max-width: 90vw;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: transform 180ms ease, filter 180ms ease;
 }
 
-/* The "PAUSED" message overlay */
+.startBtn:hover {
+  transform: translate(-50%, -52%);
+  filter: brightness(1.1);
+}
+
+@media (max-width: 992px) {
+  .startBtn {
+    font-size: 20px;
+    padding: 14px 28px;
+  }
+}
+
+/* ===================== PAUSE OVERLAY ===================== */
 .pausedOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  background: rgba(0, 0, 0, 0.5);
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -487,40 +363,120 @@ body { font-family: var(--font-body); padding-top: 0 !important; }
   opacity: 0.8;
 }
 
-/* Ensure buttons are properly styled without inline clutter */
-.startBtn {
+/* ===================== GAME COVER OVERLAY ===================== */
+.gameCoverOverlay {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   z-index: 20;
-  padding: clamp(12px, 3vw, 15px) clamp(24px, 6vw, 40px);
-  font-size: clamp(18px, 6vw, 28px);
-  background-color: #FFD700;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  font-weight: bold;
-  max-width: 90vw;
-  white-space: nowrap;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8%;
 }
 
-/* ✅ Minimal start button centered */
+.gameCoverOverlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
+  z-index: 1;
+}
 
+.gameCoverContent {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-.startBtn:hover {
-  transform: translate(-50%, -52%); /* Slightly lifts up on hover */
+.gameCoverBadge {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--muted-green);
+  padding: 8px 14px;
+  border-radius: 999px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.gameCoverTitle {
+  margin: 0 0 10px 0;
+  font-family: var(--font-heading);
+  font-size: clamp(40px, 5vw, 60px);
+  line-height: 1.1;
+  color: #ffffff !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.gameCoverSub {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.gameCoverBtn {
+  width: auto;
+  border: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 14px 36px;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--charcoal);
+  background: linear-gradient(135deg, var(--dim-yellow), #e9d086);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.gameCoverBtn:hover {
+  transform: translateY(-2px);
   filter: brightness(1.1);
 }
+
+.gameCoverSkip {
+  display: inline-block;
+  margin-top: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 200ms ease;
+}
+
+.gameCoverSkip:hover {
+  color: var(--dim-yellow);
+}
+
 @media (max-width: 992px) {
-  .catchContainerOverlay {
-    bottom: 8vh;
+  .gameCoverOverlay {
+    justify-content: center;
+    padding-left: 0;
+    padding: 0 20px;
   }
-  
-  .startBtn {
-    font-size: 20px;
-    padding: 14px 28px;
+
+  .gameCoverContent {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .gameCoverBadge,
+  .gameCoverSub,
+  .gameCoverSkip {
+    display: none !important;
+  }
+
+  .gameCoverTitle {
+    margin-bottom: 24px;
+    font-size: 48px;
   }
 }
 
