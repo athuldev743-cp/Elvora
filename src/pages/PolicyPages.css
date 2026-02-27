@@ -1,0 +1,271 @@
+/* PolicyPages.css - Shared styles for all policy/info pages */
+
+.policy-page {
+  min-height: 100vh;
+  background: #f9f7f2;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Hero Banner */
+.policy-hero {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  padding: 60px 20px 50px;
+  text-align: center;
+}
+
+.policy-hero h1 {
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.policy-hero p {
+  color: #a5d6a7;
+  font-size: 15px;
+}
+
+/* Main Content Container */
+.policy-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 60px;
+}
+
+.policy-intro {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+/* Section */
+.policy-section {
+  margin-bottom: 36px;
+}
+
+.policy-section h2 {
+  color: #2e7d32;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8f5e9;
+}
+
+.policy-section p {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+
+.policy-section ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+.policy-section ul li {
+  font-size: 15px;
+  color: #444;
+  line-height: 1.8;
+  margin-bottom: 6px;
+}
+
+.note-text {
+  margin-top: 16px !important;
+  font-weight: 600;
+}
+
+/* Highlight Box */
+.policy-highlight {
+  background: #e8f5e9;
+  border-left: 4px solid #2e7d32;
+  padding: 16px 20px;
+  border-radius: 6px;
+  font-size: 15px;
+  color: #2d2d2d;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+/* Table */
+.policy-table-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.policy-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+}
+
+.policy-table-wrap thead th {
+  background: #2e7d32;
+  color: #fff;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.policy-table-wrap tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid #e8f5e9;
+  color: #444;
+}
+
+.policy-table-wrap tbody tr:nth-child(even) td {
+  background: #f9fef9;
+}
+
+.policy-table-wrap tbody td:first-child {
+  font-weight: 500;
+  color: #2e7d32;
+}
+
+/* Contact Block */
+.contact-block {
+  background: #f1f8f1;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-top: 12px;
+}
+
+.contact-block p {
+  margin-bottom: 8px !important;
+  font-size: 15px;
+  color: #333;
+}
+
+.contact-block a {
+  color: #2e7d32;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-block a:hover {
+  text-decoration: underline;
+}
+
+/* Shipping Steps */
+.shipping-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 20px;
+  margin-bottom: 36px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.shipping-step {
+  text-align: center;
+  flex: 1;
+  min-width: 110px;
+  max-width: 160px;
+}
+
+.step-icon {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2e7d32;
+  margin-bottom: 4px;
+}
+
+.step-desc {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+}
+
+.step-arrow {
+  font-size: 20px;
+  color: #a5d6a7;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+/* Contact Cards (Contact Page) */
+.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.contact-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 18px;
+  text-align: center;
+  border-top: 4px solid #2e7d32;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  transition: transform 0.2s;
+}
+
+.contact-card:hover {
+  transform: translateY(-3px);
+}
+
+.contact-card-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.contact-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2e7d32;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.contact-card p {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.contact-card p a {
+  color: #2e7d32;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-card span {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .policy-hero h1 {
+    font-size: 26px;
+  }
+
+  .policy-container {
+    padding: 32px 16px 48px;
+  }
+
+  .step-arrow {
+    display: none;
+  }
+
+  .shipping-steps {
+    gap: 16px;
+  }
+}
