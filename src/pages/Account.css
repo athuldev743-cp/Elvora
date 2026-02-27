@@ -392,3 +392,63 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Paste this at the bottom of your Account.css ── */
+
+/* Payment Success Toast */
+.payment-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border-left: 5px solid #2e7d32;
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.14);
+  max-width: 340px;
+  animation: toastSlideIn 0.35s ease;
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.payment-toast-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.payment-toast strong {
+  display: block;
+  font-size: 15px;
+  color: #2e7d32;
+  margin-bottom: 3px;
+}
+
+.payment-toast p {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+}
+
+.payment-toast-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #aaa;
+  cursor: pointer;
+  line-height: 1;
+  margin-left: auto;
+  padding: 0 0 0 8px;
+  flex-shrink: 0;
+}
+
+.payment-toast-close:hover {
+  color: #555;
+}

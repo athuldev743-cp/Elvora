@@ -1,11 +1,8 @@
 // src/components/Buy.jsx
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import "./Buy.css";
-import {
-  createOrder,
-  createRazorpayOrder,
-  verifyRazorpayPayment,
-} from "../api/publicAPI";
+
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 /**
  * Props:
@@ -15,36 +12,25 @@ import {
  * quantity: number
  * user: { name, email }
  * onSuccess: () => void
- * useRazorpay?: boolean   (default true)
  */
-const BuyModal = ({
-  open,
-  onClose,
-  product,
-  quantity,
-  user,
-  onSuccess,
-  useRazorpay = true,
-}) => {
+const BuyModal = ({ open, onClose, product, quantity, user, onSuccess }) => {
   const [orderLoading, setOrderLoading] = useState(false);
 
-  const RZP_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID;
-
   const [orderForm, setOrderForm] = useState({
-    fullName: "",
+    fullName:    "",
     phoneNumber: "",
-    email: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-    notes: "",
+    email:       "",
+    address:     "",
+    city:        "",
+    state:       "",
+    pincode:     "",
+    notes:       "",
   });
 
-  // ✅ Persist shipping details per-user in localStorage (forever on this device/browser)
+  // Persist shipping details per-user in localStorage
   const STORAGE_KEY = useMemo(() => {
     const emailKey = (user?.email || "").trim().toLowerCase();
-    return emailKey ? `ekabhumi_checkout_${emailKey}` : "ekabhumi_checkout_guest";
+    return emailKey ? `elvora_checkout_${emailKey}` : "elvora_checkout_guest";
   }, [user?.email]);
 
   // Total amount
@@ -53,10 +39,9 @@ const BuyModal = ({
     return Number(product.price || 0) * Number(quantity || 1);
   }, [product, quantity]);
 
-  // ✅ Load saved details when modal opens
+  // Load saved details when modal opens
   useEffect(() => {
     if (!open) return;
-
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -64,40 +49,33 @@ const BuyModal = ({
         setOrderForm((prev) => ({
           ...prev,
           ...saved,
-          // still prefer current logged-in info
-          fullName: user?.name || saved.fullName || prev.fullName || "",
-          email: user?.email || saved.email || prev.email || "",
+          fullName: user?.name  || saved.fullName || prev.fullName || "",
+          email:    user?.email || saved.email    || prev.email    || "",
         }));
         return;
       }
     } catch (e) {
       console.warn("Failed to read saved checkout details", e);
     }
-
-    // fallback (no saved data)
     setOrderForm((prev) => ({
       ...prev,
-      fullName: user?.name || prev.fullName || "",
-      email: user?.email || prev.email || "",
+      fullName: user?.name  || prev.fullName || "",
+      email:    user?.email || prev.email    || "",
     }));
   }, [open, STORAGE_KEY, user]);
 
-  // ✅ Save shipping details whenever form changes (while modal is open)
+  // Save shipping details whenever form changes
   useEffect(() => {
     if (!open) return;
-
-    // usually better not to save notes
     const toSave = {
-      fullName: orderForm.fullName,
+      fullName:    orderForm.fullName,
       phoneNumber: orderForm.phoneNumber,
-      email: orderForm.email,
-      address: orderForm.address,
-      city: orderForm.city,
-      state: orderForm.state,
-      pincode: orderForm.pincode,
-      // notes: orderForm.notes, // optional
+      email:       orderForm.email,
+      address:     orderForm.address,
+      city:        orderForm.city,
+      state:       orderForm.state,
+      pincode:     orderForm.pincode,
     };
-
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     } catch (e) {
@@ -110,17 +88,13 @@ const BuyModal = ({
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    return () => { document.body.style.overflow = prev; };
   }, [open]);
 
-  // ESC to close (disable during loading)
+  // ESC to close
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => {
-      if (e.key === "Escape" && !orderLoading) onClose?.();
-    };
+    const onKey = (e) => { if (e.key === "Escape" && !orderLoading) onClose?.(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose, orderLoading]);
@@ -138,160 +112,67 @@ const BuyModal = ({
   };
 
   const validateForm = () => {
-    const { fullName, phoneNumber, email, address, city, state, pincode } =
-      orderForm;
-
-    if (!fullName.trim()) return alert("Please enter your full name"), false;
-
-    if (!phoneNumber.trim() || !/^\d{10}$/.test(phoneNumber))
-      return alert("Please enter a valid 10-digit phone number"), false;
-
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email))
-      return alert("Please enter a valid email address"), false;
-
-    if (!address.trim()) return alert("Please enter your delivery address"), false;
-    if (!city.trim()) return alert("Please enter your city"), false;
-    if (!state.trim()) return alert("Please enter your state"), false;
-
-    if (!pincode.trim() || !/^\d{6}$/.test(pincode))
-      return alert("Please enter a valid 6-digit pincode"), false;
-
+    const { fullName, phoneNumber, email, address, city, state, pincode } = orderForm;
+    if (!fullName.trim())                                      { alert("Please enter your full name");                return false; }
+    if (!phoneNumber.trim() || !/^\d{10}$/.test(phoneNumber)) { alert("Please enter a valid 10-digit phone number"); return false; }
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email))        { alert("Please enter a valid email address");         return false; }
+    if (!address.trim())                                       { alert("Please enter your delivery address");         return false; }
+    if (!city.trim())                                          { alert("Please enter your city");                     return false; }
+    if (!state.trim())                                         { alert("Please enter your state");                    return false; }
+    if (!pincode.trim() || !/^\d{6}$/.test(pincode))          { alert("Please enter a valid 6-digit pincode");       return false; }
     return true;
   };
 
-  const openRazorpay = (rzpOrder) =>
-    new Promise((resolve, reject) => {
-      if (!window.Razorpay) return reject(new Error("Razorpay SDK not loaded"));
-      if (!RZP_KEY_ID)
-        return reject(new Error("Razorpay key missing (REACT_APP_RAZORPAY_KEY_ID)"));
-
-      const options = {
-        key: RZP_KEY_ID,
-        amount: rzpOrder.amount,
-        currency: rzpOrder.currency || "INR",
-
-        // ✅ This is what you asked: brand shown in payment portal
-        name: "ELVORA",
-
-        description: "Secure payment",
-        order_id: rzpOrder.id,
-        prefill: {
-          name: orderForm.fullName || user?.name || "",
-          email: orderForm.email || user?.email || "",
-          contact: orderForm.phoneNumber || "",
-        },
-        theme: { color: "#F26722" },
-        handler: (response) => resolve(response),
-        modal: {
-          ondismiss: () => reject(new Error("Payment cancelled")),
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    });
-
-  // ✅ Flow 1: Razorpay payment + then place order
+  // Pay Online: backend creates order + Instamojo link → redirect
+  // After payment Instamojo calls backend callback → backend redirects to /account
   const handlePayAndSubmit = async () => {
-    if (!product) return;
+    if (!product)        return;
     if (!validateForm()) return;
 
     setOrderLoading(true);
     try {
-      // 1) Create Razorpay order (backend)
-      const rzpOrder = await createRazorpayOrder(totalPrice);
+      const response = await fetch(`${API_BASE}/api/payment/create`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id:       product.id,
+          product_name:     product.name,
+          quantity:         quantity,
+          unit_price:       product.price,
+          total_amount:     totalPrice,
+          customer_name:    orderForm.fullName,
+          customer_email:   orderForm.email,
+          customer_phone:   orderForm.phoneNumber,
+          shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
+          notes:            orderForm.notes || "",
+        }),
+      });
 
-      // 2) Open Razorpay Checkout
-      const payRes = await openRazorpay(rzpOrder);
+      const data = await response.json();
 
-      // 2.5) Verify payment signature (backend)
-      await verifyRazorpayPayment(payRes);
-
-      // 3) Create DB order
-      const orderData = {
-        product_id: product.id,
-        product_name: product.name,
-        quantity,
-        unit_price: product.price,
-        total_amount: Number(product.price) * Number(quantity),
-        customer_name: orderForm.fullName,
-        customer_email: orderForm.email,
-        customer_phone: orderForm.phoneNumber,
-        shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
-        notes: `${orderForm.notes || ""}\n[RZP] order=${payRes.razorpay_order_id} payment=${payRes.razorpay_payment_id}`.trim(),
-        status: "pending",
-        payment_status: "paid",
-        razorpay_order_id: payRes.razorpay_order_id,
-        razorpay_payment_id: payRes.razorpay_payment_id,
-      };
-
-      await createOrder(orderData);
-
-      alert("✅ Payment successful! Order placed. You will receive an email after admin confirms.");
-      onSuccess?.();
+      if (data.success && data.payment_url) {
+        window.location.href = data.payment_url;
+      } else {
+        alert("Payment initiation failed. Please try again.");
+        console.error("Instamojo error:", data);
+        setOrderLoading(false);
+      }
     } catch (err) {
-      console.error(err);
-      const msg =
-        typeof err?.message === "string" && err.message.trim()
-          ? err.message
-          : "Payment/Order failed. Please try again.";
-      alert(msg);
-    } finally {
+      console.error("Payment error:", err);
+      alert("Network error. Please check your connection and try again.");
       setOrderLoading(false);
     }
   };
-
-  // ✅ Flow 2: COD / normal pending order
-  const handleSubmitPending = async () => {
-    if (!product) return;
-    if (!validateForm()) return;
-
-    setOrderLoading(true);
-    try {
-      const orderData = {
-        product_id: product.id,
-        product_name: product.name,
-        quantity,
-        unit_price: product.price,
-        total_amount: Number(product.price) * Number(quantity),
-        customer_name: orderForm.fullName,
-        customer_email: orderForm.email,
-        customer_phone: orderForm.phoneNumber,
-        shipping_address: `${orderForm.address}, ${orderForm.city}, ${orderForm.state} - ${orderForm.pincode}`,
-        notes: orderForm.notes,
-        status: "pending",
-        payment_status: "pending",
-      };
-
-      await createOrder(orderData);
-      alert("✅ Order placed! You will receive an email once the admin confirms your order.");
-      onSuccess?.();
-    } catch (err) {
-      console.error("Failed to create order:", err);
-      const msg =
-        typeof err?.message === "string" && err.message.trim()
-          ? err.message
-          : "Failed to place order. Please try again.";
-      alert(msg);
-    } finally {
-      setOrderLoading(false);
-    }
-  };
-
-  const primaryClick = useRazorpay ? handlePayAndSubmit : handleSubmitPending;
-  const primaryLabel = useRazorpay
-    ? `Pay & Place Order (₹${totalPrice.toFixed(2)})`
-    : "✅ Confirm Order";
 
   return (
     <div className="buy-overlay" onMouseDown={safeClose}>
       <div className="buy-modal" onMouseDown={(e) => e.stopPropagation()}>
+
         <div className="buy-head">
           <div>
             <h2 className="buy-title">Complete Your Order</h2>
-            <p className="buy-sub">Premium checkout • Clean details • Fast confirmation</p>
+            <p className="buy-sub">Secure checkout • Fast confirmation</p>
           </div>
-
           <button
             className="buy-close"
             onClick={safeClose}
@@ -299,12 +180,11 @@ const BuyModal = ({
             aria-label="Close"
             type="button"
           >
-            ×
+            x
           </button>
         </div>
 
         <div className="buy-body">
-          {/* Summary */}
           <div className="buy-summary">
             <h3>Order Summary</h3>
             <div className="buy-row">
@@ -313,144 +193,71 @@ const BuyModal = ({
             </div>
             <div className="buy-row">
               <span>Price</span>
-              <span>
-                ₹{product?.price} × {quantity}
-              </span>
+              <span>Rs.{product?.price} x {quantity}</span>
             </div>
             <div className="buy-row buy-total">
               <span>Total</span>
-              <span>₹{Number(totalPrice).toFixed(2)}</span>
+              <span>Rs.{Number(totalPrice).toFixed(2)}</span>
             </div>
-
-            {useRazorpay && !RZP_KEY_ID ? (
-              <div className="buy-warn">
-                ⚠️ Razorpay key missing. Add <b>REACT_APP_RAZORPAY_KEY_ID</b> in frontend .env
-              </div>
-            ) : null}
           </div>
 
-          {/* Form */}
           <div className="buy-form">
             <h3>Shipping Details</h3>
 
             <div className="buy-grid2">
               <div className="buy-field">
                 <label>Full Name *</label>
-                <input
-                  name="fullName"
-                  value={orderForm.fullName}
-                  onChange={handleFormChange}
-                  placeholder="Enter your full name"
-                />
+                <input name="fullName" value={orderForm.fullName} onChange={handleFormChange} placeholder="Enter your full name" />
               </div>
-
               <div className="buy-field">
                 <label>Phone Number *</label>
-                <input
-                  name="phoneNumber"
-                  value={orderForm.phoneNumber}
-                  onChange={handleFormChange}
-                  placeholder="10-digit mobile number"
-                  maxLength={10}
-                  inputMode="numeric"
-                />
+                <input name="phoneNumber" value={orderForm.phoneNumber} onChange={handleFormChange} placeholder="10-digit mobile number" maxLength={10} inputMode="numeric" />
               </div>
             </div>
 
             <div className="buy-field">
               <label>Email Address *</label>
-              <input
-                name="email"
-                type="email"
-                value={orderForm.email}
-                onChange={handleFormChange}
-                placeholder="Enter your email"
-              />
+              <input name="email" type="email" value={orderForm.email} onChange={handleFormChange} placeholder="Enter your email" />
             </div>
 
             <div className="buy-field">
               <label>Delivery Address *</label>
-              <textarea
-                name="address"
-                value={orderForm.address}
-                onChange={handleFormChange}
-                placeholder="Full address with landmark"
-                rows={3}
-              />
+              <textarea name="address" value={orderForm.address} onChange={handleFormChange} placeholder="Full address with landmark" rows={3} />
             </div>
 
             <div className="buy-grid3">
               <div className="buy-field">
                 <label>City *</label>
-                <input
-                  name="city"
-                  value={orderForm.city}
-                  onChange={handleFormChange}
-                  placeholder="City"
-                />
+                <input name="city" value={orderForm.city} onChange={handleFormChange} placeholder="City" />
               </div>
-
               <div className="buy-field">
                 <label>State *</label>
-                <input
-                  name="state"
-                  value={orderForm.state}
-                  onChange={handleFormChange}
-                  placeholder="State"
-                />
+                <input name="state" value={orderForm.state} onChange={handleFormChange} placeholder="State" />
               </div>
-
               <div className="buy-field">
                 <label>Pincode *</label>
-                <input
-                  name="pincode"
-                  value={orderForm.pincode}
-                  onChange={handleFormChange}
-                  placeholder="6-digit pincode"
-                  maxLength={6}
-                  inputMode="numeric"
-                />
+                <input name="pincode" value={orderForm.pincode} onChange={handleFormChange} placeholder="6-digit pincode" maxLength={6} inputMode="numeric" />
               </div>
             </div>
 
             <div className="buy-field">
-              <textarea
-                name="notes"
-                value={orderForm.notes}
-                onChange={handleFormChange}
-                placeholder="Any special instructions"
-                rows={2}
-              />
+              <textarea name="notes" value={orderForm.notes} onChange={handleFormChange} placeholder="Any special instructions (optional)" rows={2} />
             </div>
           </div>
         </div>
 
         <div className="buy-actions">
-          <button
-            className="buy-btn buy-outline"
-            onClick={safeClose}
-            disabled={orderLoading}
-            type="button"
-          >
+          <button className="buy-btn buy-outline" onClick={safeClose} disabled={orderLoading} type="button">
             Cancel
           </button>
-
-          <button
-            className="buy-btn buy-primary"
-            onClick={primaryClick}
-            disabled={orderLoading || (useRazorpay && !RZP_KEY_ID)}
-            type="button"
-          >
-            {orderLoading ? (
-              <>
-                <span className="buy-miniSpin" />
-                Processing...
-              </>
-            ) : (
-              primaryLabel
-            )}
+          <button className="buy-btn buy-primary" onClick={handlePayAndSubmit} disabled={orderLoading} type="button">
+            {orderLoading
+              ? <><span className="buy-miniSpin" /> Redirecting...</>
+              : `Pay Now Rs.${totalPrice.toFixed(2)}`
+            }
           </button>
         </div>
+
       </div>
     </div>
   );
