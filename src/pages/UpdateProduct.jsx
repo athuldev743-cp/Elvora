@@ -54,12 +54,22 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
     setPreview2(URL.createObjectURL(file));
   };
 
+  // ✅ Hero toggle state
+  const isHero = Number(form.priority ?? 2) === 1;
+
   const validate = () => {
     if (!form.name.trim()) return "Name is required";
     if (!form.price || isNaN(Number(form.price))) return "Valid price is required";
     if (!form.description.trim()) return "Description is required";
     if (form.quantity === "" || isNaN(Number(form.quantity))) return "Valid quantity is required";
     if (form.priority === "" || isNaN(Number(form.priority))) return "Valid priority is required";
+
+    // ✅ Same logic implication: if hero is ON but no banner exists and none selected, block save
+    // (This mirrors your "required when visible" idea from AddProduct)
+    if (Number(form.priority) === 1 && !preview2 && !image2File) {
+      return "Hero Banner image is required for Priority 1";
+    }
+
     return "";
   };
 
@@ -87,8 +97,6 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
     }
   };
 
-  const isPriorityOne = parseInt(form.priority || "2", 10) === 1;
-
   return (
     <div className="updateWrap">
       <div className="updateGrid">
@@ -99,7 +107,11 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
             <div className="updatePreviewTitle">Main Image</div>
 
             <div className="updatePreviewImage">
-              {preview ? <img src={preview} alt="Preview" /> : <div className="noImage">No Image</div>}
+              {preview ? (
+                <img src={preview} alt="Preview" />
+              ) : (
+                <div className="noImage">No Image</div>
+              )}
             </div>
 
             <label className="fileBtn">
@@ -112,8 +124,8 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
             </div>
           </div>
 
-          {/* Hero Banner Preview (Only if Priority 1) */}
-          {isPriorityOne && (
+          {/* Hero Banner Preview (Only if Hero ON / Priority 1) */}
+          {isHero && (
             <div className="updatePreviewCard" style={{ marginTop: 20 }}>
               <div className="updatePreviewTitle">Hero Banner (Priority 1)</div>
 
@@ -156,10 +168,34 @@ export default function UpdateProduct({ product, onCancel, onSubmit, setError })
               <small>Quantity ≤ 0 will show “Available Soon” on Home.</small>
             </div>
 
+            {/* ✅ REPLACED: Priority input -> Hero toggle */}
             <div className="field">
-              <label>Priority</label>
-              <input value={form.priority} onChange={onChange("priority")} placeholder="e.g. 1" />
-              <small>Set to 1 to enable Hero Banner image.</small>
+              <label style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span>Hero Product (Priority 1)</span>
+
+                <label className="switch">
+                  <input
+                    type="checkbox"
+                    checked={isHero}
+                    onChange={(e) => {
+                      const on = e.target.checked;
+
+                      // ✅ Same rule:
+                      // ON -> priority 1
+                      // OFF -> priority 2 + clear banner file + preview
+                      setForm((p) => ({ ...p, priority: on ? "1" : "2" }));
+
+                      if (!on) {
+                        setImage2File(null);
+                        setPreview2("");
+                      }
+                    }}
+                  />
+                  <span className="slider" />
+                </label>
+              </label>
+
+              <small>Turn ON to enable Hero Banner image.</small>
             </div>
           </div>
 

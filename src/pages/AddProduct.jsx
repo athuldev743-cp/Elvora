@@ -13,8 +13,8 @@ function AddProduct({
 
   const update = (patch) => setNewProduct({ ...newProduct, ...patch });
 
-  // Check if Priority is 1
-  const isPriorityOne = parseInt(newProduct.priority || "2", 10) === 1;
+  // ✅ Hero = Priority 1, Normal = Priority 2
+  const isHero = Number(newProduct.priority ?? 2) === 1;
 
   return (
     <div className="addFormContainer">
@@ -60,26 +60,35 @@ function AddProduct({
         </div>
 
         <div className="grid2">
+          {/* ✅ REPLACED: Priority number input -> Hero toggle */}
           <div className="formGroup">
-            <label>Priority (1 = highest) *</label>
-            <input
-              type="number"
-              name="priority"
-              placeholder="Enter priority"
-              value={newProduct.priority ?? "2"}
-              onChange={(e) => {
-                const val = e.target.value;
-                // ✅ FIX: If priority is NOT 1, clear image2 immediately
-                const isOne = parseInt(val, 10) === 1;
-                update({ 
-                  priority: val,
-                  image2: isOne ? newProduct.image2 : null 
-                });
-              }}
-              required
-              min="1"
-              step="1"
-            />
+            <label style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span>Hero Product (Priority 1)</span>
+
+              {/* switch UI (styles can be added in CSS) */}
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={isHero}
+                  onChange={(e) => {
+                    const on = e.target.checked;
+
+                    // ✅ Same rule:
+                    // ON -> priority 1
+                    // OFF -> priority 2 + clear image2 immediately
+                    update({
+                      priority: on ? 1 : 2,
+                      image2: on ? newProduct.image2 : null,
+                    });
+                  }}
+                />
+                <span className="slider" />
+              </label>
+            </label>
+
+            <small>
+              Turn ON only if this product should appear in the hero banner.
+            </small>
           </div>
 
           <div className="formGroup">
@@ -123,8 +132,8 @@ function AddProduct({
           )}
         </div>
 
-        {/* ✅ HERO IMAGE (Only visible if Priority is 1) */}
-        {isPriorityOne && (
+        {/* ✅ HERO IMAGE (Only visible if Hero ON / Priority 1) */}
+        {isHero && (
           <div className="formGroup highlight-group">
             <label>Hero Banner Image (Priority 1) *</label>
             <input
@@ -135,11 +144,14 @@ function AddProduct({
                   update({ image2: e.target.files[0] });
                 }
               }}
-              required={!newProduct.image2} // Only required when visible
+              required={!newProduct.image2}
             />
             <small>Upload a wide banner image for the hero section.</small>
+
             {newProduct.image2 && (
-              <div className="filePreview">Selected: {newProduct.image2.name}</div>
+              <div className="filePreview">
+                Selected: {newProduct.image2.name}
+              </div>
             )}
           </div>
         )}
